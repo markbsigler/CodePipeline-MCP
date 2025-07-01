@@ -24,30 +24,67 @@ A production-ready TypeScript/Node.js MCP server project scaffolded from an AI p
 └── ...
 ```
 
-## Example OpenAPI Specification
+## OpenAPI Specification: CodePipeline (ISPW) Example
 
-The project uses OpenAPI to MCP tool mapping. Here is the sample `config/openapi.json`:
+The project uses OpenAPI to MCP tool mapping. Here is the current `config/openapi.json` (excerpt):
 
 ```json
 {
-  "openapi": "3.0.0",
-  "info": { "title": "Example API", "version": "1.0.0" },
+  "openapi": "3.0.3",
+  "info": {
+    "title": "BMC Compuware ISPW REST API",
+    "description": "REST API for BMC Compuware ISPW (Interactive Source Program Workbench) - a source code management, release automation, and deployment automation tool for mainframe DevOps. The API is hosted in Compuware Enterprise Services (CES) and uses token-based authentication.",
+    "version": "1.0.0",
+    "contact": {
+      "name": "BMC Compuware Support",
+      "url": "https://www.bmc.com/support/"
+    },
+    "license": {
+      "name": "BMC Software License"
+    }
+  },
+  "servers": [
+    { "url": "https://ispw.api.compuware.com", "description": "Production ISPW API Server" },
+    { "url": "https://{cesHost}:{cesPort}", "description": "Custom CES Server" }
+  ],
+  "security": [ { "PersonalAccessToken": [] } ],
   "paths": {
-    "/hello": {
+    "/ispw/{srid}/assignments": {
       "get": {
-        "operationId": "sayHello",
-        "description": "Returns a greeting.",
+        "tags": ["Assignments"],
+        "summary": "Get assignments",
+        "description": "Retrieve assignments for a specific SRID (System Resource Identifier)",
+        "parameters": [
+          { "name": "srid", "in": "path", "required": true, "schema": { "type": "string" }, "description": "System Resource Identifier" },
+          { "name": "level", "in": "query", "schema": { "type": "string", "enum": ["DEV", "INT", "ACC", "PRD"] }, "description": "Assignment level" },
+          { "name": "assignmentId", "in": "query", "schema": { "type": "string" }, "description": "Assignment ID filter" }
+        ],
         "responses": {
-          "200": {
-            "description": "Greeting response",
-            "content": { "application/json": { "schema": { "type": "object", "properties": { "message": { "type": "string" } } } } }
-          }
+          "200": { "description": "Successful response", "content": { "application/json": { "schema": { "$ref": "#/components/schemas/AssignmentListResponse" } } } },
+          "401": { "$ref": "#/components/responses/UnauthorizedError" },
+          "404": { "$ref": "#/components/responses/NotFoundError" }
+        }
+      },
+      "post": {
+        "tags": ["Assignments"],
+        "summary": "Create assignment",
+        "description": "Create a new assignment",
+        "parameters": [ { "name": "srid", "in": "path", "required": true, "schema": { "type": "string" }, "description": "System Resource Identifier" } ],
+        "requestBody": { "required": true, "content": { "application/json": { "schema": { "$ref": "#/components/schemas/CreateAssignmentRequest" } } } },
+        "responses": {
+          "201": { "description": "Assignment created successfully", "content": { "application/json": { "schema": { "$ref": "#/components/schemas/Assignment" } } } },
+          "400": { "$ref": "#/components/responses/BadRequestError" },
+          "401": { "$ref": "#/components/responses/UnauthorizedError" }
         }
       }
-    }
-  }
+    },
+    // ... (many more endpoints for tasks, releases, sets, packages, operations)
+  },
+  // ... (components, schemas, responses, tags)
 }
 ```
+
+> **Note:** The full OpenAPI spec is available in `config/openapi.json` and includes endpoints for assignments, tasks, releases, sets, packages, and DevOps operations (generate, promote, deploy, etc.).
 
 ## Environment Variables Example
 
@@ -61,7 +98,7 @@ JWT_SECRET=your_jwt_secret
 
 ## Key Features
 - Modular TypeScript structure
-- OpenAPI-driven MCP tool generation
+- OpenAPI-driven MCP tool generation (CodePipeline/ISPW)
 - Strict TypeScript, linting, and formatting
 - Comprehensive testing with Jest
 - Secure authentication and session management
