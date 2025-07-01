@@ -30,6 +30,7 @@ Generate a production-ready TypeScript/Node.js MCP server project with the follo
 - Enforce strict TypeScript config with `tsconfig.json` and `tsconfig.build.json`.
 - Use `eslint`, `prettier`, and `@typescript-eslint/parser` for linting/formatting.
 - Provide `.gitignore`, `.dockerignore`, and `.env.example` with all required environment variables and example values.
+- **API versioning:** All endpoints must be versioned (e.g., `/v1/tools/list`).
 
 ---
 
@@ -44,6 +45,7 @@ Generate a production-ready TypeScript/Node.js MCP server project with the follo
   - `tools/call`
   - `notifications/tools/list_changed`
 - Declare `tools` capability with `listChanged` support.
+- **API client generation:** Auto-generate and publish TypeScript/JavaScript API clients from the OpenAPI spec.
 
 ---
 
@@ -54,17 +56,21 @@ Generate a production-ready TypeScript/Node.js MCP server project with the follo
   - Chunked/streamed responses (Node.js streams)
   - Server-Sent Events (SSE) for notifications
   - Resumable streams with secure session management
-- **Bearer token authentication** with JWT validation.
+- **Bearer token authentication** with JWT validation (asymmetric signing, RS256, with key rotation support).
 - **Security Mitigations**:
   - NO token passthrough; all tokens must be issued for this server.
   - Secure, non-deterministic session IDs, bound to user info (`<user_id>:<session_id>`).
   - No session-based authentication; sessions for state only.
   - Verify all inbound requests when authorization is implemented.
+  - All endpoints must check user roles/permissions (least privilege).
+  - Store secrets securely using a secrets manager in production.
 - Implement **CORS** and security headers (`helmet.js`).
 - Input validation and sanitization everywhere.
 - Rate limiting and request size limits.
 - `/healthz` endpoint for health checks.
 - Structured logging (e.g., with Winston or Pino) and robust error handling.
+- **Standard error schema:** All API errors must conform to a standard JSON error schema (code, message, details).
+- **API versioning:** All endpoints must be versioned (e.g., `/v1/tools/list`).
 
 ---
 
@@ -79,6 +85,7 @@ Generate a production-ready TypeScript/Node.js MCP server project with the follo
   ```
 - Use `joi` or `zod` for config schema validation.
 - Support multiple environment configs (development, staging, production).
+- Store secrets (JWT keys, etc.) using a secrets manager in production.
 
 ---
 
@@ -97,11 +104,22 @@ Generate a production-ready TypeScript/Node.js MCP server project with the follo
   - Container Deployment
   - Session Management and Security
 - Document the process for adding new endpoints/tools.
-- Auto-generate API docs using Swagger UI or Redoc.
+- Auto-generate API docs using Swagger UI or Redoc, served at `/docs`.
+- Auto-generate and validate OpenAPI documentation in CI.
+- Ensure all served UIs/docs are accessible and support internationalization.
 
 ---
 
-## 6. Testing and Quality Assurance
+## 6. Observability and Monitoring
+
+- Integrate metrics (Prometheus), distributed tracing (OpenTelemetry), and correlation IDs for all requests.
+- Structured logging with log levels and log correlation.
+- Health check endpoints beyond `/healthz`.
+- Metrics collection and performance monitoring.
+
+---
+
+## 7. Testing and Quality Assurance
 
 - Use **Jest** for all tests.
 - Minimum 90% code coverage (unit, integration, e2e).
@@ -110,18 +128,21 @@ Generate a production-ready TypeScript/Node.js MCP server project with the follo
 - Linting/formatting checks with pre-commit hooks (`husky`).
 - TypeScript type checking in CI.
 - Security scanning (`npm audit`, `snyk`).
+- **Contract and mutation testing:** Implement contract tests (e.g., Pact) for MCP protocol compatibility and mutation testing (e.g., Stryker) for critical logic.
+- **Load/stress testing:** Include load/stress testing scripts (e.g., k6, Artillery) and document performance SLAs.
 
 ---
 
-## 7. Development Tools and Scripts
+## 8. Development Tools and Scripts
 
 - `package.json` scripts for:
   - `dev`, `build`, `test`, `test:watch`, `lint`, `format`, `docker:build`, `docker:run`
 - Use `nodemon`, `ts-node`, `concurrently` for development.
+- Auto-generate and publish TypeScript/JavaScript API clients from the OpenAPI spec.
 
 ---
 
-## 8. CI/CD Pipeline
+## 9. CI/CD Pipeline
 
 - **GitHub Actions** workflow (`.github/workflows/ci.yml`) with:
   - TypeScript compilation
@@ -129,10 +150,11 @@ Generate a production-ready TypeScript/Node.js MCP server project with the follo
   - Test/coverage
   - Security scanning
   - Docker build/test (multi-platform: linux/amd64, linux/arm64)
+  - Auto-generate and validate OpenAPI docs
 
 ---
 
-## 9. Extensibility Framework
+## 10. Extensibility Framework
 
 - **OpenAPI-to-MCP Tools Pipeline**: Add new tools by editing `config/openapi.json`.
 - Auto-generate MCP tool definitions and TypeScript types.
@@ -140,10 +162,11 @@ Generate a production-ready TypeScript/Node.js MCP server project with the follo
 - Support tool annotations for metadata.
 - Plugin architecture for MCP extensions.
 - Middleware system for custom request processing.
+- **Plugin/middleware API:** Document and implement a plugin/middleware API with lifecycle hooks (init, pre-request, post-response, error) for extensibility.
 
 ---
 
-## 10. Example Files
+## 11. Example Files
 
 - Provide a sample `config/openapi.json`:
   ```json
@@ -170,39 +193,46 @@ Generate a production-ready TypeScript/Node.js MCP server project with the follo
 
 ---
 
-## 11. Security Configuration Examples
+## 12. Security Configuration Examples
 
 - Document input validation, access controls, rate limiting, output sanitization, audit logging, token validation, session security, CORS, and logging/monitoring.
+- Enforce least-privilege for all endpoints and service accounts.
+- All endpoints must check user roles/permissions.
+- Use asymmetric JWT signing (RS256) and support key rotation.
+- Store secrets securely using a secrets manager in production.
 
 ---
 
-## 12. Container and Deployment
+## 13. Container, Deployment, and Infrastructure as Code
 
 - Multi-stage Dockerfile (build/dev and minimal prod).
 - Docker Compose with app, Redis (if needed), health checks, env management.
 - Deployment scripts for common platforms.
 - Container security best practices.
 - Specify if Docker image should be multi-arch or target a specific platform.
+- **Infrastructure as Code:** Provide IaC scripts (e.g., Terraform, Pulumi) for all deployment environments.
 
 ---
 
-## 13. Performance and Monitoring
+## 14. Performance and Monitoring
 
 - Performance monitoring setup.
-- Structured logging with log levels.
+- Structured logging with log levels and correlation IDs.
 - Health check endpoints beyond `/healthz`.
 - Metrics collection.
 - Scaling considerations.
+- Include load/stress testing scripts and document performance SLAs.
 
 ---
 
-## 14. Code Quality
+## 15. Code Quality
 
 - Require JSDoc/TSDoc comments for all exported functions, classes, and modules.
 - All code should be self-documenting and follow best practices.
+- Mutation testing for critical logic.
 
 ---
 
-The resulting project should be robust, secure, and easily extensible, automatically exposing OpenAPI operations as MCP tools, following all security best practices, and ready for production and CI/CD.
+The resulting project should be robust, secure, observable, and easily extensible, automatically exposing OpenAPI operations as MCP tools, following all security best practices, and ready for production and CI/CD.
 
 ---
