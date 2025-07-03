@@ -27,4 +27,10 @@ describe('sanitizeOutput', () => {
       42
     ]);
   });
+
+  it('returns input unchanged if no dangerous chars in sanitizeOutput', () => {
+    const input = 'safe string';
+    const result = sanitizeOutput(input);
+    expect(result).toBe('safe string');
+  });
 });

@@ -33,4 +33,22 @@ describe('jsonSchemaToZod', () => {
     const zodSchema = jsonSchemaToZod(undefined);
     expect(zodSchema.safeParse('anything').success).toBe(true);
   });
+
+  it('returns z.record(z.any()) if object schema has no properties', () => {
+    const schema = { type: 'object' };
+    const zodSchema = jsonSchemaToZod(schema);
+    expect(zodSchema.safeParse({ any: 'value' }).success).toBe(true);
+  });
+
+  it('handles object schema with no required field (all required by default)', () => {
+    const schema = {
+      type: 'object',
+      properties: { a: { type: 'string' } }
+      // no required field
+    };
+    const zodSchema = jsonSchemaToZod(schema);
+    // Should NOT allow missing 'a' (required by default)
+    expect(zodSchema.safeParse({}).success).toBe(false);
+    expect(zodSchema.safeParse({ a: 'x' }).success).toBe(true);
+  });
 });

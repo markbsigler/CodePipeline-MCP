@@ -1,4 +1,4 @@
-import { jsonSchemaToTypeScriptType, jsonSchemaTypeToTs } from '../../src/utils/openapi-to-mcp';
+import { jsonSchemaToTypeScriptType, jsonSchemaTypeToTs, extractMcpToolsFromOpenApi } from '../../src/utils/openapi-to-mcp';
 
 describe('jsonSchemaToTypeScriptType', () => {
   it('handles array schema', () => {
@@ -18,6 +18,11 @@ describe('jsonSchemaToTypeScriptType', () => {
     expect(ts).toContain('bar');
     expect(ts).toContain('string');
     expect(ts).toContain('number');
+  });
+
+  it('returns any type for undefined or non-object schema', () => {
+    expect(jsonSchemaToTypeScriptType(undefined, 'Test')).toBe('type Test = any;');
+    expect(jsonSchemaToTypeScriptType('string', 'Test')).toBe('type Test = any;');
   });
 });
 
@@ -43,5 +48,42 @@ describe('jsonSchemaTypeToTs', () => {
   it('returns any for unknown or missing schema', () => {
     expect(jsonSchemaTypeToTs(undefined)).toBe('any');
     expect(jsonSchemaTypeToTs({})).toBe('any');
+  });
+});
+
+describe('extractMcpToolsFromOpenApi', () => {
+  it('handles param.required falsy in extractMcpToolsFromOpenApi', () => {
+    const openapi = {
+      paths: {
+        '/foo': {
+          post: {
+            operationId: 'testTool',
+            parameters: [
+              { name: 'bar', schema: { type: 'string' } } // no required field
+            ],
+            responses: { '200': { content: { 'application/json': { schema: { type: 'string' } } } } }
+          }
+        }
+      }
+    };
+    const tools = extractMcpToolsFromOpenApi(openapi) as any[];
+    expect(tools[0].inputSchema.required).toEqual([]);
+    expect(tools[0].inputSchema.properties).toHaveProperty('bar');
+  });
+
+  it('handles missing description and summary in extractMcpToolsFromOpenApi', () => {
+    const openapi = {
+      paths: {
+        '/bar': {
+          get: {
+            operationId: 'noDesc',
+            parameters: [],
+            responses: { '200': { content: { 'application/json': { schema: { type: 'string' } } } } }
+          }
+        }
+      }
+    };
+    const tools = extractMcpToolsFromOpenApi(openapi) as any[];
+    expect(tools[0].description).toBe('');
   });
 });
