@@ -27,10 +27,13 @@ export function jsonSchemaToTypeScriptType(schema: any, typeName: string): strin
       .join('\n');
     return `export interface ${typeName} {\n${props}\n}`;
   }
+  if (schema.type === 'array') {
+    return `type ${typeName} = ${jsonSchemaTypeToTs(schema.items)}[];`;
+  }
   return `type ${typeName} = any;`;
 }
 
-function jsonSchemaTypeToTs(schema: any): string {
+export function jsonSchemaTypeToTs(schema: any): string {
   if (!schema) return 'any';
   if (schema.type === 'string') return 'string';
   if (schema.type === 'number' || schema.type === 'integer') return 'number';

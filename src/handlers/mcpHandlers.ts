@@ -72,7 +72,8 @@ export function toolsCallHandler(mcpTools: any[], _openapi: any) {
     res.write('},"id":null}\n');
     res.end();
     // Clean up finished streams
-    setTimeout(() => deleteStreamState(sessionId), 60000);
+    const timeout = setTimeout(() => deleteStreamState(sessionId), 60000);
+    if (typeof timeout.unref === 'function') timeout.unref();
   };
 }
 
