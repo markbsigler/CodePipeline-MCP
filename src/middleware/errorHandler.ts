@@ -7,10 +7,22 @@ export function errorHandler(err: any, req: Request, res: Response, next: NextFu
     url: req.originalUrl,
     method: req.method,
     user: (req as any).user?.sub || 'anon',
-    sessionId: (req as any).sessionId || null
+    sessionId: (req as any).sessionId || null,
+    stack: err.stack,
   }, 'Error occurred');
+
   if (res.headersSent) {
     return next(err);
   }
-  res.status(err.status || 500).json({ error: err.message || 'Internal Server Error' });
+
+  res.setHeader('Content-Type', 'application/json');
+  const status = err.status || 500;
+  const isProd = process.env.NODE_ENV === 'production';
+
+  res.status(status).json({
+    error: err.message || 'Internal Server Error',
+    code: err.code || 'ERR_INTERNAL',
+    ...(err.details && !isProd ? { details: err.details } : {}),
+    ...(isProd ? {} : { stack: err.stack }),
+  });
 }
