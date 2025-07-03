@@ -259,7 +259,7 @@ Generate a production-ready TypeScript/Node.js MCP server project with the follo
 
 ### 5. Docker and Deployment
 - Add a quick start for Docker Compose in the README and provide a production-ready `docker-compose.yml` in the project root.
-- Multi-stage Dockerfile must use a non-root user and include healthchecks.
+- Multi-stage Dockerfile must use a non-root user and include healthchecks. Provide a production-ready `Dockerfile` in the project root using best practices for Node.js/TypeScript apps (multi-stage build, non-root user, healthcheck, minimal image).
 - Document multi-arch builds and deployment best practices.
 
 ### 6. Example-Driven Documentation
