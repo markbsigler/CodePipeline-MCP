@@ -233,6 +233,13 @@ Generate a production-ready TypeScript/Node.js MCP server project with the follo
 
 ---
 
+## Mutation Testing (Stryker)
+- Mutation testing is performed using Stryker to ensure test suite quality.
+- Run `npx stryker run` to execute mutation tests and generate a report.
+- See the README for setup and usage details.
+
+---
+
 ## Additional Requirements and Best Practices
 
 ### 1. Badges and Documentation

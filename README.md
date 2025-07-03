@@ -314,3 +314,24 @@ See [LICENSE](./LICENSE).
 - [.env.example](./.env.example) – Example environment variables
 
 ---
+
+## Mutation Testing with Stryker
+
+This project uses [Stryker](https://stryker-mutator.io/) for mutation testing to ensure the robustness of the test suite.
+
+### Running Mutation Tests
+
+1. Install Stryker and dependencies (if not already installed):
+   ```sh
+   npm install --save-dev @stryker-mutator/core @stryker-mutator/typescript-checker @stryker-mutator/jest-runner
+   ```
+2. Run mutation tests:
+   ```sh
+   npx stryker run
+   ```
+3. View the mutation report:
+   Open the generated HTML report at `reports/mutation/mutation.html` for detailed results.
+
+### Stryker Configuration
+- The configuration is in `stryker.conf.js`.
+- Thresholds are set to break the build if the mutation score is below 50%.
