@@ -15,12 +15,13 @@ app.use(json({ limit: '1mb' }));
 app.use(cors());
 app.use(helmet());
 app.use(requestLogger); // Log all requests
-app.use(authenticateJWT); // Protect all routes after this line
-app.use(sessionMiddleware); // Add session management after authentication
-app.use(mcpRateLimiter); // Apply rate limiting to all routes after this line
 
 // Health check endpoint
 app.get('/healthz', (_req, res) => res.status(200).json({ status: 'ok' }));
+
+app.use(authenticateJWT); // Protect all routes after this line
+app.use(sessionMiddleware); // Add session management after authentication
+app.use(mcpRateLimiter); // Apply rate limiting to all routes after this line
 
 // Load OpenAPI and MCP tool definitions at startup
 const openapi = loadOpenApiSpec('config/openapi.json');

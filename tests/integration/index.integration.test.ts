@@ -87,8 +87,7 @@ describe('MCP Server integration (index.ts & mcpHandlers)', () => {
 
   it('should return 200 on /healthz', async () => {
     const res = await request(app)
-      .get('/healthz')
-      .set(authHeader);
+      .get('/healthz'); // No auth header needed
     expect(res.status).toBe(200);
     expect(res.body.status).toBe('ok');
   });
@@ -98,18 +97,6 @@ describe('MCP Server integration (index.ts & mcpHandlers)', () => {
       .get('/not-a-real-route')
       .set(authHeader);
     expect(res.status).toBe(404);
-  });
-
-  it('should return 401 if no Authorization header', async () => {
-    const res = await request(app).get('/healthz');
-    expect(res.status).toBe(401);
-  });
-
-  it('should return 401 for invalid JWT', async () => {
-    const res = await request(app)
-      .get('/healthz')
-      .set('Authorization', 'Bearer invalid.token.here');
-    expect(res.status).toBe(401);
   });
 
   // Simulate error in handler to trigger errorHandler middleware

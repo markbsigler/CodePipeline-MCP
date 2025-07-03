@@ -6,8 +6,19 @@ import { sanitizeOutput } from '../utils/sanitizeOutput';
 // Handler for /mcp/tools/list
 export function toolsListHandler(mcpTools: any[]) {
   return (_req: Request, res: Response) => {
-    // TODO: Add pagination support
-    res.json({ tools: mcpTools });
+    // Pagination support
+    const page = parseInt((_req.query.page as string) || '1', 10);
+    const pageSize = parseInt((_req.query.pageSize as string) || '20', 10);
+    const start = (page - 1) * pageSize;
+    const end = start + pageSize;
+    const paginatedTools = mcpTools.slice(start, end);
+    res.json({
+      tools: paginatedTools,
+      page,
+      pageSize,
+      total: mcpTools.length,
+      totalPages: Math.ceil(mcpTools.length / pageSize),
+    });
   };
 }
 
@@ -54,27 +65,38 @@ export function toolsCallHandler(mcpTools: any[], _openapi: any) {
     }
     res.setHeader('Content-Type', 'application/json');
     res.setHeader('Transfer-Encoding', 'chunked');
-    // Simulate streaming with resumable support
-    for (let i = streamState.progress; i <= 100; i += 25) {
-      await new Promise((resolve) => setTimeout(resolve, 100));
-      const chunk: { progress: string; partialResult?: any } = { progress: `${i}%`, partialResult: i === 100 ? sanitizeOutput({ echo: streamState.params }) : undefined };
-      res.write(i === 0 ? '{"jsonrpc":"2.0","result":{' : ',');
-      res.write(`"progress":"${chunk.progress}"`);
-      if (chunk.partialResult) {
-        res.write(`,"partialResult":${JSON.stringify(chunk.partialResult)}`);
-      }
-      streamState.progress = i;
-      streamState.resultChunks.push(chunk);
-      if (i < 100) updateStreamState(sessionId, { progress: i, resultChunks: streamState.resultChunks });
-    }
-    streamState.completed = true;
-    updateStreamState(sessionId, { completed: true });
-    res.write('},"id":null}\n');
-    res.end();
-    // Clean up finished streams
-    const timeout = setTimeout(() => deleteStreamState(sessionId), 60000);
-    if (typeof timeout.unref === 'function') timeout.unref();
+    await streamToolResult(res, streamState, sessionId);
   };
+}
+
+// Extracted streaming logic to reduce complexity
+async function streamToolResult(
+  res: Response,
+  streamState: any,
+  sessionId: string
+) {
+  for (let i = streamState.progress; i <= 100; i += 25) {
+    await new Promise((resolve) => setTimeout(resolve, 100));
+    const chunk: { progress: string; partialResult?: any } = {
+      progress: `${i}%`,
+      partialResult: i === 100 ? sanitizeOutput({ echo: streamState.params }) : undefined,
+    };
+    res.write(i === 0 ? '{"jsonrpc":"2.0","result":{' : ',');
+    res.write(`"progress":"${chunk.progress}"`);
+    if (chunk.partialResult) {
+      res.write(`,"partialResult":${JSON.stringify(chunk.partialResult)}`);
+    }
+    streamState.progress = i;
+    streamState.resultChunks.push(chunk);
+    if (i < 100) updateStreamState(sessionId, { progress: i, resultChunks: streamState.resultChunks });
+  }
+  streamState.completed = true;
+  updateStreamState(sessionId, { completed: true });
+  res.write('},"id":null}\n');
+  res.end();
+  // Clean up finished streams
+  const timeout = setTimeout(() => deleteStreamState(sessionId), 60000);
+  if (typeof timeout.unref === 'function') timeout.unref();
 }
 
 // Handler for /mcp/notifications/tools/list_changed (SSE or polling)

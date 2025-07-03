@@ -1,0 +1,46 @@
+name: CI
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+jobs:
+  build-test-scan:
+    runs-on: ubuntu-latest
+    services:
+      docker:
+        image: docker:24.0.5-dind
+        options: --privileged
+    steps:
+      - uses: actions/checkout@v4
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+      - name: Install dependencies
+        run: npm ci
+      - name: Build Docker image
+        run: docker build -t mcp-server:ci .
+      - name: Run Trivy scan
+        uses: aquasecurity/trivy-action@master
+        with:
+          image-ref: mcp-server:ci
+          format: table
+          exit-code: 1
+          ignore-unfixed: true
+      - name: Start containers
+        run: docker-compose up -d
+      - name: Wait for healthcheck
+        run: |
+          for i in {1..20}; do
+            if curl -sf http://localhost:3000/healthz; then exit 0; fi
+            sleep 2
+          done
+          exit 1
+      - name: Run integration tests
+        run: npm run test:integration
+      - name: Run k6 streaming test
+        run: |
+          docker run --rm -i grafana/k6 run - < tests/load/streaming.k6.js
+      - name: Stop containers
+        run: docker-compose down
