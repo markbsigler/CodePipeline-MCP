@@ -71,6 +71,8 @@ A production-ready, secure, and extensible MCP server for Node.js/TypeScript, au
    ```sh
    docker-compose up --build
    ```
+   - The app will be available at http://localhost:3000
+   - Healthcheck: http://localhost:3000/healthz
 5. **Build for production:**
    ```sh
    npm run build
@@ -288,6 +290,7 @@ We welcome contributions! Please open issues or pull requests. To contribute:
 ## FAQ / Troubleshooting
 
 **Q: Docker Compose fails to start?**
+- Ensure `docker-compose.yml` exists in the project root.
 - Check for port conflicts (default: 3000).
 - Ensure Docker is running and you have permissions.
 

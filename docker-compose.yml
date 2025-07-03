@@ -1,0 +1,28 @@
+version: '3.8'
+services:
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: mcp-server
+    restart: unless-stopped
+    environment:
+      - NODE_ENV=production
+      - PORT=3000
+      # Add other environment variables as needed
+    ports:
+      - "3000:3000"
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:3000/healthz"]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+    # Uncomment if you use a volume for hot-reload in dev
+    # volumes:
+    #   - .:/usr/src/app
+    #   - /usr/src/app/node_modules
+    # command: ["npm", "run", "start"]
+  # Add additional services (e.g., redis) as needed
+# networks:
+#   default:
+#     driver: bridge
