@@ -233,6 +233,48 @@ Generate a production-ready TypeScript/Node.js MCP server project with the follo
 
 ---
 
+## Additional Requirements and Best Practices
+
+### 1. Badges and Documentation
+- Generated README must include build, coverage, and license badges.
+- Add a table of contents for easy navigation.
+- Provide direct links to API docs (e.g., `/docs` for Swagger UI/Redoc).
+
+### 2. Security and Compliance
+- Explicitly document all security mitigations: CORS, helmet, rate limiting, input/output validation, JWT validation, session security, secrets management, and audit logging.
+- All endpoints must check user roles/permissions (least privilege).
+- No stack traces or sensitive info in production error responses.
+- Document how to report security issues.
+
+### 3. Testing and Quality
+- Minimum 100% code coverage for all critical files (handlers, utils, middleware, error handling, streaming logic).
+- All branches and lines in critical files must be covered by tests.
+- CI must fail on lint, format, or type errors.
+- Include contract and mutation testing for protocol and critical logic.
+
+### 4. Extensibility and Upgrades
+- Document the process for adding new tools, plugins, or middleware.
+- Provide a clear upgrade path for dependencies and OpenAPI specs.
+- Require a "How to Upgrade" section in the README.
+
+### 5. Docker and Deployment
+- Add a quick start for Docker Compose in the README.
+- Multi-stage Dockerfile must use a non-root user and include healthchecks.
+- Document multi-arch builds and deployment best practices.
+
+### 6. Example-Driven Documentation
+- README and generated docs must include example requests/responses for all endpoints.
+- Provide a minimal but complete example OpenAPI spec.
+- Inline example `.env` in README for clarity.
+
+### 7. FAQ and Troubleshooting
+- Add a FAQ/Troubleshooting section to the README for common issues (Docker, JWT, ports, etc).
+
+### 8. Contributing
+- Add a contributing section and reference `CONTRIBUTING.md` if present.
+
+---
+
 The resulting project should be robust, secure, observable, and easily extensible, automatically exposing OpenAPI operations as MCP tools, following all security best practices, and ready for production and CI/CD.
 
 ---

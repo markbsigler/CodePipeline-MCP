@@ -1,6 +1,28 @@
 # MCP Server – TypeScript/Node.js Production Template
 
+[![Build Status](https://github.com/<your-org>/<your-repo>/actions/workflows/ci.yml/badge.svg)](https://github.com/<your-org>/<your-repo>/actions)
+[![Coverage Status](https://coveralls.io/repos/github/<your-org>/<your-repo>/badge.svg?branch=main)](https://coveralls.io/github/<your-org>/<your-repo>?branch=main)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](./LICENSE)
+
 A production-ready, secure, and extensible MCP server for Node.js/TypeScript, auto-generating MCP tools from OpenAPI specs. Implements best practices for security, streaming, testing, and CI/CD.
+
+---
+
+## Table of Contents
+- [Project Structure](#project-structure)
+- [Quick Start](#quick-start)
+- [Features & Architecture](#features--architecture)
+- [Environment Variables Example](#environment-variables-example)
+- [API Usage Examples](#api-usage-examples)
+- [Security & Best Practices](#security--best-practices)
+- [Extending the Server](#extending-the-server)
+- [Testing & Quality](#testing--quality)
+- [CI/CD & Deployment](#cicd--deployment)
+- [Documentation & Diagrams](#documentation--diagrams)
+- [Contributing](#contributing)
+- [FAQ / Troubleshooting](#faq--troubleshooting)
+- [License](#license)
+- [References](#references)
 
 ---
 
@@ -35,16 +57,25 @@ A production-ready, secure, and extensible MCP server for Node.js/TypeScript, au
    npm install
    ```
 2. **Configure environment:**
-   - Copy `.env.example` to `.env` and set values.
+   - Copy `.env.example` to `.env` and set values (see below for example).
+   ```env
+   NODE_ENV=development
+   PORT=3000
+   JWT_SECRET=your_jwt_secret
+   ```
 3. **Run in development:**
    ```sh
    npm run dev
    ```
-4. **Build for production:**
+4. **Run with Docker Compose:**
+   ```sh
+   docker-compose up --build
+   ```
+5. **Build for production:**
    ```sh
    npm run build
    ```
-5. **Run tests:**
+6. **Run tests:**
    ```sh
    npm test
    ```
@@ -240,6 +271,31 @@ sequenceDiagram
     Server-->>Client: Set sessionId (state only)
     Note right of Server: No session-based auth
 ```
+
+---
+
+## Contributing
+
+We welcome contributions! Please open issues or pull requests. To contribute:
+- Fork the repo and create a feature branch.
+- Run `npm install` and `npm test` to ensure all tests pass.
+- Follow the code style (lint/format/typecheck scripts).
+- Add/modify tests for your changes.
+- See [CONTRIBUTING.md](./CONTRIBUTING.md) if available.
+
+---
+
+## FAQ / Troubleshooting
+
+**Q: Docker Compose fails to start?**
+- Check for port conflicts (default: 3000).
+- Ensure Docker is running and you have permissions.
+
+**Q: JWT errors?**
+- Ensure your `.env` has a valid `JWT_SECRET` and matches the signing algorithm.
+
+**Q: How do I access API docs?**
+- Visit `/docs` (Swagger UI/Redoc) when the server is running.
 
 ---
 
