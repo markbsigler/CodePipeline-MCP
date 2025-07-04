@@ -18,13 +18,27 @@ describe('mcpHandlers', () => {
   describe('toolsListHandler', () => {
     it('returns tools array', () => {
       const res = mockRes();
-      toolsListHandler([{ name: 'foo' }])({} as any, res);
-      expect(res.json).toHaveBeenCalledWith({ tools: [{ name: 'foo' }] });
+      const req = { query: { page: '1', pageSize: '20' } } as any;
+      toolsListHandler([{ name: 'foo' }])(req, res);
+      expect(res.json).toHaveBeenCalledWith({
+        tools: [{ name: 'foo' }],
+        page: 1,
+        pageSize: 20,
+        total: 1,
+        totalPages: 1,
+      });
     });
     it('returns empty tools array', () => {
       const res = mockRes();
-      toolsListHandler([])({} as any, res);
-      expect(res.json).toHaveBeenCalledWith({ tools: [] });
+      const req = { query: { page: '1', pageSize: '20' } } as any;
+      toolsListHandler([])(req, res);
+      expect(res.json).toHaveBeenCalledWith({
+        tools: [],
+        page: 1,
+        pageSize: 20,
+        total: 0,
+        totalPages: 0,
+      });
     });
   });
 
