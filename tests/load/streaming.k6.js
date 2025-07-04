@@ -1,4 +1,4 @@
-# k6 script for streaming endpoint load test
+// Remove invalid comment and ensure valid JS for k6
 import http from 'k6/http';
 import { check, sleep } from 'k6';
 
