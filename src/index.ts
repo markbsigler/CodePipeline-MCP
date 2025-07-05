@@ -37,7 +37,12 @@ export function createApp() {
   app.post('/mcp/tools/call', toolsCallHandler(mcpTools, openapi));
   app.get('/mcp/notifications/tools/list_changed', notificationsListChangedHandler());
 
-  // TODO: Add session management, rate limiting, input validation, error handling, SSE, etc.
+  // Add a catch-all 404 handler before the error handler
+  app.use((_req, res, next) => {
+    const err: any = new Error('Not Found');
+    err.status = 404;
+    next(err);
+  });
   app.use(errorHandler); // Add error handling middleware at the end
 
   return app;

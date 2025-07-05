@@ -52,6 +52,15 @@ describe('mcpHandlers', () => {
     });
     afterAll(() => { delete toolZodSchemas['echo']; });
 
+    beforeEach(() => {
+      // For streaming tests, set NODE_ENV to 'development' to exercise streaming path
+      process.env.NODE_ENV = 'development';
+    });
+    afterEach(() => {
+      // Restore NODE_ENV to 'test' after each test
+      process.env.NODE_ENV = 'test';
+    });
+
     it('returns 404 if tool not found', async () => {
       const res = mockRes();
       res.req.body = { tool: 'notfound', params: {} };
@@ -180,6 +189,8 @@ describe('mcpHandlers', () => {
     }, 10000);
 
     it('matches tool by id as well as name', async () => {
+      const oldEnv = process.env.NODE_ENV;
+      process.env.NODE_ENV = 'development';
       const mcpTools = [{ name: 'echo', id: 'echo-id' }];
       toolZodSchemas['echo'] = {
         input: { safeParse: (params: any) => ({ success: true, data: params }) }
@@ -194,6 +205,7 @@ describe('mcpHandlers', () => {
       expect(res.setHeader).toHaveBeenCalledWith('Content-Type', 'application/json');
       expect(res.write).toHaveBeenCalled();
       expect(res.end).toHaveBeenCalled();
+      process.env.NODE_ENV = oldEnv;
     });
 
     it('returns single JSON object in test mode', async () => {

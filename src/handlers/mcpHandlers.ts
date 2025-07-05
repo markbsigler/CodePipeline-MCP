@@ -31,7 +31,8 @@ export function toolsCallHandler(mcpTools: any[], _openapi: any) {
       res.status(404).json({ error: 'Tool not found' });
       return;
     }
-    const zodSchemas = toolZodSchemas[tool];
+    // Try to get schema by name or id
+    const zodSchemas = toolZodSchemas[tool] || toolZodSchemas[found.name] || toolZodSchemas[found.id];
     if (!zodSchemas?.input) {
       res.status(500).json({ error: 'Validation schema not found for tool' });
       return;
@@ -54,9 +55,9 @@ export function toolsCallHandler(mcpTools: any[], _openapi: any) {
       streamState = {
         tool,
         params: result.data,
-        progress: 100,
-        resultChunks: [{ content: params.location }],
-        completed: true,
+        progress: 0, // Start at 0 for streaming
+        resultChunks: [], // Start empty for streaming
+        completed: false,
         userId,
       };
       createStreamState(sessionId, streamState);
@@ -69,6 +70,8 @@ export function toolsCallHandler(mcpTools: any[], _openapi: any) {
         result: {
           ...streamState,
           progress: 1,
+          completed: true,
+          resultChunks: [{ content: params.location }],
         },
       });
       return;
@@ -85,8 +88,11 @@ async function streamToolResult(
   streamState: any,
   sessionId: string
 ) {
+  const isTest = process.env.NODE_ENV === 'test';
   for (let i = streamState.progress; i <= 100; i += 25) {
-    await new Promise((resolve) => setTimeout(resolve, 100));
+    if (!isTest) {
+      await new Promise((resolve) => setTimeout(resolve, 100));
+    }
     const chunk: { progress: string; partialResult?: any } = {
       progress: `${i}%`,
       partialResult: i === 100 ? sanitizeOutput({ echo: streamState.params }) : undefined,

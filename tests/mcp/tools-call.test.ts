@@ -5,6 +5,9 @@ import { z, ZodTypeAny } from 'zod';
 
 // --- Test Setup ---
 
+// Force test mode for deterministic handler output
+process.env.NODE_ENV = 'test';
+
 // 1. Define a sample list of tools that our mocked module will return.
 const mockMcpTools = [
   {
