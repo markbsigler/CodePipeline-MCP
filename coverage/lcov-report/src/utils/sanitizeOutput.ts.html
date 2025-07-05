@@ -23,30 +23,30 @@
         <div class='clearfix'>
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">100% </span>
+                <span class="strong">0% </span>
                 <span class="quiet">Statements</span>
-                <span class='fraction'>28/28</span>
+                <span class='fraction'>0/28</span>
             </div>
         
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">93.33% </span>
+                <span class="strong">0% </span>
                 <span class="quiet">Branches</span>
-                <span class='fraction'>14/15</span>
+                <span class='fraction'>0/15</span>
             </div>
         
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">100% </span>
+                <span class="strong">0% </span>
                 <span class="quiet">Functions</span>
-                <span class='fraction'>4/4</span>
+                <span class='fraction'>0/4</span>
             </div>
         
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">100% </span>
+                <span class="strong">0% </span>
                 <span class="quiet">Lines</span>
-                <span class='fraction'>21/21</span>
+                <span class='fraction'>0/21</span>
             </div>
         
             
@@ -61,7 +61,7 @@
             </div>
         </template>
     </div>
-    <div class='status-line high'></div>
+    <div class='status-line low'></div>
     <pre><table class="coverage">
 <tr><td class="line-count quiet"><a name='L1'></a><a href='#L1'>1</a>
 <a name='L2'></a><a href='#L2'>2</a>
@@ -109,82 +109,82 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">7x</span>
-<span class="cline-any cline-yes">7x</span>
-<span class="cline-any cline-yes">7x</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">7x</span>
-<span class="cline-any cline-yes">92x</span>
-<span class="cline-any cline-yes">89x</span>
-<span class="cline-any cline-yes">2x</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">88x</span>
-<span class="cline-any cline-yes">68x</span>
-<span class="cline-any cline-yes">68x</span>
-<span class="cline-any cline-yes">88x</span>
-<span class="cline-any cline-yes">501x</span>
-<span class="cline-any cline-yes">79x</span>
-<span class="cline-any cline-yes">77x</span>
-<span class="cline-any cline-yes">77x</span>
-<span class="cline-any cline-yes">17x</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">68x</span>
-<span class="cline-any cline-yes">11x</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">20x</span>
-<span class="cline-any cline-yes">15x</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">11x</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span></td><td class="text"><pre class="prettyprint lang-js">/**
  * Recursively sanitize output by removing dangerous fields and escaping strings.
  * For production, use a library like xss or DOMPurify for HTML.
  * This version also removes more sensitive fields, escapes more characters, prevents prototype pollution, and limits recursion depth.
  */
-const SENSITIVE_KEYS = ['password', 'token', 'secret', 'ssn', 'apikey', 'api_key'];
-const POLLUTION_KEYS = ['__proto__', 'constructor', 'prototype'];
-const MAX_DEPTH = 20;
+const SENSITIVE_KEYS = <span class="cstat-no" title="statement not covered" >['password', 'token', 'secret', 'ssn', 'apikey', 'api_key'];</span>
+const POLLUTION_KEYS = <span class="cstat-no" title="statement not covered" >['__proto__', 'constructor', 'prototype'];</span>
+const MAX_DEPTH = <span class="cstat-no" title="statement not covered" >20;</span>
 &nbsp;
-export function sanitizeOutput(obj: any, depth = 0): any {
-  if (depth &gt;= MAX_DEPTH) return undefined;
-  if (Array.isArray(obj)) {
-    return obj.map(item =&gt; sanitizeOutput(item, depth + 1));
+<span class="cstat-no" title="statement not covered" >export function <span class="fstat-no" title="function not covered" >s</span>anitizeOutput(</span>obj: any, depth = <span class="branch-0 cbranch-no" title="branch not covered" >0)</span>: any {
+<span class="cstat-no" title="statement not covered" >  <span class="missing-if-branch" title="if path not taken" >I</span>if (depth &gt;= MAX_DEPTH) <span class="cstat-no" title="statement not covered" >return undefined;</span></span>
+<span class="cstat-no" title="statement not covered" >  <span class="missing-if-branch" title="if path not taken" >I</span>if (Array.isArray(obj)) {</span>
+<span class="cstat-no" title="statement not covered" >    return obj.map(<span class="fstat-no" title="function not covered" >item </span>=&gt; <span class="cstat-no" title="statement not covered" >sanitizeOutput(item, depth + 1))</span>;</span>
   }
-  if (obj &amp;&amp; typeof obj === 'object') {
-    const clean: Record&lt;string, any&gt; = {};
-    for (const [k, v] of Object.entries(obj)) {
-      const keyLower = k.toLowerCase();
-      if (SENSITIVE_KEYS.some(s =&gt; keyLower.includes(s))) continue;
-      if (POLLUTION_KEYS.includes(k)) continue;
-      const sanitized = sanitizeOutput(v, depth + 1);
-      if (sanitized !== undefined) {
-        clean[k] = sanitized;
+<span class="cstat-no" title="statement not covered" >  <span class="missing-if-branch" title="if path not taken" >I</span>if (obj &amp;&amp; typeof obj === 'object') {</span>
+    const clean: Record&lt;string, any&gt; = <span class="cstat-no" title="statement not covered" >{};</span>
+<span class="cstat-no" title="statement not covered" >    for (const [k, v] of Object.entries(obj)) {</span>
+      const keyLower = <span class="cstat-no" title="statement not covered" >k.toLowerCase();</span>
+<span class="cstat-no" title="statement not covered" >      <span class="missing-if-branch" title="if path not taken" >I</span>if (SENSITIVE_KEYS.some(<span class="fstat-no" title="function not covered" >s </span>=&gt; <span class="cstat-no" title="statement not covered" >keyLower.includes(s))</span>) <span class="cstat-no" title="statement not covered" >continue;</span></span>
+<span class="cstat-no" title="statement not covered" >      <span class="missing-if-branch" title="if path not taken" >I</span>if (POLLUTION_KEYS.includes(k)) <span class="cstat-no" title="statement not covered" >continue;</span></span>
+      const sanitized = <span class="cstat-no" title="statement not covered" >sanitizeOutput(v, depth + 1);</span>
+<span class="cstat-no" title="statement not covered" >      <span class="missing-if-branch" title="if path not taken" >I</span>if (sanitized !== undefined) {</span>
+<span class="cstat-no" title="statement not covered" >        clean[k] = sanitized;</span>
       }
     }
     // If the object is empty, return undefined (unless it's the root)
-    if (Object.keys(clean).length === 0 &amp;&amp; depth !== 0) return undefined;
-    return clean;
+<span class="cstat-no" title="statement not covered" >    <span class="missing-if-branch" title="if path not taken" >I</span>if (Object.keys(clean).length === 0 &amp;&amp; depth !== 0) <span class="cstat-no" title="statement not covered" >return undefined;</span></span>
+<span class="cstat-no" title="statement not covered" >    return clean;</span>
   }
-  if (typeof obj === 'string') {
-    return obj.replace(/[&lt;&gt;&amp;"'`]/g, c =&gt; ({
+<span class="cstat-no" title="statement not covered" >  <span class="missing-if-branch" title="if path not taken" >I</span>if (typeof obj === 'string') {</span>
+<span class="cstat-no" title="statement not covered" >    return obj.replace(/[&lt;&gt;&amp;"'`]/g, <span class="fstat-no" title="function not covered" >c </span>=&gt; (<span class="cstat-no" title="statement not covered" >{</span></span>
       '&lt;': '&amp;lt;',
       '&gt;': '&amp;gt;',
       '&amp;': '&amp;amp;',
       '"': '&amp;quot;',
       "'": '&amp;#39;',
       '`': '&amp;#96;'
-    }[c] ?? <span class="branch-1 cbranch-no" title="branch not covered" >c)</span>);
+    }[c] ?? c));
   }
-  return obj;
+<span class="cstat-no" title="statement not covered" >  return obj;</span>
 }
 &nbsp;</pre></td></tr></table></pre>
 
@@ -193,7 +193,7 @@ export function sanitizeOutput(obj: any, depth = 0): any {
             <div class='footer quiet pad2 space-top1 center small'>
                 Code coverage generated by
                 <a href="https://istanbul.js.org/" target="_blank" rel="noopener noreferrer">istanbul</a>
-                at 2025-07-05T15:39:30.022Z
+                at 2025-07-05T15:42:27.253Z
             </div>
         <script src="../../prettify.js"></script>
         <script>

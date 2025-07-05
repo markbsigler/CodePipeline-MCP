@@ -112,7 +112,7 @@ describe('jsonSchemaToZod', () => {
     const zodSchema = jsonSchemaToZod(schema);
     expect(zodSchema.safeParse(1).success).toBe(true);
     expect(zodSchema.safeParse(3).success).toBe(false);
-    expect(zodSchema.safeParse(1.5).success).toBe(true); // z.number() does not enforce integer
+    expect(zodSchema.safeParse(1.5).success).toBe(false); // z.number().int() enforces integer
   });
 
   it('converts boolean schema', () => {

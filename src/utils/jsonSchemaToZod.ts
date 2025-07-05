@@ -54,6 +54,7 @@ export function jsonSchemaToZod(schema: any): ZodTypeAny {
     let num = z.number();
     if (schema.minimum !== undefined) num = num.min(schema.minimum);
     if (schema.maximum !== undefined) num = num.max(schema.maximum);
+    if (type === 'integer') num = num.int(); // Enforce integer if type is 'integer'
     base = num;
   } else if (type === 'boolean') {
     base = z.boolean();
