@@ -1,4 +1,12 @@
 import pino from 'pino';
+import pinoHttp from 'pino-http';
+import fs from 'fs';
+import path from 'path';
+
+const logDir = process.env.LOG_DIR || 'logs';
+if (!fs.existsSync(logDir)) {
+  fs.mkdirSync(logDir);
+}
 
 const logger = pino({
   level: process.env.LOG_LEVEL || 'info',
@@ -6,6 +14,13 @@ const logger = pino({
     target: 'pino-pretty',
     options: { colorize: true }
   } : undefined
-});
+},
+  pino.destination({
+    dest: path.join(logDir, 'app.log'),
+    minLength: 4096,
+    sync: false
+  })
+);
 
+export const httpLogger = pinoHttp({ logger });
 export default logger;
