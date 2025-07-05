@@ -1,8 +1,16 @@
 import request from 'supertest';
-import app from '../src/index';
+import { jest } from '@jest/globals';
 import jwt from 'jsonwebtoken';
 
-const JWT_SECRET = process.env.JWT_SECRET || 'changeme';
+// Mock dependencies that read from the file system before importing the app
+jest.mock('../src/utils/openapi-to-mcp', () => ({
+  loadOpenApiSpec: jest.fn(),
+  extractMcpToolsFromOpenApi: jest.fn().mockReturnValue([]), // Return empty tools for these tests
+}));
+
+import { createApp } from '../src/index';
+
+const JWT_SECRET = process.env.JWT_SECRET ?? 'changeme';
 const ISSUER = 'codepipeline-mcp-server';
 
 function makeToken(payload: object, opts: object = {}) {
@@ -10,6 +18,8 @@ function makeToken(payload: object, opts: object = {}) {
 }
 
 describe('Security & Logging', () => {
+  const app = createApp();
+
   it('rejects requests with missing/invalid JWT', async () => {
     const res = await request(app).post('/mcp/tools/list').send({});
     expect(res.status).toBe(401);

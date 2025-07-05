@@ -10,34 +10,44 @@ import { sessionMiddleware } from './middleware/session';
 import { errorHandler } from './middleware/errorHandler';
 import { requestLogger } from './middleware/requestLogger';
 
-const app = express();
-app.use(json({ limit: '1mb' }));
-app.use(cors());
-app.use(helmet());
-app.use(requestLogger); // Log all requests
+export function createApp() {
+  const app = express();
+  app.use(json({ limit: '1mb' }));
+  app.use(cors());
+  app.use(helmet());
+  app.use(requestLogger); // Log all requests
 
-// Health check endpoint
-app.get('/healthz', (_req, res) => res.status(200).json({ status: 'ok' }));
+  // Health check endpoint
+  app.get('/healthz', (_req, res) => res.status(200).json({ status: 'ok' }));
 
-app.use(authenticateJWT); // Protect all routes after this line
-app.use(sessionMiddleware); // Add session management after authentication
-app.use(mcpRateLimiter); // Apply rate limiting to all routes after this line
+  app.use(authenticateJWT); // Protect all routes after this line
+  app.use(sessionMiddleware); // Add session management after authentication
 
-// Load OpenAPI and MCP tool definitions at startup
-const openapi = loadOpenApiSpec('config/openapi.json');
-const mcpTools = extractMcpToolsFromOpenApi(openapi);
+  // Apply rate limiting to all routes after this line, but disable it for tests
+  if (process.env.NODE_ENV !== 'test') {
+    app.use(mcpRateLimiter);
+  }
 
-// MCP protocol endpoints
-app.post('/mcp/tools/list', toolsListHandler(mcpTools));
-app.post('/mcp/tools/call', toolsCallHandler(mcpTools, openapi));
-app.get('/mcp/notifications/tools/list_changed', notificationsListChangedHandler());
+  // Load OpenAPI and MCP tool definitions at startup
+  const openapi = loadOpenApiSpec('config/openapi.json');
+  const mcpTools = extractMcpToolsFromOpenApi(openapi);
 
-// TODO: Add session management, rate limiting, input validation, error handling, SSE, etc.
-app.use(errorHandler); // Add error handling middleware at the end
+  // MCP protocol endpoints
+  app.post('/mcp/tools/list', toolsListHandler(mcpTools));
+  app.post('/mcp/tools/call', toolsCallHandler(mcpTools, openapi));
+  app.get('/mcp/notifications/tools/list_changed', notificationsListChangedHandler());
 
-export default app;
+  // TODO: Add session management, rate limiting, input validation, error handling, SSE, etc.
+  app.use(errorHandler); // Add error handling middleware at the end
 
-if (require.main === module) {
+  return app;
+}
+
+// Start the server only if this file is run directly (not imported as a module)
+const isMainModule = require.main === module;
+
+if (isMainModule) {
+  const app = createApp();
   const port = process.env.PORT || 3000;
   app.listen(port, () => {
     // eslint-disable-next-line no-console

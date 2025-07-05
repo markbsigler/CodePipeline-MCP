@@ -12,7 +12,7 @@ export function authenticateJWT(req: Request, res: Response, next: NextFunction)
   const token = authHeader.substring(7);
   try {
     const payload = jwt.verify(token, JWT_SECRET, { issuer: JWT_ISSUER });
-    (req as any).user = payload;
+    req.user = payload;
     next();
   } catch (err) {
     console.error('JWT authentication error:', err);
