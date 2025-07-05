@@ -16,9 +16,9 @@ import { createApp } from '../../src/index';
 
 const app = createApp();
 
-describe('GET /mcp/notifications/tools/list_changed', () => {
+describe('GET /v1/mcp/notifications/tools/list_changed', () => {
   it('should return 200 OK with changed: false', async () => {
-    const res = await request(app).get('/mcp/notifications/tools/list_changed');
+    const res = await request(app).get('/v1/mcp/notifications/tools/list_changed');
 
     expect(res.status).toBe(200);
     expect(res.body).toEqual({ changed: false });

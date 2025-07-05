@@ -756,6 +756,18 @@
           }
         }
       }
+    },
+    "/docs": {
+      "get": {
+        "tags": ["Documentation"],
+        "summary": "OpenAPI Documentation",
+        "description": "Swagger UI/Redoc for the current API version. Always up-to-date.",
+        "responses": {
+          "200": {
+            "description": "Swagger UI or Redoc HTML page"
+          }
+        }
+      }
     }
   },
   "components": {
@@ -1257,6 +1269,10 @@
     {
       "name": "Operations",
       "description": "ISPW operations like generate, promote, and deploy"
+    },
+    {
+      "name": "Documentation",
+      "description": "API documentation and specifications"
     }
   ]
 }

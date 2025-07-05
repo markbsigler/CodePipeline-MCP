@@ -52,10 +52,10 @@ import { createApp } from '../../src/index';
 // 5. Create a fresh, isolated app instance for this test suite.
 const app = createApp();
 
-describe('POST /mcp/tools/call', () => {
+describe('POST /v1/mcp/tools/call', () => {
   it('should return 200 and a streamed result for a valid tool call', async () => {
     const res = await request(app)
-      .post('/mcp/tools/call')
+      .post('/v1/mcp/tools/call')
       .send({
         tool: 'get_weather',
         params: { location: 'San Francisco, CA' },
@@ -75,7 +75,7 @@ describe('POST /mcp/tools/call', () => {
 
   it('should return 404 if the tool does not exist', async () => {
     const res = await request(app)
-      .post('/mcp/tools/call')
+      .post('/v1/mcp/tools/call')
       .send({ tool: 'non_existent_tool', params: {} });
 
     expect(res.status).toBe(404);
@@ -84,7 +84,7 @@ describe('POST /mcp/tools/call', () => {
 
   it('should return 500 if a tool exists but has no validation schema', async () => {
     const res = await request(app)
-      .post('/mcp/tools/call')
+      .post('/v1/mcp/tools/call')
       .send({ tool: 'get_stock_price', params: { ticker: 'GOOG' } });
 
     expect(res.status).toBe(500);
@@ -93,7 +93,7 @@ describe('POST /mcp/tools/call', () => {
 
   it('should return 400 if the input parameters are invalid', async () => {
     const res = await request(app)
-      .post('/mcp/tools/call')
+      .post('/v1/mcp/tools/call')
       .send({ tool: 'get_weather', params: { location: 12345 } }); // Invalid type
 
     expect(res.status).toBe(400);

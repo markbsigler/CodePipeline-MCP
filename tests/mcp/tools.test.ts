@@ -35,9 +35,9 @@ jest.mock('../../src/middleware/auth', () => ({
 
 const app = createApp();
 
-describe('POST /mcp/tools/list', () => {
+describe('POST /v1/mcp/tools/list', () => {
   it('should return 200 OK with the list of mocked tools', async () => {
-    const res = await request(app).post('/mcp/tools/list').send({});
+    const res = await request(app).post('/v1/mcp/tools/list').send({});
 
     expect(res.status).toBe(200);
     expect(res.body).toEqual({ tools: mockMcpTools });

@@ -32,7 +32,17 @@ export function createApp() {
   const openapi = loadOpenApiSpec('config/openapi.json');
   const mcpTools = extractMcpToolsFromOpenApi(openapi);
 
-  // MCP protocol endpoints
+  // Versioned API router (v1)
+  const v1 = express.Router();
+
+  // MCP protocol endpoints under /v1/mcp
+  v1.post('/mcp/tools/list', toolsListHandler(mcpTools));
+  v1.post('/mcp/tools/call', toolsCallHandler(mcpTools, openapi));
+  v1.get('/mcp/notifications/tools/list_changed', notificationsListChangedHandler());
+
+  app.use('/v1', v1);
+
+  // Legacy (unversioned) endpoints for backward compatibility (optional, can deprecate later)
   app.post('/mcp/tools/list', toolsListHandler(mcpTools));
   app.post('/mcp/tools/call', toolsCallHandler(mcpTools, openapi));
   app.get('/mcp/notifications/tools/list_changed', notificationsListChangedHandler());
