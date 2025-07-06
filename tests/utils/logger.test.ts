@@ -1,4 +1,5 @@
-jest.mock('pino', () => () => ({ info: jest.fn(), error: jest.fn() }));
+jest.mock('pino', () => Object.assign(() => ({ info: jest.fn(), error: jest.fn() }), { destination: jest.fn(() => process.stdout) }));
+jest.mock('pino-http', () => () => ({ logger: { info: jest.fn(), error: jest.fn() } }));
 
 describe('logger', () => {
   it('should use pino-pretty transport in development', () => {

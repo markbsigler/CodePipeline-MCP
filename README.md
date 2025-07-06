@@ -9,23 +9,57 @@ A production-ready, secure, and extensible MCP server for Node.js/TypeScript, au
 
 ---
 
+## Configuration Notes (2025)
+
+### ESLint
+- Migrated to flat config (`eslint.config.js`).
+- `.eslintrc.json` and `.eslintignore` are deprecated and no longer used.
+
+### Jest
+- All Jest configuration is now in `jest.config.cjs`.
+- `jest.config.js` is deprecated and only present as a stub.
+
+### Logger Test Mocking
+- Logger tests (`tests/utils/logger.test.ts`) now mock both `pino` and `pino-http`.
+- `pino.destination` is also mocked to avoid file descriptor errors.
+- Example:
+  ```typescript
+  jest.mock('pino', () => Object.assign(() => ({ info: jest.fn(), error: jest.fn() }), { destination: jest.fn(() => process.stdout) }));
+  jest.mock('pino-http', () => () => ({ logger: { info: jest.fn(), error: jest.fn() } }));
+  ```
+- This ensures logger tests pass in all environments.
+
+### Observability & Rate Limiting
+- New observability and rate limiting middleware integrated into the Express app (`src/index.ts`).
+- `/metrics` endpoint and tracing are now available.
+
+### Running Tests
+- Run all tests with:
+  ```sh
+  npm test
+  ```
+- All tests should pass after the above changes.
+
+---
+
 ## Table of Contents
 - [MCP Server – TypeScript/Node.js Production Template](#mcp-server--typescriptnodejs-production-template)
+  - [Configuration Notes (2025)](#configuration-notes-2025)
   - [Table of Contents](#table-of-contents)
   - [Project Structure](#project-structure)
   - [Quick Start](#quick-start)
-  - [Features \& Architecture](#features--architecture)
+  - [Features & Architecture](#features--architecture)
   - [Environment Variables Example](#environment-variables-example)
   - [API Usage Examples](#api-usage-examples)
     - [Health Check](#health-check)
     - [404/Error Handling Example](#404error-handling-example)
     - [MCP Tool Call (JSON-RPC 2.0)](#mcp-tool-call-json-rpc-20)
     - [SSE Notifications](#sse-notifications)
-  - [Security \& Best Practices](#security--best-practices)
+  - [Security & Best Practices](#security--best-practices)
   - [Extending the Server](#extending-the-server)
-  - [Testing \& Quality](#testing--quality)
-  - [CI/CD \& Deployment](#cicd--deployment)
-  - [Documentation \& Diagrams](#documentation--diagrams)
+  - [Testing & Quality](#testing--quality)
+  - [CI/CD & Deployment](#cicd--deployment)
+  - [Documentation & Diagrams](#documentation--diagrams)
     - [Bearer Token Authentication Flow](#bearer-token-authentication-flow)
     - [OpenAPI-to-MCP Tools Mapping](#openapi-to-mcp-tools-mapping)
     - [MCP Protocol Message Flow](#mcp-protocol-message-flow)
