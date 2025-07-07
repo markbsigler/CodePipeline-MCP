@@ -7,8 +7,11 @@ import { sanitizeOutput } from '../utils/sanitizeOutput';
 export function toolsListHandler(mcpTools: any[]) {
   return (_req: Request, res: Response) => {
     // Pagination support
-    const page = parseInt((_req.query.page as string) || '1', 10);
-    const pageSize = parseInt((_req.query.pageSize as string) || '20', 10);
+    let page = parseInt((_req.query.page as string) || '1', 10);
+    let pageSize = parseInt((_req.query.pageSize as string) || '20', 10);
+    // Ensure positive integers
+    if (isNaN(page) || page < 1) page = 1;
+    if (isNaN(pageSize) || pageSize < 1) pageSize = 20;
     const start = (page - 1) * pageSize;
     const end = start + pageSize;
     const paginatedTools = mcpTools.slice(start, end);
