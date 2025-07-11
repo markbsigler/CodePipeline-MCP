@@ -42,6 +42,7 @@ A production-ready, secure, and extensible MCP server BMC AMI DevX Code Pipeline
 
 ---
 
+
 ## Table of Contents
 - [MCP Server – TypeScript/Node.js Production Template](#mcp-server--typescriptnodejs-production-template)
   - [Configuration Notes (2025)](#configuration-notes-2025)
@@ -58,21 +59,22 @@ A production-ready, secure, and extensible MCP server BMC AMI DevX Code Pipeline
   - [Security & Best Practices](#security--best-practices)
   - [Extending the Server](#extending-the-server)
   - [Testing & Quality](#testing--quality)
-  - [CI/CD & Deployment](#cicd--deployment)
+    - [Mutation Testing with Stryker](#mutation-testing-with-stryker)
+      - [Running Mutation Tests](#running-mutation-tests)
+      - [Stryker Configuration](#stryker-configuration)
   - [Documentation & Diagrams](#documentation--diagrams)
-    - [Bearer Token Authentication Flow](#bearer-token-authentication-flow)
-    - [OpenAPI-to-MCP Tools Mapping](#openapi-to-mcp-tools-mapping)
-    - [MCP Protocol Message Flow](#mcp-protocol-message-flow)
-    - [Tool Execution and Response Handling](#tool-execution-and-response-handling)
-    - [Container Deployment](#container-deployment)
-    - [Session Management and Security](#session-management-and-security)
+  - [Advanced Observability](#advanced-observability)
+  - [Production Hardening](#production-hardening)
+  - [CI/CD & Deployment](#cicd--deployment)
   - [Contributing](#contributing)
   - [FAQ / Troubleshooting](#faq--troubleshooting)
+  - [Authentication Guide](#authentication-guide)
+  - [API Endpoint Reference](#api-endpoint-reference)
+  - [API Versioning](#api-versioning)
+  - [Changelog](#changelog)
+  - [Contact / Support](#contact--support)
   - [License](#license)
   - [References](#references)
-  - [Mutation Testing with Stryker](#mutation-testing-with-stryker)
-    - [Running Mutation Tests](#running-mutation-tests)
-    - [Stryker Configuration](#stryker-configuration)
 
 ---
 
