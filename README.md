@@ -143,7 +143,6 @@ A production-ready, secure, and extensible MCP server BMC AMI DevX Code Pipeline
 ├── Dockerfile
 ├── docker-compose.yml
 ├── README.md
-├── LICENSE
 └── ...
 ```
 
@@ -168,6 +167,7 @@ A production-ready, secure, and extensible MCP server BMC AMI DevX Code Pipeline
 3. **Run in development:**
    ```sh
    npm run dev
+
    ```
 4. **Run with Docker Compose:**
    ```sh
@@ -197,29 +197,13 @@ A production-ready, secure, and extensible MCP server BMC AMI DevX Code Pipeline
 ## VS Code Client Configuration
 
 To connect to this MCP server from VS Code as a client:
-
-1. Open your workspace settings (`.vscode/settings.json` or via Command Palette: Preferences: Open Settings (JSON)).
 2. Add or update the following settings to configure the MCP server endpoint and authentication:
 
-```json
   // MCP server base URL
   "mcp.serverUrl": "http://localhost:3000/v1",
   // JWT token for authentication (replace with your actual token)
   "mcp.jwtToken": "<your-jwt-token>",
   // Optionally, set request timeout (in ms)
-  "mcp.requestTimeout": 10000
-}
-```
-
-**Notes:**
-- Replace `<your-jwt-token>` with a valid token (see [Authentication Guide](#authentication-guide)).
-- Adjust `serverUrl` if your server runs on a different host or port.
-- These settings are generic and can be used by any VS Code extension or custom client that supports JSON-RPC or REST calls to the MCP server.
-
----
-
-## Features & Architecture
-
 
 - **OpenAPI-to-MCP Tool Mapping:**
   - Auto-generates MCP tool endpoints from `config/openapi.json`.
