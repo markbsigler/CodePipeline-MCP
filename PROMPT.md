@@ -1,6 +1,27 @@
 # MCP Server TypeScript Node Project Generation Prompt
 
-Generate a production-ready TypeScript/Node.js MCP server project with the following best practices and security mitigations.
+
+Generate a production-ready TypeScript/Node.js MCP server project with the following best practices and security mitigations. All requirements below are mandatory unless otherwise noted.
+
+**Key additional requirements:**
+- Every endpoint/tool in the generated README and API docs must include at least one example request and response (curl and TypeScript/Node.js).
+- All error responses must conform to a standard JSON error schema (with `code`, `message`, and `details` fields), and this schema must be documented in the OpenAPI spec and README. Example:
+  ```json
+  {
+    "error": {
+      "code": "ERR_CODE",
+      "message": "Human-readable error message.",
+      "details": { "field": "description" }
+    }
+  }
+  ```
+- The OpenAPI spec must be validated in CI; the project must fail to build if the spec is invalid.
+- The README must include a “How to Upgrade” section for dependencies and OpenAPI spec changes, with commands and manual steps.
+- The README must include instructions for reporting security issues (e.g., via email or GitHub Security Advisories).
+- All served UIs/docs must be accessible (a11y best practices).
+- Generated API clients must be published to a package registry (npm, GitHub Packages, etc.) and include usage instructions in the README.
+- If there are specific performance SLAs, these must be documented and tested.
+- Use consistent terminology throughout (e.g., “tool” vs. “endpoint”, “handler” vs. “controller”).
 
 ---
 
@@ -96,6 +117,9 @@ Generate a production-ready TypeScript/Node.js MCP server project with the follo
   - API usage examples (curl, TypeScript/Node.js)
   - Security configuration
   - Docker deployment
+  - **How to Upgrade** section for dependencies and OpenAPI spec changes
+  - **Security Reporting** section with instructions for reporting vulnerabilities
+  - Example-driven documentation: every endpoint/tool must have at least one example request and response (curl and TypeScript/Node.js)
 - Include **Mermaid diagrams** for:
   - Bearer Token Authentication Flow
   - OpenAPI-to-MCP Tools Mapping
@@ -105,8 +129,8 @@ Generate a production-ready TypeScript/Node.js MCP server project with the follo
   - Session Management and Security
 - Document the process for adding new endpoints/tools.
 - Auto-generate API docs using Swagger UI or Redoc, served at `/docs`.
-- Auto-generate and validate OpenAPI documentation in CI.
-- Ensure all served UIs/docs are accessible and support internationalization.
+- Auto-generate and validate OpenAPI documentation in CI (build must fail if invalid).
+- Ensure all served UIs/docs are accessible and support internationalization (a11y best practices).
 
 ---
 
@@ -182,6 +206,10 @@ Generate a production-ready TypeScript/Node.js MCP server project with the follo
             "200": {
               "description": "Greeting response",
               "content": { "application/json": { "schema": { "type": "object", "properties": { "message": { "type": "string" } } } } }
+            },
+            "default": {
+              "description": "Error response",
+              "content": { "application/json": { "schema": { "type": "object", "properties": { "error": { "type": "object", "properties": { "code": { "type": "string" }, "message": { "type": "string" }, "details": { "type": "object" } } } } } } }
             }
           }
         }
@@ -246,12 +274,13 @@ Generate a production-ready TypeScript/Node.js MCP server project with the follo
 - Generated README must include build, coverage, and license badges.
 - Add a table of contents for easy navigation.
 - Provide direct links to API docs (e.g., `/docs` for Swagger UI/Redoc).
+- README and API docs must include at least one example request and response (curl and TypeScript/Node.js) for every endpoint/tool.
 
 ### 2. Security and Compliance
 - Explicitly document all security mitigations: CORS, helmet, rate limiting, input/output validation, JWT validation, session security, secrets management, and audit logging.
 - All endpoints must check user roles/permissions (least privilege).
 - No stack traces or sensitive info in production error responses.
-- Document how to report security issues.
+- Document how to report security issues (README must include a Security Reporting section).
 
 ### 3. Testing and Quality
 - Minimum 100% code coverage for all critical files (handlers, utils, middleware, error handling, streaming logic).
@@ -262,7 +291,7 @@ Generate a production-ready TypeScript/Node.js MCP server project with the follo
 ### 4. Extensibility and Upgrades
 - Document the process for adding new tools, plugins, or middleware.
 - Provide a clear upgrade path for dependencies and OpenAPI specs.
-- Require a "How to Upgrade" section in the README.
+- Require a "How to Upgrade" section in the README, with commands and manual steps.
 
 ### 5. Docker and Deployment
 - Add a quick start for Docker Compose in the README and provide a production-ready `docker-compose.yml` in the project root.
@@ -270,8 +299,8 @@ Generate a production-ready TypeScript/Node.js MCP server project with the follo
 - Document multi-arch builds and deployment best practices.
 
 ### 6. Example-Driven Documentation
-- README and generated docs must include example requests/responses for all endpoints.
-- Provide a minimal but complete example OpenAPI spec.
+- README and generated docs must include at least one example request and response (curl and TypeScript/Node.js) for all endpoints/tools.
+- Provide a minimal but complete example OpenAPI spec, including error schema.
 - Inline example `.env` in README for clarity.
 
 ### 7. FAQ and Troubleshooting
@@ -282,6 +311,7 @@ Generate a production-ready TypeScript/Node.js MCP server project with the follo
 
 ---
 
-The resulting project should be robust, secure, observable, and easily extensible, automatically exposing OpenAPI operations as MCP tools, following all security best practices, and ready for production and CI/CD.
+
+The resulting project should be robust, secure, observable, and easily extensible, automatically exposing OpenAPI operations as MCP tools, following all security best practices, and ready for production and CI/CD. All requirements above are mandatory unless otherwise noted.
 
 ---
