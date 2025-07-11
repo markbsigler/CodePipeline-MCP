@@ -202,7 +202,6 @@ To connect to this MCP server from VS Code as a client:
 2. Add or update the following settings to configure the MCP server endpoint and authentication:
 
 ```json
-{
   // MCP server base URL
   "mcp.serverUrl": "http://localhost:3000/v1",
   // JWT token for authentication (replace with your actual token)
@@ -220,6 +219,7 @@ To connect to this MCP server from VS Code as a client:
 ---
 
 ## Features & Architecture
+
 
 - **OpenAPI-to-MCP Tool Mapping:**
   - Auto-generates MCP tool endpoints from `config/openapi.json`.
@@ -247,29 +247,14 @@ To connect to this MCP server from VS Code as a client:
   - Multi-environment support (development, staging, production)
 - **Testing & Quality:**
   - Jest with 90%+ code coverage (**100% for critical logic and edge cases**)
-  - Robust integration and edge case test coverage (input validation, error handling, rate limiting, etc.)
   - Linting/formatting (eslint, prettier, husky)
   - TypeScript strict mode
-  - Security scanning (`npm audit`, `snyk`)
 - **CI/CD & Docker:**
   - GitHub Actions workflow for build, lint, test, coverage, security, Docker
   - Multi-stage Dockerfile and Docker Compose
 - **Extensibility:**
   - Add new tools by editing `config/openapi.json`
-  - Auto-generate TypeScript types and handler templates
-  - Plugin/middleware system for custom processing
-- **Documentation:**
-  - Auto-generated API docs (Swagger UI/Redoc)
-  - Mermaid diagrams for flows (see below)
-  - Comprehensive security and deployment docs
-
----
-
-## Environment Variables Example
-
-See `.env.example`:
 ```
-NODE_ENV=development
 PORT=3000
 JWT_SECRET=your_jwt_secret
 ```
