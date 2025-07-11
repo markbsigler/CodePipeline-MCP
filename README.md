@@ -1,11 +1,11 @@
-# MCP Server – TypeScript/Node.js Production Template
+# BMC AMI DevX Code Pipeline MCP Server
 
 [![Build Status](https://github.com/<your-org>/<your-repo>/actions/workflows/ci.yml/badge.svg)](https://github.com/<your-org>/<your-repo>/actions)
 [![Coverage Status](https://coveralls.io/repos/github/<your-org>/<your-repo>/badge.svg?branch=main)](https://coveralls.io/github/<your-org>/<your-repo>?branch=main)
 [![Mutation Score](https://img.shields.io/badge/mutation--score-85%25-brightgreen?logo=stryker)](./reports/mutation/mutation.html)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](./LICENSE)
 
-A production-ready, secure, and extensible MCP server for Node.js/TypeScript, auto-generating MCP tools from OpenAPI specs. Implements best practices for security, streaming, testing, and CI/CD.
+A production-ready, secure, and extensible MCP server BMC AMI DevX Code Pipeline, auto-generating MCP tools from OpenAPI specs. Implements best practices for security, streaming, testing, and CI/CD.
 
 ---
 
