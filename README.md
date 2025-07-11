@@ -44,8 +44,7 @@ A production-ready, secure, and extensible MCP server BMC AMI DevX Code Pipeline
 
 
 ## Table of Contents
-- [MCP Server – TypeScript/Node.js Production Template](#mcp-server--typescriptnodejs-production-template)
-  - [Configuration Notes (2025)](#configuration-notes-2025)
+- [BMC AMI DevX Code Pipeline MCP Server](#bmc-ami-devx-code-pipeline-mcp-server)
   - [Table of Contents](#table-of-contents)
   - [Project Structure](#project-structure)
   - [Quick Start](#quick-start)
