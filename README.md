@@ -46,8 +46,9 @@ A production-ready, secure, and extensible MCP server BMC AMI DevX Code Pipeline
 ## Table of Contents
 - [BMC AMI DevX Code Pipeline MCP Server](#bmc-ami-devx-code-pipeline-mcp-server)
   - [Table of Contents](#table-of-contents)
-  - [Project Structure](#project-structure)
   - [Quick Start](#quick-start)
+  - [Features & Architecture](#features--architecture)
+  - [Project Structure](#project-structure)
   - [Authentication Guide](#authentication-guide)
   # Removed duplicate TOC entry for VS Code Client Configuration
   - [Features & Architecture](#features--architecture)
@@ -76,6 +77,52 @@ A production-ready, secure, and extensible MCP server BMC AMI DevX Code Pipeline
   - [Contact / Support](#contact--support)
   - [License](#license)
   - [References](#references)
+
+---
+
+## Features & Architecture
+
+- **OpenAPI-to-MCP Tool Mapping:**
+  - Auto-generates MCP tool endpoints from `config/openapi.json`.
+  - Supports `tools/list`, `tools/call`, and notifications.
+- **Streamable HTTP API:**
+  - JSON-RPC 2.0 over HTTP
+  - Chunked/streamed responses (Node.js streams)
+  - Server-Sent Events (SSE) for notifications
+  - Resumable streams with secure session management
+- **Security:**
+  - Bearer token authentication with JWT validation
+  - No token passthrough; all tokens must be issued for this server
+  - Secure, non-deterministic session IDs (`<user_id>:<session_id>`)
+  - Sessions for state only (not authentication)
+  - CORS and security headers (helmet.js)
+  - **Strict input validation and sanitization everywhere (including integer enforcement and pattern checks)**
+  - Rate limiting and request size limits
+  - Structured logging (Winston or Pino)
+  - Robust error handling (including 404 and rate limiting responses)
+- **Health & Monitoring:**
+  - `/healthz` endpoint
+  - Metrics and performance monitoring (extensible)
+- **Configuration:**
+  - `.env` with schema validation (zod or joi)
+  - Multi-environment support (development, staging, production)
+- **Testing & Quality:**
+  - Jest with 90%+ code coverage (**100% for critical logic and edge cases**)
+  - Robust integration and edge case test coverage (input validation, error handling, rate limiting, etc.)
+  - Linting/formatting (eslint, prettier, husky)
+  - TypeScript strict mode
+  - Security scanning (`npm audit`, `snyk`)
+- **CI/CD & Docker:**
+  - GitHub Actions workflow for build, lint, test, coverage, security, Docker
+  - Multi-stage Dockerfile and Docker Compose
+- **Extensibility:**
+  - Add new tools by editing `config/openapi.json`
+  - Auto-generate TypeScript types and handler templates
+  - Plugin/middleware system for custom processing
+- **Documentation:**
+  - Auto-generated API docs (Swagger UI/Redoc)
+  - Mermaid diagrams for flows (see below)
+  - Comprehensive security and deployment docs
 
 ---
 
