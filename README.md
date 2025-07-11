@@ -48,6 +48,7 @@ A production-ready, secure, and extensible MCP server BMC AMI DevX Code Pipeline
   - [Table of Contents](#table-of-contents)
   - [Project Structure](#project-structure)
   - [Quick Start](#quick-start)
+  - [Authentication Guide](#authentication-guide)
   - [VS Code Client Configuration](#vs-code-client-configuration)
   - [Features & Architecture](#features--architecture)
   - [Environment Variables Example](#environment-variables-example)
@@ -159,6 +160,53 @@ To connect to this MCP server from VS Code as a client:
    ```sh
    npm test
    ```
+
+---
+
+## Authentication Guide
+
+1. **Obtain a JWT Token:**  
+   Use your authentication provider or the server's `/auth/login` endpoint (if enabled):
+
+   ```sh
+   curl -X POST http://localhost:3000/auth/login \
+     -H "Content-Type: application/json" \
+     -d '{"username":"user","password":"pass"}'
+   ```
+
+   The response will include a JWT token.
+
+2. **Use the Token:**  
+   Add the token to the `Authorization` header for all API requests:
+
+   ```
+   Authorization: Bearer <your-jwt-token>
+   ```
+
+---
+
+## VS Code Client Configuration
+
+To connect to this MCP server from VS Code as a client:
+
+1. Open your workspace settings (`.vscode/settings.json` or via Command Palette: Preferences: Open Settings (JSON)).
+2. Add or update the following settings to configure the MCP server endpoint and authentication:
+
+```json
+{
+  // MCP server base URL
+  "mcp.serverUrl": "http://localhost:3000/v1",
+  // JWT token for authentication (replace with your actual token)
+  "mcp.jwtToken": "<your-jwt-token>",
+  // Optionally, set request timeout (in ms)
+  "mcp.requestTimeout": 10000
+}
+```
+
+**Notes:**
+- Replace `<your-jwt-token>` with a valid token (see [Authentication Guide](#authentication-guide)).
+- Adjust `serverUrl` if your server runs on a different host or port.
+- These settings are generic and can be used by any VS Code extension or custom client that supports JSON-RPC or REST calls to the MCP server.
 
 ---
 
