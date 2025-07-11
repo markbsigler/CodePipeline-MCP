@@ -20,11 +20,6 @@ function createRateLimiter(max: number) {
       response.set('X-RateLimit-Remaining', '0');
       response.set('X-RateLimit-Reset', (Math.floor(Date.now() / 1000) + 60).toString());
       response.status(429).json(options.message);
-    },
-    onLimitReached: (_req: Request, response: any, options: Options) => {
-      response.set('X-RateLimit-Limit', (options.max ?? 60).toString());
-      response.set('X-RateLimit-Remaining', '0');
-      response.set('X-RateLimit-Reset', (Math.floor(Date.now() / 1000) + 60).toString());
     }
   });
 }
