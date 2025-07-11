@@ -361,7 +361,72 @@ We welcome contributions! Please open issues or pull requests. To contribute:
 
 ## License
 
-See [LICENSE](./LICENSE).
+
+---
+
+## Quick Start Example
+
+Start the server (see [Quick Start](#quick-start)), then call the API:
+
+```sh
+curl -X POST http://localhost:3000/v1/tools/call \
+  -H "Authorization: Bearer <your-jwt-token>" \
+  -H "Content-Type: application/json" \
+  -d '{"method":"toolName","params":{"key":"value"}}'
+```
+
+Replace `<your-jwt-token>` with a valid token (see [Security & Best Practices](#security--best-practices)).
+
+---
+
+## API Endpoint Reference
+
+| Endpoint                | Method | Description                        |
+|-------------------------|--------|------------------------------------|
+| `/v1/tools/list`        | POST   | List available tools               |
+| `/v1/tools/call`        | POST   | Call a tool                        |
+| `/v1/notifications`     | GET    | Stream notifications (SSE)         |
+| `/healthz`              | GET    | Health check                       |
+| `/metrics`              | GET    | Prometheus metrics                 |
+| `/docs`                 | GET    | API documentation (Swagger/Redoc)  |
+
+See the [OpenAPI spec](./config/openapi.json) or `/docs` endpoint for full details.
+
+---
+
+## Authentication Guide
+
+1. **Obtain a JWT Token:**  
+   Use your authentication provider or the server's `/auth/login` endpoint (if enabled):
+
+   ```sh
+   curl -X POST http://localhost:3000/auth/login \
+     -H "Content-Type: application/json" \
+     -d '{"username":"user","password":"pass"}'
+   ```
+
+   The response will include a JWT token.
+
+2. **Use the Token:**  
+   Add the token to the `Authorization` header for all API requests:
+
+   ```
+   Authorization: Bearer <your-jwt-token>
+   ```
+
+---
+
+## Changelog
+
+See [CHANGELOG.md](./CHANGELOG.md) for release notes and recent changes.
+
+---
+
+## Contact / Support
+
+- Open an [issue](https://github.com/<your-org>/<your-repo>/issues)
+- Join the discussion on [GitHub Discussions](https://github.com/<your-org>/<your-repo>/discussions)
+- Email: support@example.com
 
 ---
 
