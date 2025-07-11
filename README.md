@@ -333,6 +333,99 @@ sequenceDiagram
 
 ---
 
+## Advanced Observability
+
+### Distributed Tracing with OpenTelemetry
+
+- The server integrates [OpenTelemetry](https://opentelemetry.io/) for distributed tracing.
+- Traces are exported in OTLP format and can be sent to Jaeger, Zipkin, or any compatible backend.
+- **How to view traces:**
+  1. Run a local Jaeger instance:
+     ```sh
+     docker run -d --name jaeger -e COLLECTOR_ZIPKIN_HOST_PORT=:9411 -p 16686:16686 -p 4317:4317 -p 4318:4318 -p 14268:14268 jaegertracing/all-in-one:latest
+     ```
+  2. Set `OTEL_EXPORTER_OTLP_ENDPOINT` in your `.env`:
+     ```env
+     OTEL_EXPORTER_OTLP_ENDPOINT=http://localhost:4317
+     ```
+  3. Start the server and generate traffic.
+  4. Open [http://localhost:16686](http://localhost:16686) to view traces.
+
+- **Custom Spans:**
+  - The codebase uses custom spans for key operations (tool execution, streaming, error handling).
+  - You can add more spans using the OpenTelemetry API in your handlers or middleware.
+
+### Metrics and Grafana Dashboards
+
+- Prometheus metrics are exposed at `/metrics`.
+- To visualize metrics in Grafana:
+  1. Run Prometheus and Grafana (example Docker Compose):
+     ```yaml
+     version: '3'
+     services:
+       prometheus:
+         image: prom/prometheus
+         volumes:
+           - ./prometheus.yml:/etc/prometheus/prometheus.yml
+         ports:
+           - "9090:9090"
+       grafana:
+         image: grafana/grafana
+         ports:
+           - "3001:3000"
+     ```
+  2. Add a Prometheus data source in Grafana pointing to `http://localhost:9090`.
+  3. Import example dashboards (see `docs/grafana/` for JSON files):
+     - HTTP request rate, error rate, latency, and custom business metrics.
+  4. Example Prometheus scrape config:
+     ```yaml
+     scrape_configs:
+       - job_name: 'mcp-server'
+         static_configs:
+           - targets: ['host.docker.internal:3000']
+     ```
+
+---
+
+## Production Hardening
+
+### Reverse Proxy and HTTPS
+- Deploy behind a reverse proxy (e.g., NGINX, Traefik, AWS ALB) for TLS termination, request buffering, and DDoS protection.
+- Always use HTTPS in production. Redirect HTTP to HTTPS at the proxy level.
+- Example NGINX config:
+  ```nginx
+  server {
+    listen 443 ssl;
+    server_name yourdomain.com;
+    ssl_certificate /etc/ssl/certs/fullchain.pem;
+    ssl_certificate_key /etc/ssl/private/privkey.pem;
+    location / {
+      proxy_pass http://localhost:3000;
+      proxy_set_header Host $host;
+      proxy_set_header X-Real-IP $remote_addr;
+      proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+      proxy_set_header X-Forwarded-Proto $scheme;
+    }
+  }
+  ```
+
+### Scaling and Resource Limits
+- Use Docker resource limits or Kubernetes requests/limits to prevent resource exhaustion.
+- Run multiple replicas behind a load balancer for high availability.
+- Use a process manager (e.g., PM2) or container orchestrator (Kubernetes, ECS) for automatic restarts and health checks.
+- Monitor memory and CPU usage; set alerts for abnormal patterns.
+
+### Environment Hardening
+- Set `NODE_ENV=production` in production environments.
+- Use strong, unique secrets for `JWT_SECRET` and other credentials.
+- Restrict network access to the app and database (firewalls, security groups).
+- Regularly update dependencies and run `npm audit`/`snyk` scans.
+- Enable logging and log rotation; forward logs to a centralized system (e.g., ELK, Datadog).
+- Disable or restrict `/docs` and other debug endpoints in production if not needed.
+- Review and restrict CORS origins to trusted domains only.
+
+---
+
 ## Contributing
 
 We welcome contributions! Please open issues or pull requests. To contribute:
