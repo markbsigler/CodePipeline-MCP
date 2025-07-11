@@ -129,7 +129,6 @@ A production-ready, secure, and extensible MCP server BMC AMI DevX Code Pipeline
 ## Project Structure
 
 ```
-.
 ├── src/
 │   ├── handlers/
 │   ├── middleware/
@@ -187,26 +186,12 @@ A production-ready, secure, and extensible MCP server BMC AMI DevX Code Pipeline
 
 ---
 
-## Authentication Guide
 
 1. **Obtain a JWT Token:**  
    Use your authentication provider or the server's `/auth/login` endpoint (if enabled):
 
    ```sh
-   curl -X POST http://localhost:3000/auth/login \
-     -H "Content-Type: application/json" \
-     -d '{"username":"user","password":"pass"}'
    ```
-
-   The response will include a JWT token.
-
-2. **Use the Token:**  
-   Add the token to the `Authorization` header for all API requests:
-
-   ```
-   Authorization: Bearer <your-jwt-token>
-   ```
-
 ---
 
 ## VS Code Client Configuration
