@@ -273,9 +273,14 @@ sequenceDiagram
     API->>JWT: Validate JWT signature & claims
     JWT-->>API: Valid/Invalid
     alt Valid
-        API-->>Client: Process request
+        API->>API: Validate claims (exp, aud, etc)
+        alt Claims valid
+            API-->>Client: Process request
+        else Claims invalid/expired
+            API-->>Client: 401 Unauthorized (invalid claims)
+        end
     else Invalid
-        API-->>Client: 401 Unauthorized
+        API-->>Client: 401 Unauthorized (invalid signature)
     end
 ```
 
@@ -284,8 +289,10 @@ sequenceDiagram
 flowchart TD
     A[openapi.json] --> B[Parse OpenAPI]
     B --> C[Generate MCP Tool Definitions]
-    C --> D[Register Tool Endpoints]
-    D --> E[Expose /tools/list, /tools/call]
+    C --> D[Generate TypeScript Types]
+    D --> E[Generate Handlers]
+    E --> F[Register Tool Endpoints]
+    F --> G[Expose /tools/list, /tools/call]
 ```
 
 ### MCP Protocol Message Flow
@@ -294,8 +301,12 @@ sequenceDiagram
     participant Client
     participant Server
     Client->>Server: JSON-RPC 2.0 request (tools/call)
-    Server-->>Client: Streamed/Chunked response
-    Note right of Server: SSE for notifications
+    alt Success
+        Server-->>Client: Streamed/Chunked response
+        Note right of Server: SSE for notifications
+    else Error
+        Server-->>Client: Error response (JSON-RPC error)
+    end
 ```
 
 ### Tool Execution and Response Handling
@@ -306,17 +317,26 @@ sequenceDiagram
     participant Handler
     Client->>Server: tools/call (with params)
     Server->>Handler: Validate & execute tool
-    Handler-->>Server: Stream/Result
-    Server-->>Client: Streamed/Final response
+    alt Success
+        Handler-->>Server: Stream/Result
+        Server-->>Client: Streamed/Final response
+    else Error
+        Handler-->>Server: Error/Exception
+        Server-->>Client: Error response
+    end
 ```
 
-### Container Deployment
+### Container Deployment & Observability
 ```mermaid
 flowchart TD
     subgraph Docker Compose
       App[App Container] --env--> Redis[(Redis)]
       App --healthcheck--> Healthz
+      App --metrics--> Prometheus
+      App --traces--> Jaeger
     end
+    Prometheus --metrics--> Grafana
+    Jaeger --traces--> Grafana
     App --expose--> Internet
 ```
 
@@ -329,6 +349,68 @@ sequenceDiagram
     Server->>Server: Generate sessionId = userId:random
     Server-->>Client: Set sessionId (state only)
     Note right of Server: No session-based auth
+    alt Session expired/invalid
+        Server-->>Client: 440 Session Expired
+    end
+```
+
+### Rate Limiting Flow
+```mermaid
+sequenceDiagram
+    participant Client
+    participant Server
+    Client->>Server: API Request
+    Server->>Server: Check Rate Limit
+    alt Limit Exceeded
+        Server-->>Client: 429 Too Many Requests
+    else Allowed
+        Server->>Server: Process Request
+        Server-->>Client: Response
+    end
+```
+
+### Error Handling Flow
+```mermaid
+sequenceDiagram
+    participant Client
+    participant Server
+    participant Logger
+    participant Tracer
+    Client->>Server: API Request
+    Server->>Server: Validate & Process
+    alt Error Occurs
+        Server->>Logger: Log Error
+        Server->>Tracer: Record Span/Error
+        Server-->>Client: Error Response
+    else Success
+        Server-->>Client: Success Response
+    end
+```
+
+### Observability Pipeline
+```mermaid
+flowchart LR
+    App -->|Traces| Jaeger
+    App -->|Metrics| Prometheus
+    Prometheus --> Grafana
+    Jaeger --> Grafana
+```
+
+### JWT Token Lifecycle
+```mermaid
+sequenceDiagram
+    participant User
+    participant AuthServer
+    participant API as MCP Server
+    User->>AuthServer: Login (username/password)
+    AuthServer-->>User: JWT Token
+    User->>API: API Request with JWT
+    API->>API: Validate JWT (signature, claims)
+    alt Valid
+        API-->>User: Success
+    else Expired/Invalid
+        API-->>User: 401 Unauthorized
+    end
 ```
 
 ---
