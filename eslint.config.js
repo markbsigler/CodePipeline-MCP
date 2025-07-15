@@ -25,10 +25,16 @@ export default [
         project: './tsconfig.json',
       },
     },
+
     rules: {
       '@typescript-eslint/no-unused-vars': ['warn', { argsIgnorePattern: '^_' }],
-      '@typescript-eslint/no-explicit-any': 'warn',
+      '@typescript-eslint/no-explicit-any': 'error',
+      '@typescript-eslint/explicit-function-return-type': 'error',
+      '@typescript-eslint/explicit-module-boundary-types': 'warn',
       'no-console': 'warn',
+      'semi': ['error', 'always'],
+      'quotes': ['error', 'single'],
+      'curly': 'error',
       'import/order': [
         'warn',
         {
@@ -44,7 +50,18 @@ export default [
           alphabetize: { order: 'asc', caseInsensitive: true },
         },
       ],
+      'import/no-unresolved': 'error',
+      'import/newline-after-import': 'error',
     },
+    overrides: [
+      {
+        files: ['**/*.test.ts', '**/*.spec.ts'],
+        rules: {
+          '@typescript-eslint/no-explicit-any': 'off',
+          'no-console': 'off',
+        },
+      },
+    ],
     settings: {
       'import/resolver': {
         typescript: {},

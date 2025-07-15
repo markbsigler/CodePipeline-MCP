@@ -1,4 +1,72 @@
-import { toolsListHandler, toolsCallHandler, notificationsListChangedHandler } from '../../src/handlers/mcpHandlers';
+import request from 'supertest';
+import express from 'express';
+import { toolsListHandler, toolsCallHandler } from '../../src/handlers/mcpHandlers';
+
+describe('toolsListHandler', () => {
+  const mcpTools = Array.from({ length: 50 }, (_, i) => ({ id: `tool${i+1}`, name: `Tool ${i+1}` }));
+  let app: express.Express;
+
+  beforeEach(() => {
+    app = express();
+    app.get('/tools', toolsListHandler(mcpTools));
+  });
+
+  it('should default to page=1 and pageSize=20 if not provided', async () => {
+    const res = await request(app).get('/tools');
+    expect(res.status).toBe(200);
+    expect(res.body.page).toBe(1);
+    expect(res.body.pageSize).toBe(20);
+    expect(res.body.tools.length).toBe(20);
+  });
+
+  it('should default to page=1 if page is 0 or negative', async () => {
+    const res = await request(app).get('/tools?page=0');
+    expect(res.body.page).toBe(1);
+    const res2 = await request(app).get('/tools?page=-5');
+    expect(res2.body.page).toBe(1);
+  });
+
+  it('should default to pageSize=20 if pageSize is 0 or negative', async () => {
+    const res = await request(app).get('/tools?pageSize=0');
+    expect(res.body.pageSize).toBe(20);
+    const res2 = await request(app).get('/tools?pageSize=-10');
+    expect(res2.body.pageSize).toBe(20);
+  });
+
+  it('should default to page=1 and pageSize=20 if not a number', async () => {
+    const res = await request(app).get('/tools?page=foo&pageSize=bar');
+    expect(res.body.page).toBe(1);
+    expect(res.body.pageSize).toBe(20);
+  });
+});
+
+describe('toolsCallHandler', () => {
+  let app: express.Express;
+  const mcpTools = [
+    { id: 'tool1', name: 'Tool 1' },
+    { id: 'tool2', name: 'Tool 2' }
+  ];
+  const openapi = {};
+
+  beforeEach(() => {
+    app = express();
+    app.use(express.json());
+    app.post('/call', toolsCallHandler(mcpTools, openapi));
+  });
+
+  it('should return 404 if tool not found', async () => {
+    const res = await request(app).post('/call').send({ tool: 'not-a-tool', params: {} });
+    expect(res.status).toBe(404);
+    expect(res.body.error).toMatch(/not found/i);
+  });
+
+  it('should return 500 if validation schema not found', async () => {
+    const res = await request(app).post('/call').send({ tool: 'tool1', params: {} });
+    expect(res.status).toBe(500);
+    expect(res.body.error).toMatch(/validation schema not found/i);
+  });
+});
+import { notificationsListChangedHandler } from '../../src/handlers/mcpHandlers';
 import { toolZodSchemas } from '../../src/types/toolZodSchemas';
 import * as streamStateStore from '../../src/utils/streamStateStore';
 import * as sanitize from '../../src/utils/sanitizeOutput';
