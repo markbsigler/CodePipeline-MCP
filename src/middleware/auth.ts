@@ -15,7 +15,9 @@ export function authenticateJWT(req: Request, res: Response, next: NextFunction)
     req.user = payload;
     next();
   } catch (err) {
-    console.error('JWT authentication error:', err);
+    if (process.env.NODE_ENV !== 'test') {
+      console.error('JWT authentication error:', err);
+    }
     return res.status(401).json({ error: 'Invalid, expired, or unauthorized token' });
   }
 }
