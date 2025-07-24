@@ -29,7 +29,7 @@ export function createApp() {
   }
 
   // Load OpenAPI and MCP tool definitions at startup
-  const openapi = loadOpenApiSpec('config/openapi.json');
+  const openapi = loadOpenApiSpec('Code/CodePipeline-MCP/config/openapi.json');
   const mcpTools = extractMcpToolsFromOpenApi(openapi);
 
   // Versioned API router (v1)

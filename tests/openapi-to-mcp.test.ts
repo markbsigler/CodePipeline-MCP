@@ -10,7 +10,7 @@ type Tool = {
 };
 
 describe('OpenAPI to MCP Tool Mapping', () => {
-  const openapi = loadOpenApiSpec('config/openapi.json');
+  const openapi = loadOpenApiSpec('Code/CodePipeline-MCP/config/openapi.json');
   const tools = extractMcpToolsFromOpenApi(openapi) as Tool[];
 
   it('should extract tools from OpenAPI spec', () => {
