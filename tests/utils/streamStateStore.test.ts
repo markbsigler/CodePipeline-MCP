@@ -2,7 +2,7 @@ import {
   createStreamState,
   getStreamState,
   updateStreamState,
-  deleteStreamState
+  deleteStreamState,
 } from '../../src/utils/streamStateStore';
 
 describe('streamStateStore', () => {

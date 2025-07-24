@@ -1,8 +1,7 @@
-
 process.env.JWT_SECRET = 'testsecret';
 process.env.JWT_ISSUER = 'testissuer';
-import { authenticateJWT } from 'middleware/auth';
 import jwt from 'jsonwebtoken';
+import { authenticateJWT } from 'middleware/auth';
 
 describe('authenticateJWT', () => {
   let req: any, res: any, next: any;
@@ -12,7 +11,12 @@ describe('authenticateJWT', () => {
     req = { headers: {}, user: undefined };
     res = { status: jest.fn().mockReturnThis(), json: jest.fn() };
     next = jest.fn();
-    process.env = { ...OLD_ENV, JWT_SECRET: 'testsecret', JWT_ISSUER: 'testissuer', NODE_ENV: 'test' };
+    process.env = {
+      ...OLD_ENV,
+      JWT_SECRET: 'testsecret',
+      JWT_ISSUER: 'testissuer',
+      NODE_ENV: 'test',
+    };
   });
   afterEach(() => {
     process.env = OLD_ENV;
@@ -22,7 +26,9 @@ describe('authenticateJWT', () => {
   it('should return 401 if no Authorization header', () => {
     authenticateJWT(req, res, next);
     expect(res.status).toHaveBeenCalledWith(401);
-    expect(res.json).toHaveBeenCalledWith({ error: expect.stringMatching(/authorization/i) });
+    expect(res.json).toHaveBeenCalledWith({
+      error: expect.stringMatching(/authorization/i),
+    });
     expect(next).not.toHaveBeenCalled();
   });
 
@@ -30,7 +36,9 @@ describe('authenticateJWT', () => {
     req.headers['authorization'] = 'Basic abc';
     authenticateJWT(req, res, next);
     expect(res.status).toHaveBeenCalledWith(401);
-    expect(res.json).toHaveBeenCalledWith({ error: expect.stringMatching(/authorization/i) });
+    expect(res.json).toHaveBeenCalledWith({
+      error: expect.stringMatching(/authorization/i),
+    });
     expect(next).not.toHaveBeenCalled();
   });
 
@@ -39,17 +47,23 @@ describe('authenticateJWT', () => {
     const payload = { sub: 'user1' };
     jest.spyOn(jwt, 'verify').mockReturnValue(payload);
     authenticateJWT(req, res, next);
-    expect(jwt.verify).toHaveBeenCalledWith('validtoken', 'testsecret', { issuer: 'testissuer' });
+    expect(jwt.verify).toHaveBeenCalledWith('validtoken', 'testsecret', {
+      issuer: 'testissuer',
+    });
     expect(req.user).toEqual(payload);
     expect(next).toHaveBeenCalled();
   });
 
   it('should return 401 and not call next if token is invalid', () => {
     req.headers['authorization'] = 'Bearer invalidtoken';
-    jest.spyOn(jwt, 'verify').mockImplementation(() => { throw new Error('bad token'); });
+    jest.spyOn(jwt, 'verify').mockImplementation(() => {
+      throw new Error('bad token');
+    });
     authenticateJWT(req, res, next);
     expect(res.status).toHaveBeenCalledWith(401);
-    expect(res.json).toHaveBeenCalledWith({ error: expect.stringMatching(/token/i) });
+    expect(res.json).toHaveBeenCalledWith({
+      error: expect.stringMatching(/token/i),
+    });
     expect(next).not.toHaveBeenCalled();
   });
 
@@ -57,9 +71,14 @@ describe('authenticateJWT', () => {
     process.env.NODE_ENV = 'production';
     req.headers['authorization'] = 'Bearer invalidtoken';
     const spy = jest.spyOn(console, 'error').mockImplementation(() => {});
-    jest.spyOn(jwt, 'verify').mockImplementation(() => { throw new Error('bad token'); });
+    jest.spyOn(jwt, 'verify').mockImplementation(() => {
+      throw new Error('bad token');
+    });
     authenticateJWT(req, res, next);
-    expect(spy).toHaveBeenCalledWith(expect.stringMatching(/JWT authentication error/), expect.any(Error));
+    expect(spy).toHaveBeenCalledWith(
+      expect.stringMatching(/JWT authentication error/),
+      expect.any(Error),
+    );
     spy.mockRestore();
   });
 });

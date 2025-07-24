@@ -8,13 +8,24 @@ describe('sanitizeOutput', () => {
   });
 
   it('removes sensitive keys (case-insensitive, partial match)', () => {
-    const input = { apiKey: 'shouldRemove', api_key: 'shouldRemove', mySecret: 'shouldRemove', ssn: 'shouldRemove', something: 1 };
+    const input = {
+      apiKey: 'shouldRemove',
+      api_key: 'shouldRemove',
+      mySecret: 'shouldRemove',
+      ssn: 'shouldRemove',
+      something: 1,
+    };
     const result = sanitizeOutput(input);
     expect(result).toEqual({ something: 1 });
   });
 
   it('removes prototype pollution keys', () => {
-    const input = { normal: 1, __proto__: 'bad', constructor: 'bad', prototype: 'bad' };
+    const input = {
+      normal: 1,
+      __proto__: 'bad',
+      constructor: 'bad',
+      prototype: 'bad',
+    };
     const result = sanitizeOutput(input);
     expect(result).toEqual({ normal: 1 });
   });
@@ -27,22 +38,21 @@ describe('sanitizeOutput', () => {
       quote: '"single\' and `backtick`',
     };
     const result = sanitizeOutput(input);
-    expect(result.html).toBe('&lt;script&gt;alert(&quot;xss&quot;)&lt;/script&gt;');
+    expect(result.html).toBe(
+      '&lt;script&gt;alert(&quot;xss&quot;)&lt;/script&gt;',
+    );
     expect(result.amp).toBe('a &amp; b');
     expect(result.quote).toBe('&quot;single&#39; and &#96;backtick&#96;');
   });
 
   it('recursively sanitizes nested objects and arrays', () => {
     const input = {
-      arr: [
-        { password: 'bad', safe: 'ok' },
-        '<tag>'
-      ],
+      arr: [{ password: 'bad', safe: 'ok' }, '<tag>'],
       nested: {
         token: 'bad',
         safe: 'ok',
-        deeper: { secret: 'bad', value: '<>' }
-      }
+        deeper: { secret: 'bad', value: '<>' },
+      },
     };
     const result = sanitizeOutput(input);
     expect(result.arr[0]).toEqual({ safe: 'ok' });
@@ -53,7 +63,7 @@ describe('sanitizeOutput', () => {
   });
 
   it('returns undefined if max recursion depth is exceeded', () => {
-    let deep: any = { a: 1 };
+    const deep: any = { a: 1 };
     let curr = deep;
     for (let i = 0; i < 25; i++) {
       curr.nest = {};
@@ -63,7 +73,12 @@ describe('sanitizeOutput', () => {
     // At depth 21, value should be undefined
     let d = result;
     let count = 0;
-    while (d && typeof d === 'object' && Object.keys(d).length > 0 && d.nest !== undefined) {
+    while (
+      d &&
+      typeof d === 'object' &&
+      Object.keys(d).length > 0 &&
+      d.nest !== undefined
+    ) {
       d = d.nest;
       count++;
     }
@@ -72,7 +87,7 @@ describe('sanitizeOutput', () => {
   });
 
   it('returns undefined exactly at max recursion depth', () => {
-    let deep: any = { a: 1 };
+    const deep: any = { a: 1 };
     let curr = deep;
     for (let i = 0; i < 20; i++) {
       curr.nest = {};
@@ -81,7 +96,12 @@ describe('sanitizeOutput', () => {
     const result = sanitizeOutput(deep);
     let d = result;
     let count = 0;
-    while (d && typeof d === 'object' && Object.keys(d).length > 0 && d.nest !== undefined) {
+    while (
+      d &&
+      typeof d === 'object' &&
+      Object.keys(d).length > 0 &&
+      d.nest !== undefined
+    ) {
       d = d.nest;
       count++;
     }
@@ -97,7 +117,7 @@ describe('sanitizeOutput', () => {
   });
 
   it('debug: print structure at max recursion depth', () => {
-    let deep: any = { a: 1 };
+    const deep: any = { a: 1 };
     let curr = deep;
     for (let i = 0; i < 25; i++) {
       curr.nest = {};

@@ -1,15 +1,24 @@
 import { Request, Response, NextFunction } from 'express';
+
 import logger from '../utils/logger';
 
-export function errorHandler(err: any, req: Request, res: Response, next: NextFunction) {
-  logger.error({
-    err,
-    url: req.originalUrl,
-    method: req.method,
-    user: (req as any).user?.sub || 'anon',
-    sessionId: (req as any).sessionId || null,
-    stack: err.stack,
-  }, 'Error occurred');
+export function errorHandler(
+  err: Error & { status?: number; [key: string]: unknown },
+  req: Request,
+  res: Response,
+  next: NextFunction,
+): void {
+  logger.error(
+    {
+      err,
+      url: req.originalUrl,
+      method: req.method,
+      user: (req as { user?: { sub?: string } }).user?.sub || 'anon',
+      sessionId: (req as { sessionId?: string }).sessionId || null,
+      stack: err.stack,
+    },
+    'Error occurred',
+  );
 
   if (res.headersSent) {
     return next(err);

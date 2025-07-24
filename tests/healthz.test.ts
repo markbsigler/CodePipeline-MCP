@@ -1,5 +1,5 @@
-import request from 'supertest';
 import { jest } from '@jest/globals';
+import request from 'supertest';
 
 // Mock the openapi utility functions before importing the app.
 // This prevents the app from trying to read a file from disk during testing.

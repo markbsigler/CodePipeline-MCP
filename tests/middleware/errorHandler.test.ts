@@ -1,6 +1,12 @@
-import { errorHandler } from '../../src/middleware/errorHandler';
-import express, { Request, Response, NextFunction } from 'express';
+import express, { Request, Response } from 'express';
 import request from 'supertest';
+
+
+import { errorHandler } from '../../src/middleware/errorHandler';
+// Use type assertion for test mock
+import * as loggerModule from '../../src/utils/logger';
+
+const logger = loggerModule as any;
 
 // Mock logger to silence output and capture logs
 jest.mock('../../src/utils/logger', () => ({
@@ -56,7 +62,6 @@ describe('errorHandler', () => {
 
   it('should log anon user and null sessionId if missing', async () => {
     process.env.NODE_ENV = 'development';
-    const logger = require('../../src/utils/logger');
     app = express();
     app.get('/error3', (_req, _res, next) => {
       const err: any = new Error('fail!');
@@ -66,7 +71,7 @@ describe('errorHandler', () => {
     await request(app).get('/error3');
     expect(logger.error).toHaveBeenCalledWith(
       expect.objectContaining({ user: 'anon', sessionId: null }),
-      expect.any(String)
+      expect.any(String),
     );
   });
 
@@ -75,7 +80,7 @@ describe('errorHandler', () => {
     const next = jest.fn();
     const req = {} as Request;
     const res = { headersSent: true } as unknown as Response;
-    const err = new Error('fail!');
+    const err: any = new Error('fail!');
     errorHandler(err, req, res, next);
     expect(next).toHaveBeenCalledWith(err);
   });

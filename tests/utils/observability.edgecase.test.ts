@@ -1,5 +1,6 @@
-import request from 'supertest';
 import express from 'express';
+import request from 'supertest';
+
 import * as observability from '../../src/utils/observability';
 
 describe('observability edge case', () => {

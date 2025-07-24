@@ -1,5 +1,6 @@
 {
   "compilerOptions": {
+    "typeRoots": ["./src/types", "./node_modules/@types"],
     "target": "ES2022",
     "module": "CommonJS",
     "moduleResolution": "node",
@@ -18,6 +19,6 @@
     "declaration": true,
     "sourceMap": true
   },
-  "include": ["src/**/*", "tests/**/*"],
+  "include": ["src/**/*", "tests/**/*", "src/types/express.d.ts"],
   "exclude": ["node_modules", "dist"]
 }

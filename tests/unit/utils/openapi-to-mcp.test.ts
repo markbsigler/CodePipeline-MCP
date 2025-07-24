@@ -1,10 +1,11 @@
 import fs from 'fs';
 import path from 'path';
+
 import {
   loadOpenApiSpec,
   jsonSchemaToTypeScriptType,
   jsonSchemaTypeToTs,
-  extractMcpToolsFromOpenApi
+  extractMcpToolsFromOpenApi,
 } from 'utils/openapi-to-mcp';
 
 describe('loadOpenApiSpec', () => {
@@ -22,7 +23,11 @@ describe('loadOpenApiSpec', () => {
 
 describe('jsonSchemaToTypeScriptType', () => {
   it('should return interface for object schema', () => {
-    const schema = { type: 'object', properties: { foo: { type: 'string' } }, required: ['foo'] };
+    const schema = {
+      type: 'object',
+      properties: { foo: { type: 'string' } },
+      required: ['foo'],
+    };
     const result = jsonSchemaToTypeScriptType(schema, 'TestType');
     expect(result).toContain('export interface TestType');
     expect(result).toContain('foo: string;');
@@ -57,13 +62,24 @@ describe('extractMcpToolsFromOpenApi', () => {
 
 describe('jsonSchemaToTypeScriptType edge cases', () => {
   it('handles object with optional properties', () => {
-    const schema = { type: 'object', properties: { foo: { type: 'string' }, bar: { type: 'number' } }, required: ['foo'] };
+    const schema = {
+      type: 'object',
+      properties: { foo: { type: 'string' }, bar: { type: 'number' } },
+      required: ['foo'],
+    };
     const result = jsonSchemaToTypeScriptType(schema, 'OptType');
     expect(result).toContain('foo: string;');
     expect(result).toContain('bar?: number;');
   });
   it('handles array of objects', () => {
-    const schema = { type: 'array', items: { type: 'object', properties: { x: { type: 'boolean' } }, required: ['x'] } };
+    const schema = {
+      type: 'array',
+      items: {
+        type: 'object',
+        properties: { x: { type: 'boolean' } },
+        required: ['x'],
+      },
+    };
     const result = jsonSchemaToTypeScriptType(schema, 'ArrObj');
     expect(result).toContain('ArrObj = { x: boolean }[]');
   });
@@ -79,12 +95,20 @@ describe('jsonSchemaToTypeScriptType edge cases', () => {
 
 describe('jsonSchemaTypeToTs edge cases', () => {
   it('handles nested object', () => {
-    const schema = { type: 'object', properties: { foo: { type: 'object', properties: { bar: { type: 'string' } } } } };
+    const schema = {
+      type: 'object',
+      properties: {
+        foo: { type: 'object', properties: { bar: { type: 'string' } } },
+      },
+    };
     const result = jsonSchemaTypeToTs(schema);
     expect(result).toContain('foo: { bar: string }');
   });
   it('handles array of arrays', () => {
-    const schema = { type: 'array', items: { type: 'array', items: { type: 'number' } } };
+    const schema = {
+      type: 'array',
+      items: { type: 'array', items: { type: 'number' } },
+    };
     const result = jsonSchemaTypeToTs(schema);
     expect(result).toBe('number[][]');
   });
@@ -102,20 +126,41 @@ describe('extractMcpToolsFromOpenApi edge/complex cases', () => {
             operationId: 'fooOp',
             description: 'desc',
             parameters: [
-              { name: 'id', in: 'query', required: true, schema: { type: 'string' } },
-              { name: 'opt', in: 'query', schema: { type: 'number' } }
+              {
+                name: 'id',
+                in: 'query',
+                required: true,
+                schema: { type: 'string' },
+              },
+              { name: 'opt', in: 'query', schema: { type: 'number' } },
             ],
             requestBody: {
               content: {
-                'application/json': { schema: { type: 'object', properties: { bar: { type: 'boolean' } }, required: ['bar'] } }
-              }
+                'application/json': {
+                  schema: {
+                    type: 'object',
+                    properties: { bar: { type: 'boolean' } },
+                    required: ['bar'],
+                  },
+                },
+              },
             },
             responses: {
-              '200': { content: { 'application/json': { schema: { type: 'object', properties: { baz: { type: 'string' } }, required: ['baz'] } } } }
-            }
-          }
-        }
-      }
+              '200': {
+                content: {
+                  'application/json': {
+                    schema: {
+                      type: 'object',
+                      properties: { baz: { type: 'string' } },
+                      required: ['baz'],
+                    },
+                  },
+                },
+              },
+            },
+          },
+        },
+      },
     };
     const tools = extractMcpToolsFromOpenApi(openapi);
     expect(tools.length).toBe(1);
@@ -135,7 +180,9 @@ describe('extractMcpToolsFromOpenApi edge/complex cases', () => {
     expect(tools[0].outputSchema).toBeDefined();
   });
   it('handles summary fallback for description', () => {
-    const openapi = { paths: { '/baz': { get: { operationId: 'bazOp', summary: 'sum' } } } };
+    const openapi = {
+      paths: { '/baz': { get: { operationId: 'bazOp', summary: 'sum' } } },
+    };
     const tools = extractMcpToolsFromOpenApi(openapi);
     expect(tools[0].description).toBe('sum');
   });

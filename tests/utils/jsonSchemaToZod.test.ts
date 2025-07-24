@@ -21,7 +21,7 @@ describe('jsonSchemaToZod', () => {
     const schema = {
       type: 'object',
       properties: { a: { type: 'string' }, b: { type: 'number' } },
-      required: ['a']
+      required: ['a'],
     };
     const zodSchema = jsonSchemaToZod(schema);
     expect(zodSchema.safeParse({ a: 'x', b: 2 }).success).toBe(true);
@@ -43,7 +43,7 @@ describe('jsonSchemaToZod', () => {
   it('handles object schema with no required field (all required by default)', () => {
     const schema = {
       type: 'object',
-      properties: { a: { type: 'string' } }
+      properties: { a: { type: 'string' } },
       // no required field
     };
     const zodSchema = jsonSchemaToZod(schema);
@@ -76,7 +76,7 @@ describe('jsonSchemaToZod', () => {
   });
 
   it('converts oneOf schema', () => {
-    const schema = { oneOf: [ { type: 'string' }, { type: 'number' } ] };
+    const schema = { oneOf: [{ type: 'string' }, { type: 'number' }] };
     const zodSchema = jsonSchemaToZod(schema);
     expect(zodSchema.safeParse('x').success).toBe(true);
     expect(zodSchema.safeParse(5).success).toBe(true);
@@ -84,7 +84,7 @@ describe('jsonSchemaToZod', () => {
   });
 
   it('converts anyOf schema', () => {
-    const schema = { anyOf: [ { type: 'boolean' }, { const: 7 } ] };
+    const schema = { anyOf: [{ type: 'boolean' }, { const: 7 }] };
     const zodSchema = jsonSchemaToZod(schema);
     expect(zodSchema.safeParse(true).success).toBe(true);
     expect(zodSchema.safeParse(7).success).toBe(true);

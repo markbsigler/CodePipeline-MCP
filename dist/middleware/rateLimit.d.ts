@@ -1,1 +1,2 @@
-export declare const mcpRateLimiter: import("express-rate-limit").RateLimitRequestHandler;
+import { Request } from "express";
+export declare function mcpRateLimiter(req: Request, res: any, next: any): void;

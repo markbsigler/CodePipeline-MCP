@@ -48,7 +48,7 @@ describe('jsonSchemaToZod edge cases', () => {
     const schema = {
       type: 'object',
       properties: { a: { type: 'string' }, b: { type: 'number' } },
-      required: ['a']
+      required: ['a'],
     };
     const zodSchema = jsonSchemaToZod(schema);
     expect(zodSchema.safeParse({ a: 'x', b: 2 }).success).toBe(true);

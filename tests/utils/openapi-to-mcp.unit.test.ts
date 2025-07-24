@@ -1,4 +1,8 @@
-import { jsonSchemaToTypeScriptType, jsonSchemaTypeToTs, extractMcpToolsFromOpenApi } from '../../src/utils/openapi-to-mcp';
+import {
+  jsonSchemaToTypeScriptType,
+  jsonSchemaTypeToTs,
+  extractMcpToolsFromOpenApi,
+} from '../../src/utils/openapi-to-mcp';
 
 describe('jsonSchemaToTypeScriptType', () => {
   it('handles array schema', () => {
@@ -11,7 +15,7 @@ describe('jsonSchemaToTypeScriptType', () => {
     const schema = {
       type: 'object',
       properties: { foo: { type: 'string' }, bar: { type: 'number' } },
-      required: ['foo']
+      required: ['foo'],
     };
     const ts = jsonSchemaToTypeScriptType(schema, 'MyObj');
     expect(ts).toContain('foo');
@@ -21,8 +25,12 @@ describe('jsonSchemaToTypeScriptType', () => {
   });
 
   it('returns any type for undefined or non-object schema', () => {
-    expect(jsonSchemaToTypeScriptType(undefined, 'Test')).toBe('type Test = any;');
-    expect(jsonSchemaToTypeScriptType('string', 'Test')).toBe('type Test = any;');
+    expect(jsonSchemaToTypeScriptType(undefined, 'Test')).toBe(
+      'type Test = any;',
+    );
+    expect(jsonSchemaToTypeScriptType('string', 'Test')).toBe(
+      'type Test = any;',
+    );
   });
 });
 
@@ -38,12 +46,20 @@ describe('jsonSchemaTypeToTs', () => {
     expect(jsonSchemaTypeToTs({ type: 'boolean' })).toBe('boolean');
   });
   it('returns array type for array schema', () => {
-    expect(jsonSchemaTypeToTs({ type: 'array', items: { type: 'string' } })).toBe('string[]');
-    expect(jsonSchemaTypeToTs({ type: 'array', items: { type: 'number' } })).toBe('number[]');
+    expect(
+      jsonSchemaTypeToTs({ type: 'array', items: { type: 'string' } }),
+    ).toBe('string[]');
+    expect(
+      jsonSchemaTypeToTs({ type: 'array', items: { type: 'number' } }),
+    ).toBe('number[]');
   });
   it('returns object type for object schema with properties', () => {
-    expect(jsonSchemaTypeToTs({ type: 'object', properties: { foo: { type: 'string' }, bar: { type: 'number' } } }))
-      .toBe('{ foo: string; bar: number }');
+    expect(
+      jsonSchemaTypeToTs({
+        type: 'object',
+        properties: { foo: { type: 'string' }, bar: { type: 'number' } },
+      }),
+    ).toBe('{ foo: string; bar: number }');
   });
   it('returns any for unknown or missing schema', () => {
     expect(jsonSchemaTypeToTs(undefined)).toBe('any');
@@ -59,12 +75,16 @@ describe('extractMcpToolsFromOpenApi', () => {
           post: {
             operationId: 'testTool',
             parameters: [
-              { name: 'bar', schema: { type: 'string' } } // no required field
+              { name: 'bar', schema: { type: 'string' } }, // no required field
             ],
-            responses: { '200': { content: { 'application/json': { schema: { type: 'string' } } } } }
-          }
-        }
-      }
+            responses: {
+              '200': {
+                content: { 'application/json': { schema: { type: 'string' } } },
+              },
+            },
+          },
+        },
+      },
     };
     const tools = extractMcpToolsFromOpenApi(openapi) as any[];
     expect(tools[0].inputSchema.required).toEqual([]);
@@ -78,10 +98,14 @@ describe('extractMcpToolsFromOpenApi', () => {
           get: {
             operationId: 'noDesc',
             parameters: [],
-            responses: { '200': { content: { 'application/json': { schema: { type: 'string' } } } } }
-          }
-        }
-      }
+            responses: {
+              '200': {
+                content: { 'application/json': { schema: { type: 'string' } } },
+              },
+            },
+          },
+        },
+      },
     };
     const tools = extractMcpToolsFromOpenApi(openapi) as any[];
     expect(tools[0].description).toBe('');

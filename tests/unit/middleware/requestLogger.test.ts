@@ -5,8 +5,19 @@ describe('requestLogger middleware', () => {
   let req: any, res: any, next: jest.Mock;
 
   beforeEach(() => {
-    req = { method: 'GET', originalUrl: '/test', user: { sub: 'user1' }, sessionId: 'sess', headers: {} };
-    res = { statusCode: 200, on: jest.fn((event, cb) => { if (event === 'finish') cb(); }) };
+    req = {
+      method: 'GET',
+      originalUrl: '/test',
+      user: { sub: 'user1' },
+      sessionId: 'sess',
+      headers: {},
+    };
+    res = {
+      statusCode: 200,
+      on: jest.fn((event, cb) => {
+        if (event === 'finish') {cb();}
+      }),
+    };
     next = jest.fn();
     jest.spyOn(logger, 'info').mockImplementation(() => {});
   });
@@ -28,9 +39,9 @@ describe('requestLogger middleware', () => {
         url: '/test',
         status: 200,
         user: 'user1',
-        sessionId: 'sess'
+        sessionId: 'sess',
       }),
-      'Request completed'
+      'Request completed',
     );
   });
 });

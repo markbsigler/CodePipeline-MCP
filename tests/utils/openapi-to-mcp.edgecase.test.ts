@@ -8,12 +8,16 @@ describe('openapi-to-mcp param schema fallback', () => {
           post: {
             operationId: 'testTool',
             parameters: [
-              { name: 'bar' } // no schema
+              { name: 'bar' }, // no schema
             ],
-            responses: { '200': { content: { 'application/json': { schema: { type: 'string' } } } } }
-          }
-        }
-      }
+            responses: {
+              '200': {
+                content: { 'application/json': { schema: { type: 'string' } } },
+              },
+            },
+          },
+        },
+      },
     };
     const tools = extractMcpToolsFromOpenApi(openapi) as any[];
     expect(tools[0].inputSchema.properties.bar).toEqual({ type: 'string' });

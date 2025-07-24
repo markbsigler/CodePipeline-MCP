@@ -23,30 +23,30 @@
         <div class='clearfix'>
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">50% </span>
+                <span class="strong">100% </span>
                 <span class="quiet">Statements</span>
-                <span class='fraction'>5/10</span>
+                <span class='fraction'>10/10</span>
             </div>
         
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">0% </span>
+                <span class="strong">100% </span>
                 <span class="quiet">Branches</span>
-                <span class='fraction'>0/1</span>
+                <span class='fraction'>1/1</span>
             </div>
         
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">0% </span>
+                <span class="strong">100% </span>
                 <span class="quiet">Functions</span>
-                <span class='fraction'>0/4</span>
+                <span class='fraction'>4/4</span>
             </div>
         
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">50% </span>
+                <span class="strong">100% </span>
                 <span class="quiet">Lines</span>
-                <span class='fraction'>5/10</span>
+                <span class='fraction'>10/10</span>
             </div>
         
             
@@ -61,7 +61,7 @@
             </div>
         </template>
     </div>
-    <div class='status-line medium'></div>
+    <div class='status-line high'></div>
     <pre><table class="coverage">
 <tr><td class="line-count quiet"><a name='L1'></a><a href='#L1'>1</a>
 <a name='L2'></a><a href='#L2'>2</a>
@@ -94,7 +94,10 @@
 <a name='L29'></a><a href='#L29'>29</a>
 <a name='L30'></a><a href='#L30'>30</a>
 <a name='L31'></a><a href='#L31'>31</a>
-<a name='L32'></a><a href='#L32'>32</a></td><td class="line-coverage quiet"><span class="cline-any cline-neutral">&nbsp;</span>
+<a name='L32'></a><a href='#L32'>32</a>
+<a name='L33'></a><a href='#L33'>33</a>
+<a name='L34'></a><a href='#L34'>34</a>
+<a name='L35'></a><a href='#L35'>35</a></td><td class="line-coverage quiet"><span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -106,55 +109,61 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">2x</span>
+<span class="cline-any cline-yes">13x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">2x</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">2x</span>
-<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-yes">13x</span>
+<span class="cline-any cline-yes">4x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">2x</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-yes">13x</span>
+<span class="cline-any cline-yes">3x</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">13x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">2x</span>
-<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">13x</span>
+<span class="cline-any cline-yes">4x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span></td><td class="text"><pre class="prettyprint lang-js">// src/utils/streamStateStore.ts
 // Simple in-memory store for stream state (replace with Redis or DB for production)
 &nbsp;
 interface StreamState {
   tool: string;
-  params: any;
+  params: unknown;
   progress: number;
-  resultChunks: any[];
+  resultChunks: Array&lt;{ progress: string; partialResult?: unknown }&gt;;
   completed: boolean;
   userId: string;
 }
 &nbsp;
 const streamStore: Record&lt;string, StreamState&gt; = {};
 &nbsp;
-export function <span class="fstat-no" title="function not covered" >createStreamState(</span>sessionId: string, state: StreamState) {
-<span class="cstat-no" title="statement not covered" >  streamStore[sessionId] = state;</span>
+export function createStreamState(sessionId: string, state: StreamState): void {
+  streamStore[sessionId] = state;
 }
 &nbsp;
-export function <span class="fstat-no" title="function not covered" >getStreamState(</span>sessionId: string): StreamState | undefined {
-<span class="cstat-no" title="statement not covered" >  return streamStore[sessionId];</span>
+export function getStreamState(sessionId: string): StreamState | undefined {
+  return streamStore[sessionId];
 }
 &nbsp;
-export function <span class="fstat-no" title="function not covered" >updateStreamState(</span>sessionId: string, update: Partial&lt;StreamState&gt;) {
-<span class="cstat-no" title="statement not covered" >  <span class="missing-if-branch" title="if path not taken" >I</span>if (streamStore[sessionId]) {</span>
-<span class="cstat-no" title="statement not covered" >    Object.assign(streamStore[sessionId], update);</span>
+export function updateStreamState(
+  sessionId: string,
+  update: Partial&lt;StreamState&gt;,
+): void {
+  if (streamStore[sessionId]) {
+    Object.assign(streamStore[sessionId], update);
   }
 }
 &nbsp;
-export function <span class="fstat-no" title="function not covered" >deleteStreamState(</span>sessionId: string) {
-<span class="cstat-no" title="statement not covered" >  delete streamStore[sessionId];</span>
+export function deleteStreamState(sessionId: string): void {
+  delete streamStore[sessionId];
 }
 &nbsp;</pre></td></tr></table></pre>
 
@@ -163,7 +172,7 @@ export function <span class="fstat-no" title="function not covered" >deleteStrea
             <div class='footer quiet pad2 space-top1 center small'>
                 Code coverage generated by
                 <a href="https://istanbul.js.org/" target="_blank" rel="noopener noreferrer">istanbul</a>
-                at 2025-07-24T16:21:13.945Z
+                at 2025-07-24T21:52:36.152Z
             </div>
         <script src="../../prettify.js"></script>
         <script>

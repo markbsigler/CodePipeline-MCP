@@ -1,9 +1,9 @@
 # MCP Server TypeScript Node Project Generation Prompt
 
-
 Generate a production-ready TypeScript/Node.js MCP server project with the following best practices and security mitigations. All requirements below are mandatory unless otherwise noted.
 
 **Key additional requirements:**
+
 - Every endpoint/tool in the generated README and API docs must include at least one example request and response (curl and TypeScript/Node.js).
 - All error responses must conform to a standard JSON error schema (with `code`, `message`, and `details` fields), and this schema must be documented in the OpenAPI spec and README. Example:
   ```json
@@ -205,11 +205,34 @@ Generate a production-ready TypeScript/Node.js MCP server project with the follo
           "responses": {
             "200": {
               "description": "Greeting response",
-              "content": { "application/json": { "schema": { "type": "object", "properties": { "message": { "type": "string" } } } } }
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "type": "object",
+                    "properties": { "message": { "type": "string" } }
+                  }
+                }
+              }
             },
             "default": {
               "description": "Error response",
-              "content": { "application/json": { "schema": { "type": "object", "properties": { "error": { "type": "object", "properties": { "code": { "type": "string" }, "message": { "type": "string" }, "details": { "type": "object" } } } } } } }
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "type": "object",
+                    "properties": {
+                      "error": {
+                        "type": "object",
+                        "properties": {
+                          "code": { "type": "string" },
+                          "message": { "type": "string" },
+                          "details": { "type": "object" }
+                        }
+                      }
+                    }
+                  }
+                }
+              }
             }
           }
         }
@@ -262,6 +285,7 @@ Generate a production-ready TypeScript/Node.js MCP server project with the follo
 ---
 
 ## Mutation Testing (Stryker)
+
 - Mutation testing is performed using Stryker to ensure test suite quality.
 - Run `npx stryker run` to execute mutation tests and generate a report.
 - See the README for setup and usage details.
@@ -271,46 +295,53 @@ Generate a production-ready TypeScript/Node.js MCP server project with the follo
 ## Additional Requirements and Best Practices
 
 ### 1. Badges and Documentation
+
 - Generated README must include build, coverage, and license badges.
 - Add a table of contents for easy navigation.
 - Provide direct links to API docs (e.g., `/docs` for Swagger UI/Redoc).
 - README and API docs must include at least one example request and response (curl and TypeScript/Node.js) for every endpoint/tool.
 
 ### 2. Security and Compliance
+
 - Explicitly document all security mitigations: CORS, helmet, rate limiting, input/output validation, JWT validation, session security, secrets management, and audit logging.
 - All endpoints must check user roles/permissions (least privilege).
 - No stack traces or sensitive info in production error responses.
 - Document how to report security issues (README must include a Security Reporting section).
 
 ### 3. Testing and Quality
+
 - Minimum 100% code coverage for all critical files (handlers, utils, middleware, error handling, streaming logic).
 - All branches and lines in critical files must be covered by tests.
 - CI must fail on lint, format, or type errors.
 - Include contract and mutation testing for protocol and critical logic.
 
 ### 4. Extensibility and Upgrades
+
 - Document the process for adding new tools, plugins, or middleware.
 - Provide a clear upgrade path for dependencies and OpenAPI specs.
 - Require a "How to Upgrade" section in the README, with commands and manual steps.
 
 ### 5. Docker and Deployment
+
 - Add a quick start for Docker Compose in the README and provide a production-ready `docker-compose.yml` in the project root.
 - Multi-stage Dockerfile must use a non-root user and include healthchecks. Provide a production-ready `Dockerfile` in the project root using best practices for Node.js/TypeScript apps (multi-stage build, non-root user, healthcheck, minimal image).
 - Document multi-arch builds and deployment best practices.
 
 ### 6. Example-Driven Documentation
+
 - README and generated docs must include at least one example request and response (curl and TypeScript/Node.js) for all endpoints/tools.
 - Provide a minimal but complete example OpenAPI spec, including error schema.
 - Inline example `.env` in README for clarity.
 
 ### 7. FAQ and Troubleshooting
+
 - Add a FAQ/Troubleshooting section to the README for common issues (Docker, JWT, ports, etc).
 
 ### 8. Contributing
+
 - Add a contributing section and reference `CONTRIBUTING.md` if present.
 
 ---
-
 
 The resulting project should be robust, secure, observable, and easily extensible, automatically exposing OpenAPI operations as MCP tools, following all security best practices, and ready for production and CI/CD. All requirements above are mandatory unless otherwise noted.
 

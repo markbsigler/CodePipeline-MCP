@@ -1,6 +1,6 @@
-import request from 'supertest';
 import { jest } from '@jest/globals';
 import { Request, Response, NextFunction } from 'express';
+import request from 'supertest';
 import { z, ZodTypeAny } from 'zod';
 
 // --- Test Setup ---
@@ -26,7 +26,9 @@ const mockMcpTools = [
 const mockZodSchemas: Record<string, { input: ZodTypeAny }> = {
   get_weather: {
     input: z.object({
-      location: z.string().describe('The city and state, e.g. San Francisco, CA'),
+      location: z
+        .string()
+        .describe('The city and state, e.g. San Francisco, CA'),
     }),
   },
   // Note: 'get_stock_price' is intentionally omitted to test the schema-not-found case.
@@ -39,7 +41,8 @@ jest.mock('../../src/utils/openapi-to-mcp', () => ({
 }));
 
 jest.mock('../../src/middleware/auth', () => ({
-  authenticateJWT: (_req: Request, _res: Response, next: NextFunction) => next(), // Bypass auth for these tests
+  authenticateJWT: (_req: Request, _res: Response, next: NextFunction): void =>
+    next(), // Bypass auth for these tests
 }));
 
 // 4. Mock the generated Zod schemas to provide our test schemas.
@@ -53,7 +56,7 @@ import { createApp } from '../../src/index';
 const app = createApp();
 
 describe('POST /v1/mcp/tools/call', () => {
-  it('should return 200 and a streamed result for a valid tool call', async () => {
+  it('should return 200 and a streamed result for a valid tool call', async function shouldReturn200AndStreamedResult(): Promise<void> {
     const res = await request(app)
       .post('/v1/mcp/tools/call')
       .send({
@@ -73,7 +76,7 @@ describe('POST /v1/mcp/tools/call', () => {
     expect(body.result.resultChunks[0].content).toContain('San Francisco, CA');
   });
 
-  it('should return 404 if the tool does not exist', async () => {
+  it('should return 404 if the tool does not exist', async function shouldReturn404IfToolDoesNotExist(): Promise<void> {
     const res = await request(app)
       .post('/v1/mcp/tools/call')
       .send({ tool: 'non_existent_tool', params: {} });
@@ -98,6 +101,8 @@ describe('POST /v1/mcp/tools/call', () => {
 
     expect(res.status).toBe(400);
     expect(res.body.error).toBe('Invalid tool input');
-    expect(res.body.details[0].message).toBe('Expected string, received number');
+    expect(res.body.details[0].message).toBe(
+      'Expected string, received number',
+    );
   });
 });

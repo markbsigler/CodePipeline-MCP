@@ -1,18 +1,21 @@
-  it('should use default admin limit for unknown endpoint with admin user', async () => {
-    let app: express.Express = express();
-    app.use((req: any, _res: any, next: any) => {
-      req.user = { role: 'admin' };
-      next();
-    });
-    app.use('/unknown', mcpRateLimiter, (_req: any, res: any) => res.status(200).send('ok'));
-    let res: request.Response | undefined = undefined;
-    for (let i = 0; i < 20; i++) {
-      res = await request(app).get('/unknown');
-      expect(res.status).toBe(200);
-    }
+it('should use default admin limit for unknown endpoint with admin user', async () => {
+  const app: express.Express = express();
+  app.use((req: any, _res: any, next: any) => {
+    req.user = { role: 'admin' };
+    next();
   });
-import request from 'supertest';
+  app.use('/unknown', mcpRateLimiter, (_req: any, res: any) =>
+    res.status(200).send('ok'),
+  );
+  let res: request.Response | undefined = undefined;
+  for (let i = 0; i < 20; i++) {
+    res = await request(app).get('/unknown');
+    expect(res.status).toBe(200);
+  }
+});
 import express from 'express';
+import request from 'supertest';
+
 import { mcpRateLimiter } from '../../src/middleware/rateLimit';
 
 describe('mcpRateLimiter', () => {
@@ -25,9 +28,15 @@ describe('mcpRateLimiter', () => {
       req.user = undefined;
       next();
     });
-    app.use('/v1/mcp/tools/list', mcpRateLimiter, (_req, res) => res.status(200).send('ok'));
-    app.use('/v1/mcp/tools/call', mcpRateLimiter, (_req, res) => res.status(200).send('ok'));
-    app.use('/other', mcpRateLimiter, (_req, res) => res.status(200).send('ok'));
+    app.use('/v1/mcp/tools/list', mcpRateLimiter, (_req, res) =>
+      res.status(200).send('ok'),
+    );
+    app.use('/v1/mcp/tools/call', mcpRateLimiter, (_req, res) =>
+      res.status(200).send('ok'),
+    );
+    app.use('/other', mcpRateLimiter, (_req, res) =>
+      res.status(200).send('ok'),
+    );
   });
 
   it('should allow requests under the limit for /v1/mcp/tools/list', async () => {
@@ -73,7 +82,9 @@ describe('mcpRateLimiter', () => {
       req.user = { role: 'admin' };
       next();
     });
-    app.use('/v1/mcp/tools/list', mcpRateLimiter, (_req: any, res: any) => res.status(200).send('ok'));
+    app.use('/v1/mcp/tools/list', mcpRateLimiter, (_req: any, res: any) =>
+      res.status(200).send('ok'),
+    );
     let res: request.Response | undefined = undefined;
     for (let i = 0; i < 20; i++) {
       res = await request(app).get('/v1/mcp/tools/list');
@@ -86,7 +97,9 @@ describe('mcpRateLimiter', () => {
       req.user = 'some-string';
       next();
     });
-    app.use('/other', mcpRateLimiter, (_req, res) => res.status(200).send('ok'));
+    app.use('/other', mcpRateLimiter, (_req, res) =>
+      res.status(200).send('ok'),
+    );
     let res = undefined;
     for (let i = 0; i < 61; i++) {
       res = await request(app).get('/other');
@@ -102,7 +115,9 @@ describe('mcpRateLimiter', () => {
       req.user = { foo: 'bar' };
       next();
     });
-    app.use('/other', mcpRateLimiter, (_req, res) => res.status(200).send('ok'));
+    app.use('/other', mcpRateLimiter, (_req, res) =>
+      res.status(200).send('ok'),
+    );
     let res = undefined;
     for (let i = 0; i < 61; i++) {
       res = await request(app).get('/other');
@@ -118,7 +133,9 @@ describe('mcpRateLimiter', () => {
       (req as any).user = null;
       next();
     });
-    app.use('/other', mcpRateLimiter, (_req, res) => res.status(200).send('ok'));
+    app.use('/other', mcpRateLimiter, (_req, res) =>
+      res.status(200).send('ok'),
+    );
     let res = undefined;
     for (let i = 0; i < 61; i++) {
       res = await request(app).get('/other');

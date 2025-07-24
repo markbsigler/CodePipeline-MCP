@@ -1,15 +1,51 @@
 "use strict";
-var __importDefault = (this && this.__importDefault) || function (mod) {
-    return (mod && mod.__esModule) ? mod : { "default": mod };
-};
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.mcpRateLimiter = void 0;
-const express_rate_limit_1 = __importDefault(require("express-rate-limit"));
-exports.mcpRateLimiter = (0, express_rate_limit_1.default)({
-    windowMs: 60 * 1000, // 1 minute
-    max: 60, // limit each IP to 60 requests per minute
+exports.mcpRateLimiter = mcpRateLimiter;
+// Example config: { '/v1/mcp/tools/list': { max: 30 }, '/v1/mcp/tools/call': { max: 10 } }
+const endpointRateLimits = {
+  "/v1/mcp/tools/list": { max: 30 },
+  "/v1/mcp/tools/call": { max: 10 },
+};
+// Factory to create a rate limiter for a given endpoint and user role
+function createRateLimiter(max) {
+  return require("express-rate-limit")({
+    windowMs: 60 * 1000,
+    max,
     standardHeaders: true,
     legacyHeaders: false,
-    message: { error: 'Too many requests, please try again later.' }
+    message: { error: "Too many requests, please try again later." },
+    handler: (_req, response, _next, options) => {
+      response.set("X-RateLimit-Limit", (options.max ?? 60).toString());
+      response.set("X-RateLimit-Remaining", "0");
+      response.set(
+        "X-RateLimit-Reset",
+        (Math.floor(Date.now() / 1000) + 60).toString(),
+      );
+      response.status(429).json(options.message);
+    },
+  });
+}
+// Pre-create limiters for each endpoint and role
+const limiters = {};
+Object.entries(endpointRateLimits).forEach(([route, { max }]) => {
+  limiters[`${route}:user`] = createRateLimiter(max);
+  limiters[`${route}:admin`] = createRateLimiter(1000);
 });
+limiters["default:user"] = createRateLimiter(60);
+limiters["default:admin"] = createRateLimiter(1000);
+function mcpRateLimiter(req, res, next) {
+  const key = req.baseUrl + req.path;
+  // Defensive: req.user may be string, JwtPayload, or undefined
+  let role = "user";
+  if (
+    typeof req.user === "object" &&
+    req.user !== null &&
+    "role" in req.user &&
+    req.user.role === "admin"
+  ) {
+    role = "admin";
+  }
+  const limiter = limiters[`${key}:${role}`] || limiters[`default:${role}`];
+  return limiter(req, res, next);
+}
 //# sourceMappingURL=rateLimit.js.map

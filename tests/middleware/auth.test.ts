@@ -1,6 +1,7 @@
-import request from 'supertest';
 import express, { Request, Response } from 'express';
 import jwt from 'jsonwebtoken';
+import request from 'supertest';
+
 import { authenticateJWT } from '../../src/middleware/auth';
 
 // Setup a minimal express app to test the middleware
@@ -18,7 +19,9 @@ describe('authenticateJWT middleware', () => {
   it('should return 401 if no Authorization header is present', async () => {
     const res = await request(app).get('/protected');
     expect(res.status).toBe(401);
-    expect(res.body).toEqual({ error: 'Missing or invalid Authorization header' });
+    expect(res.body).toEqual({
+      error: 'Missing or invalid Authorization header',
+    });
   });
 
   it('should return 401 if Authorization header does not start with "Bearer "', async () => {
@@ -26,7 +29,9 @@ describe('authenticateJWT middleware', () => {
       .get('/protected')
       .set('Authorization', 'Token some-invalid-token');
     expect(res.status).toBe(401);
-    expect(res.body).toEqual({ error: 'Missing or invalid Authorization header' });
+    expect(res.body).toEqual({
+      error: 'Missing or invalid Authorization header',
+    });
   });
 
   it('should return 401 for an invalid or malformed token', async () => {
@@ -34,7 +39,9 @@ describe('authenticateJWT middleware', () => {
       .get('/protected')
       .set('Authorization', 'Bearer invalid-token');
     expect(res.status).toBe(401);
-    expect(res.body).toEqual({ error: 'Invalid, expired, or unauthorized token' });
+    expect(res.body).toEqual({
+      error: 'Invalid, expired, or unauthorized token',
+    });
   });
 
   it('should return 401 for an expired token', async () => {
@@ -47,7 +54,9 @@ describe('authenticateJWT middleware', () => {
       .get('/protected')
       .set('Authorization', `Bearer ${expiredToken}`);
     expect(res.status).toBe(401);
-    expect(res.body).toEqual({ error: 'Invalid, expired, or unauthorized token' });
+    expect(res.body).toEqual({
+      error: 'Invalid, expired, or unauthorized token',
+    });
   });
 
   it('should call next() and attach user payload for a valid token', async () => {

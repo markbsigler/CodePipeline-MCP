@@ -1,8 +1,9 @@
-
 // Mock @opentelemetry/sdk-node before importing observability
 jest.mock('@opentelemetry/sdk-node', () => {
   return {
-    NodeSDK: jest.fn(() => { throw new Error('fail'); })
+    NodeSDK: jest.fn(() => {
+      throw new Error('fail');
+    }),
   };
 });
 
@@ -20,6 +21,9 @@ describe('initObservability', () => {
 
   it('should log and not throw if NodeSDK throws', () => {
     expect(() => observability.initObservability()).not.toThrow();
-    expect(errorSpy).toHaveBeenCalledWith('Failed to initialize observability:', expect.any(Error));
+    expect(errorSpy).toHaveBeenCalledWith(
+      'Failed to initialize observability:',
+      expect.any(Error),
+    );
   });
 });

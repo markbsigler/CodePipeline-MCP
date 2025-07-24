@@ -1,16 +1,25 @@
-import express from 'express';
-import cors from 'cors';
-import helmet from 'helmet';
 import { json } from 'body-parser';
-import { loadOpenApiSpec, extractMcpToolsFromOpenApi } from './utils/openapi-to-mcp';
-import { toolsListHandler, toolsCallHandler, notificationsListChangedHandler } from './handlers/mcpHandlers';
-import { authenticateJWT } from './middleware/auth';
-import { mcpRateLimiter } from './middleware/rateLimit';
-import { sessionMiddleware } from './middleware/session';
-import { errorHandler } from './middleware/errorHandler';
-import { requestLogger } from './middleware/requestLogger';
+import cors from 'cors';
+import express, { Application } from 'express';
+import helmet from 'helmet';
 
-export function createApp() {
+import {
+  toolsListHandler,
+  toolsCallHandler,
+  notificationsListChangedHandler,
+} from './handlers/mcpHandlers';
+import { authenticateJWT } from './middleware/auth';
+import { errorHandler } from './middleware/errorHandler';
+import { mcpRateLimiter } from './middleware/rateLimit';
+import { requestLogger } from './middleware/requestLogger';
+import { sessionMiddleware } from './middleware/session';
+import {
+  loadOpenApiSpec,
+  extractMcpToolsFromOpenApi,
+} from './utils/openapi-to-mcp';
+
+
+export function createApp(): Application {
   const app = express();
   app.use(json({ limit: '1mb' }));
   app.use(cors());
@@ -18,7 +27,7 @@ export function createApp() {
   app.use(requestLogger); // Log all requests
 
   // Health check endpoint
-  app.get('/healthz', (_req, res) => res.status(200).json({ status: 'ok' }));
+  app.get('/healthz', (_req, res): void => { res.status(200).json({ status: 'ok' }); });
 
   app.use(authenticateJWT); // Protect all routes after this line
   app.use(sessionMiddleware); // Add session management after authentication
@@ -38,18 +47,24 @@ export function createApp() {
   // MCP protocol endpoints under /v1/mcp
   v1.post('/mcp/tools/list', toolsListHandler(mcpTools));
   v1.post('/mcp/tools/call', toolsCallHandler(mcpTools, openapi));
-  v1.get('/mcp/notifications/tools/list_changed', notificationsListChangedHandler());
+  v1.get(
+    '/mcp/notifications/tools/list_changed',
+    notificationsListChangedHandler(),
+  );
 
   app.use('/v1', v1);
 
   // Legacy (unversioned) endpoints for backward compatibility (optional, can deprecate later)
   app.post('/mcp/tools/list', toolsListHandler(mcpTools));
   app.post('/mcp/tools/call', toolsCallHandler(mcpTools, openapi));
-  app.get('/mcp/notifications/tools/list_changed', notificationsListChangedHandler());
+  app.get(
+    '/mcp/notifications/tools/list_changed',
+    notificationsListChangedHandler(),
+  );
 
   // Add a catch-all 404 handler before the error handler
-  app.use((_req, res, next) => {
-    const err: any = new Error('Not Found');
+  app.use((_req, _res, next): void => {
+    const err = new Error('Not Found') as Error & { status?: number };
     err.status = 404;
     next(err);
   });
@@ -58,8 +73,7 @@ export function createApp() {
   return app;
 }
 
-
-export function startServer() {
+export function startServer(): void {
   const app = createApp();
   const port = process.env.PORT || 3000;
   app.listen(port, () => {
@@ -69,9 +83,8 @@ export function startServer() {
 }
 
 // Start the server only if this file is run directly (not imported as a module)
-const isMainModule = require.main === module;
+const isMainModule = typeof require !== 'undefined' && require.main === module;
 if (isMainModule) {
-  // Dynamically import to avoid circular dependency
-  // eslint-disable-next-line @typescript-eslint/no-var-requires
-  require('./startServer').startServer();
+  // Dynamically import to avoid circular dependency and keep startup logic testable
+  import('./startServer').then((mod) => mod.startServer());
 }

@@ -1,6 +1,7 @@
-import logger, { httpLogger } from 'utils/logger';
 import fs from 'fs';
 import path from 'path';
+
+import logger, { httpLogger } from 'utils/logger';
 
 describe('logger', () => {
   it('should be a pino logger instance', () => {

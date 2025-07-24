@@ -8,17 +8,17 @@ exports.updateStreamState = updateStreamState;
 exports.deleteStreamState = deleteStreamState;
 const streamStore = {};
 function createStreamState(sessionId, state) {
-    streamStore[sessionId] = state;
+  streamStore[sessionId] = state;
 }
 function getStreamState(sessionId) {
-    return streamStore[sessionId];
+  return streamStore[sessionId];
 }
 function updateStreamState(sessionId, update) {
-    if (streamStore[sessionId]) {
-        Object.assign(streamStore[sessionId], update);
-    }
+  if (streamStore[sessionId]) {
+    Object.assign(streamStore[sessionId], update);
+  }
 }
 function deleteStreamState(sessionId) {
-    delete streamStore[sessionId];
+  delete streamStore[sessionId];
 }
 //# sourceMappingURL=streamStateStore.js.map

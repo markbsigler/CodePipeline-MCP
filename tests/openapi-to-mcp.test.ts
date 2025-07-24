@@ -1,4 +1,7 @@
-import { loadOpenApiSpec, extractMcpToolsFromOpenApi } from '../src/utils/openapi-to-mcp';
+import {
+  loadOpenApiSpec,
+  extractMcpToolsFromOpenApi,
+} from '../src/utils/openapi-to-mcp';
 
 type Tool = {
   name: string;

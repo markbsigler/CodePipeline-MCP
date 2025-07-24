@@ -1,5 +1,3 @@
-
-
 # BMC AMI DevX Code Pipeline MCP Server
 
 [![Build Status](https://github.com/markbsigler/CodePipeline-MCP/actions/workflows/ci.yml/badge.svg)](https://github.com/markbsigler/CodePipeline-MCP/actions)
@@ -11,15 +9,10 @@ A production-ready, secure, and extensible MCP server BMC AMI DevX Code Pipeline
 
 ---
 
-
-
-
-
-
-
 ## Table of Contents
 
 <!-- toc -->
+
 - [BMC AMI DevX Code Pipeline MCP Server](#bmc-ami-devx-code-pipeline-mcp-server)
   - [Table of Contents](#table-of-contents)
   - [Features \& Architecture](#features--architecture)
@@ -66,7 +59,7 @@ A production-ready, secure, and extensible MCP server BMC AMI DevX Code Pipeline
   - [References](#references)
   - [API Versioning](#api-versioning)
   - [Documentation](#documentation)
-<!-- tocstop -->
+  <!-- tocstop -->
 
 ---
 
@@ -138,9 +131,6 @@ A production-ready, secure, and extensible MCP server BMC AMI DevX Code Pipeline
 
 ---
 
-
-
-
 ## Quick Start
 
 1. **Install dependencies:**
@@ -148,15 +138,16 @@ A production-ready, secure, and extensible MCP server BMC AMI DevX Code Pipeline
    ```sh
    npm install
    ```
+
 2. **Configure environment:**
    - Copy `.env.example` to `.env` and set values (see below for example).
-
 
    ```env
    NODE_ENV=development
    PORT=3000
    JWT_SECRET=your_jwt_secret
    ```
+
 3. **Run in development:**
 
    ```sh
@@ -186,8 +177,6 @@ A production-ready, secure, and extensible MCP server BMC AMI DevX Code Pipeline
 
 ---
 
-
-
 1. **Obtain a JWT Token:**  
    Use your authentication provider or the server's `/auth/login` endpoint (if enabled):
 
@@ -202,14 +191,12 @@ A production-ready, secure, and extensible MCP server BMC AMI DevX Code Pipeline
 
 ## VS Code Client Configuration
 
-
-To connect to this MCP server from VS Code as a client:
-2. Add or update the following settings to configure the MCP server endpoint and authentication:
+To connect to this MCP server from VS Code as a client: 2. Add or update the following settings to configure the MCP server endpoint and authentication:
 
 ```json
 {
   "mcp.serverUrl": "http://localhost:3000/v1",
-  "mcp.jwtToken": "<your-jwt-token>",
+  "mcp.jwtToken": "<your-jwt-token>"
   // Optionally, set request timeout (in ms)
 }
 ```
@@ -248,7 +235,6 @@ To connect to this MCP server from VS Code as a client:
 - **Extensibility:**
   - Add new tools by editing `config/openapi.json`
 
-
 ```env
 PORT=3000
 JWT_SECRET=your_jwt_secret
@@ -258,13 +244,11 @@ JWT_SECRET=your_jwt_secret
 
 ## API Usage Examples
 
-
 ### Health Check
 
 ```sh
 curl http://localhost:3000/healthz
 ```
-
 
 ### 404/Error Handling Example
 
@@ -272,7 +256,6 @@ curl http://localhost:3000/healthz
 curl http://localhost:3000/nonexistent
 # Returns 404 Not Found with error JSON
 ```
-
 
 ### MCP Tool Call (JSON-RPC 2.0)
 
@@ -282,7 +265,6 @@ curl -X POST http://localhost:3000/tools/call \
   -H "Content-Type: application/json" \
   -d '{"jsonrpc":"2.0","method":"tools/call","params":{...},"id":1}'
 ```
-
 
 ### SSE Notifications
 
@@ -316,7 +298,6 @@ curl http://localhost:3000/notifications/tools/list_changed -H "Accept: text/eve
 - **Code generation:** Use the provided scripts/CLI tools (see `scripts/` or `package.json` scripts) to auto-generate TypeScript types and handler templates from OpenAPI specs.
 
 ---
-
 
 ## Testing & Quality
 
@@ -368,7 +349,6 @@ This project uses [Stryker](https://stryker-mutator.io/) for mutation testing to
 
 ## Documentation & Diagrams
 
-
 ### Bearer Token Authentication Flow
 
 ```mermaid
@@ -391,7 +371,6 @@ sequenceDiagram
     end
 ```
 
-
 ### OpenAPI-to-MCP Tools Mapping
 
 ```mermaid
@@ -403,7 +382,6 @@ flowchart TD
     E --> F[Register Tool Endpoints]
     F --> G[Expose /tools/list, /tools/call]
 ```
-
 
 ### MCP Protocol Message Flow
 
@@ -419,7 +397,6 @@ sequenceDiagram
         Server-->>Client: Error response (JSON-RPC error)
     end
 ```
-
 
 ### Tool Execution and Response Handling
 
@@ -439,7 +416,6 @@ sequenceDiagram
     end
 ```
 
-
 ### Container Deployment & Observability
 
 ```mermaid
@@ -454,7 +430,6 @@ flowchart TD
     Jaeger --traces--> Grafana
     App --expose--> Internet
 ```
-
 
 ### Session Management and Security
 
@@ -471,7 +446,6 @@ sequenceDiagram
     end
 ```
 
-
 ### Rate Limiting Flow
 
 ```mermaid
@@ -487,7 +461,6 @@ sequenceDiagram
         Server-->>Client: Response
     end
 ```
-
 
 ### Error Handling Flow
 
@@ -508,7 +481,6 @@ sequenceDiagram
     end
 ```
 
-
 ### Observability Pipeline
 
 ```mermaid
@@ -518,7 +490,6 @@ flowchart LR
     Prometheus --> Grafana
     Jaeger --> Grafana
 ```
-
 
 ### JWT Token Lifecycle
 
@@ -547,7 +518,6 @@ sequenceDiagram
 - The server integrates [OpenTelemetry](https://opentelemetry.io/) for distributed tracing.
 - Traces are exported in OTLP format and can be sent to Jaeger, Zipkin, or any compatible backend.
 - **How to view traces:**
-
   1. Run a local Jaeger instance:
 
      ```sh
@@ -571,11 +541,10 @@ sequenceDiagram
 
 - Prometheus metrics are exposed at `/metrics`.
 - To visualize metrics in Grafana:
-
   1. Run Prometheus and Grafana (example Docker Compose):
 
      ```yaml
-     version: '3'
+     version: "3"
      services:
        prometheus:
          image: prom/prometheus
@@ -592,22 +561,20 @@ sequenceDiagram
   2. Add a Prometheus data source in Grafana pointing to `http://localhost:9090`.
 
   3. Import example dashboards (see `docs/grafana/` for JSON files):
-
      - HTTP request rate, error rate, latency, and custom business metrics.
 
   4. Example Prometheus scrape config:
 
      ```yaml
      scrape_configs:
-       - job_name: 'mcp-server'
+       - job_name: "mcp-server"
          static_configs:
-           - targets: ['host.docker.internal:3000']
+           - targets: ["host.docker.internal:3000"]
      ```
 
 ---
 
 ## Production Hardening
-
 
 ### Reverse Proxy and HTTPS
 
@@ -631,14 +598,12 @@ sequenceDiagram
   }
   ```
 
-
 ### Scaling and Resource Limits
 
 - Use Docker resource limits or Kubernetes requests/limits to prevent resource exhaustion.
 - Run multiple replicas behind a load balancer for high availability.
 - Use a process manager (e.g., PM2) or container orchestrator (Kubernetes, ECS) for automatic restarts and health checks.
 - Monitor memory and CPU usage; set alerts for abnormal patterns.
-
 
 ### Environment Hardening
 
@@ -651,7 +616,6 @@ sequenceDiagram
 - Review and restrict CORS origins to trusted domains only.
 
 ---
-
 
 ## Contributing
 
@@ -666,7 +630,6 @@ We welcome contributions! Please open issues or pull requests. To contribute:
 ---
 
 ## FAQ / Troubleshooting
-
 
 **Q: Docker Compose fails to start?**
 
@@ -684,7 +647,6 @@ We welcome contributions! Please open issues or pull requests. To contribute:
 
 ---
 
-
 ## License
 
 This project is licensed under the [MIT License](./LICENSE).
@@ -696,8 +658,6 @@ This project is licensed under the [MIT License](./LICENSE).
 - Open an [issue](https://github.com/markbsigler/CodePipeline-MCP/issues)
 - Join the discussion on [GitHub Discussions](https://github.com/markbsigler/CodePipeline-MCP/discussions)
 - Email: <mark.sigler@protonmail.com>
-
-
 
 ```sh
 curl -X POST http://localhost:3000/v1/tools/call \
@@ -714,14 +674,14 @@ Replace `<your-jwt-token>` with a valid token (see [Security & Best Practices](#
 
 ## API Endpoint Reference
 
-| Endpoint                | Method | Description                                 |
-|-------------------------|--------|---------------------------------------------|
-| `/v1/tools/list`        | POST   | List available MCP tools                    |
-| `/v1/tools/call`        | POST   | Call a specific MCP tool                    |
-| `/v1/notifications`     | GET    | Stream notifications (SSE)                  |
-| `/healthz`              | GET    | Health check (liveness probe)               |
-| `/metrics`              | GET    | Prometheus metrics for monitoring           |
-| `/docs`                 | GET    | API documentation (Swagger/Redoc UI)        |
+| Endpoint            | Method | Description                          |
+| ------------------- | ------ | ------------------------------------ |
+| `/v1/tools/list`    | POST   | List available MCP tools             |
+| `/v1/tools/call`    | POST   | Call a specific MCP tool             |
+| `/v1/notifications` | GET    | Stream notifications (SSE)           |
+| `/healthz`          | GET    | Health check (liveness probe)        |
+| `/metrics`          | GET    | Prometheus metrics for monitoring    |
+| `/docs`             | GET    | API documentation (Swagger/Redoc UI) |
 
 See the [OpenAPI spec](./config/openapi.json) or [Swagger UI](/docs) for full details and try-it-out functionality.
 
@@ -731,7 +691,6 @@ See the [OpenAPI spec](./config/openapi.json) or [Swagger UI](/docs) for full de
 
 1. **Obtain a JWT Token:**  
    Use your authentication provider or the server's `/auth/login` endpoint (if enabled):
-
 
    ```sh
    curl -X POST http://localhost:3000/auth/login \
@@ -744,7 +703,6 @@ See the [OpenAPI spec](./config/openapi.json) or [Swagger UI](/docs) for full de
 2. **Use the Token:**  
    Add the token to the `Authorization` header for all API requests:
 
-
    ```text
    Authorization: Bearer <your-jwt-token>
    ```
@@ -756,9 +714,6 @@ See the [OpenAPI spec](./config/openapi.json) or [Swagger UI](/docs) for full de
 See [CHANGELOG.md](./CHANGELOG.md) for release notes and recent changes.
 
 ---
-
-
-
 
 ## References
 

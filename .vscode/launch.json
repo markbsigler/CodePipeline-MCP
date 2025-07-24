@@ -6,10 +6,7 @@
       "request": "launch",
       "name": "Debug MCP Server",
       "program": "${workspaceFolder}/src/index.ts",
-      "runtimeArgs": [
-        "-r",
-        "ts-node/register"
-      ],
+      "runtimeArgs": ["-r", "ts-node/register"],
       "envFile": "${workspaceFolder}/.env",
       "cwd": "${workspaceFolder}",
       "skipFiles": ["<node_internals>/**"],
