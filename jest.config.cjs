@@ -16,6 +16,7 @@ module.exports = {
   // Remove extensionsToTreatAsEsm and useESM
   transformIgnorePatterns: ['/node_modules/(?!(uuid|pino)/)'],
   moduleNameMapper: {
+    '^(handlers|types|utils|models|services|middleware|routes|config|lib|db|constants|schemas|validators|controllers|mocks|fixtures|testUtils|__mocks__)/(.*)$': '<rootDir>/src/$1/$2',
     '^(\\.{1,2}/.*)\\.js$': '$1',
   },
   transform: {

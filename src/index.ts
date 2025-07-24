@@ -58,14 +58,20 @@ export function createApp() {
   return app;
 }
 
-// Start the server only if this file is run directly (not imported as a module)
-const isMainModule = require.main === module;
 
-if (isMainModule) {
+export function startServer() {
   const app = createApp();
   const port = process.env.PORT || 3000;
   app.listen(port, () => {
     // eslint-disable-next-line no-console
     console.log(`MCP server listening on port ${port}`);
   });
+}
+
+// Start the server only if this file is run directly (not imported as a module)
+const isMainModule = require.main === module;
+if (isMainModule) {
+  // Dynamically import to avoid circular dependency
+  // eslint-disable-next-line @typescript-eslint/no-var-requires
+  require('./startServer').startServer();
 }
