@@ -1,7 +1,9 @@
+
+
 # BMC AMI DevX Code Pipeline MCP Server
 
-[![Build Status](https://github.com/<your-org>/<your-repo>/actions/workflows/ci.yml/badge.svg)](https://github.com/<your-org>/<your-repo>/actions)
-[![Coverage Status](https://coveralls.io/repos/github/<your-org>/<your-repo>/badge.svg?branch=main)](https://coveralls.io/github/<your-org>/<your-repo>?branch=main)
+[![Build Status](https://github.com/markbsigler/CodePipeline-MCP/actions/workflows/ci.yml/badge.svg)](https://github.com/markbsigler/CodePipeline-MCP/actions)
+[![Coverage Status](https://coveralls.io/repos/github/markbsigler/CodePipeline-MCP/badge.svg?branch=main)](https://coveralls.io/github/markbsigler/CodePipeline-MCP?branch=main)
 [![Mutation Score](https://img.shields.io/badge/mutation--score-85%25-brightgreen?logo=stryker)](./reports/mutation/mutation.html)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](./LICENSE)
 
@@ -11,72 +13,207 @@ A production-ready, secure, and extensible MCP server BMC AMI DevX Code Pipeline
 
 ## Configuration Notes (2025)
 
+
 ### ESLint
+
 - Migrated to flat config (`eslint.config.js`).
 - `.eslintrc.json` and `.eslintignore` are deprecated and no longer used.
 
+
 ### Jest
+
 - All Jest configuration is now in `jest.config.cjs`.
 - `jest.config.js` is deprecated and only present as a stub.
 
+
+
 ### Logger Test Mocking
+
 - Logger tests (`tests/utils/logger.test.ts`) now mock both `pino` and `pino-http`.
 - `pino.destination` is also mocked to avoid file descriptor errors.
 - Example:
-  ```typescript
-  jest.mock('pino', () => Object.assign(() => ({ info: jest.fn(), error: jest.fn() }), { destination: jest.fn(() => process.stdout) }));
-  jest.mock('pino-http', () => () => ({ logger: { info: jest.fn(), error: jest.fn() } }));
-  ```
+
+```typescript
+jest.mock('pino', () => Object.assign(() => ({ info: jest.fn(), error: jest.fn() }), { destination: jest.fn(() => process.stdout) }));
+jest.mock('pino-http', () => () => ({ logger: { info: jest.fn(), error: jest.fn() } }));
+```
+
 - This ensures logger tests pass in all environments.
 
+
+
 ### Observability & Rate Limiting
+
 - New observability and rate limiting middleware integrated into the Express app (`src/index.ts`).
 - `/metrics` endpoint and tracing are now available.
 
+
+
+
+### Error Handling & Observability (2025)
+
+- **Server Startup:**
+  - All error branches in server startup (`startServer.ts`) are now robustly handled and logged.
+  - Errors in `createApp` and `app.listen` are caught, logged with `console.error`, and do not crash the process.
+
+- **Observability Initialization:**
+  - Errors during OpenTelemetry `NodeSDK` initialization are caught and logged.
+  - The server continues to run even if observability fails to initialize.
+
+- **Testing:**
+  - All error-handling branches for startup and observability are now fully covered by Jest tests.
+  - Tests use Jest spies and module mocks to simulate and verify error conditions and logging.
+  - Achieves 98%+ overall coverage, 100% for critical files.
+
+
+
 ### Running Tests
+
 - Run all tests with:
-  ```sh
-  npm test
-  ```
-- All tests should pass after the above changes.
+
+```sh
+npm test
+```
+
+- To check coverage:
+
+```sh
+npm test -- --coverage
+```
+
+- All tests should pass, including error-handling and logging verification for startup and observability.
 
 ---
 
 
+
+
+
 ## Table of Contents
+
+
+<!-- toc -->
 - [BMC AMI DevX Code Pipeline MCP Server](#bmc-ami-devx-code-pipeline-mcp-server)
+  - [Configuration Notes (2025)](#configuration-notes-2025)
+    - [ESLint](#eslint)
+    - [Jest](#jest)
+    - [Logger Test Mocking](#logger-test-mocking)
+    - [Observability \& Rate Limiting](#observability--rate-limiting)
+    - [Error Handling \& Observability (2025)](#error-handling--observability-2025)
+    - [Running Tests](#running-tests)
   - [Table of Contents](#table-of-contents)
-  - [Quick Start](#quick-start)
-  - [Features & Architecture](#features--architecture)
+    - [Maintaining the Table of Contents](#maintaining-the-table-of-contents)
+  - [Features \& Architecture](#features--architecture)
   - [Project Structure](#project-structure)
-  - [Authentication Guide](#authentication-guide)
-  # Removed duplicate TOC entry for VS Code Client Configuration
-  - [Features & Architecture](#features--architecture)
-  - [Environment Variables Example](#environment-variables-example)
+  - [Quick Start](#quick-start)
+  - [VS Code Client Configuration](#vs-code-client-configuration)
   - [API Usage Examples](#api-usage-examples)
     - [Health Check](#health-check)
     - [404/Error Handling Example](#404error-handling-example)
     - [MCP Tool Call (JSON-RPC 2.0)](#mcp-tool-call-json-rpc-20)
     - [SSE Notifications](#sse-notifications)
-  - [Security & Best Practices](#security--best-practices)
+  - [Security \& Best Practices](#security--best-practices)
   - [Extending the Server](#extending-the-server)
-  - [Testing & Quality](#testing--quality)
-    - [Mutation Testing with Stryker](#mutation-testing-with-stryker)
-      - [Running Mutation Tests](#running-mutation-tests)
-      - [Stryker Configuration](#stryker-configuration)
-  - [Documentation & Diagrams](#documentation--diagrams)
+  - [Testing \& Quality](#testing--quality)
+  - [Mutation Testing with Stryker](#mutation-testing-with-stryker)
+    - [Running Mutation Tests](#running-mutation-tests)
+    - [Stryker Configuration](#stryker-configuration)
+  - [CI/CD \& Deployment](#cicd--deployment)
+  - [Documentation \& Diagrams](#documentation--diagrams)
+    - [Bearer Token Authentication Flow](#bearer-token-authentication-flow)
+    - [OpenAPI-to-MCP Tools Mapping](#openapi-to-mcp-tools-mapping)
+    - [MCP Protocol Message Flow](#mcp-protocol-message-flow)
+    - [Tool Execution and Response Handling](#tool-execution-and-response-handling)
+    - [Container Deployment \& Observability](#container-deployment--observability)
+    - [Session Management and Security](#session-management-and-security)
+    - [Rate Limiting Flow](#rate-limiting-flow)
+    - [Error Handling Flow](#error-handling-flow)
+    - [Observability Pipeline](#observability-pipeline)
+    - [JWT Token Lifecycle](#jwt-token-lifecycle)
   - [Advanced Observability](#advanced-observability)
+    - [Distributed Tracing with OpenTelemetry](#distributed-tracing-with-opentelemetry)
+    - [Metrics and Grafana Dashboards](#metrics-and-grafana-dashboards)
   - [Production Hardening](#production-hardening)
-  - [CI/CD & Deployment](#cicd--deployment)
+    - [Reverse Proxy and HTTPS](#reverse-proxy-and-https)
+    - [Scaling and Resource Limits](#scaling-and-resource-limits)
+    - [Environment Hardening](#environment-hardening)
   - [Contributing](#contributing)
   - [FAQ / Troubleshooting](#faq--troubleshooting)
-  - [Authentication Guide](#authentication-guide)
+  - [License](#license)
+  - [This project is licensed under the MIT License.](#this-project-is-licensed-under-the-mit-license)
   - [API Endpoint Reference](#api-endpoint-reference)
-  - [API Versioning](#api-versioning)
+  - [Authentication Guide](#authentication-guide)
   - [Changelog](#changelog)
   - [Contact / Support](#contact--support)
-  - [License](#license)
   - [References](#references)
+  - [API Versioning](#api-versioning)
+  - [Documentation](#documentation)
+### Maintaining the Table of Contents
+
+The Table of Contents above is auto-generated using [markdown-toc](https://github.com/jonschlinkert/markdown-toc). To update it after editing headings, run:
+
+```sh
+npx markdown-toc -i README.md
+```
+
+This will regenerate the TOC between the `<!-- toc -->` and `<!-- tocstop -->` markers in place. You can also use the "Markdown All in One" VS Code extension for TOC management.
+
+- [BMC AMI DevX Code Pipeline MCP Server](#bmc-ami-devx-code-pipeline-mcp-server)
+  - [Configuration Notes (2025)](#configuration-notes-2025)
+    - [ESLint](#eslint)
+    - [Jest](#jest)
+    - [Logger Test Mocking](#logger-test-mocking)
+    - [Observability \& Rate Limiting](#observability--rate-limiting)
+    - [Error Handling \& Observability (2025)](#error-handling--observability-2025)
+    - [Running Tests](#running-tests)
+  - [Table of Contents](#table-of-contents)
+    - [Maintaining the Table of Contents](#maintaining-the-table-of-contents)
+  - [Features \& Architecture](#features--architecture)
+  - [Project Structure](#project-structure)
+  - [Quick Start](#quick-start)
+  - [VS Code Client Configuration](#vs-code-client-configuration)
+  - [API Usage Examples](#api-usage-examples)
+    - [Health Check](#health-check)
+    - [404/Error Handling Example](#404error-handling-example)
+    - [MCP Tool Call (JSON-RPC 2.0)](#mcp-tool-call-json-rpc-20)
+    - [SSE Notifications](#sse-notifications)
+  - [Security \& Best Practices](#security--best-practices)
+  - [Extending the Server](#extending-the-server)
+  - [Testing \& Quality](#testing--quality)
+  - [Mutation Testing with Stryker](#mutation-testing-with-stryker)
+    - [Running Mutation Tests](#running-mutation-tests)
+    - [Stryker Configuration](#stryker-configuration)
+  - [CI/CD \& Deployment](#cicd--deployment)
+  - [Documentation \& Diagrams](#documentation--diagrams)
+    - [Bearer Token Authentication Flow](#bearer-token-authentication-flow)
+    - [OpenAPI-to-MCP Tools Mapping](#openapi-to-mcp-tools-mapping)
+    - [MCP Protocol Message Flow](#mcp-protocol-message-flow)
+    - [Tool Execution and Response Handling](#tool-execution-and-response-handling)
+    - [Container Deployment \& Observability](#container-deployment--observability)
+    - [Session Management and Security](#session-management-and-security)
+    - [Rate Limiting Flow](#rate-limiting-flow)
+    - [Error Handling Flow](#error-handling-flow)
+    - [Observability Pipeline](#observability-pipeline)
+    - [JWT Token Lifecycle](#jwt-token-lifecycle)
+  - [Advanced Observability](#advanced-observability)
+    - [Distributed Tracing with OpenTelemetry](#distributed-tracing-with-opentelemetry)
+    - [Metrics and Grafana Dashboards](#metrics-and-grafana-dashboards)
+  - [Production Hardening](#production-hardening)
+    - [Reverse Proxy and HTTPS](#reverse-proxy-and-https)
+    - [Scaling and Resource Limits](#scaling-and-resource-limits)
+    - [Environment Hardening](#environment-hardening)
+  - [Contributing](#contributing)
+  - [FAQ / Troubleshooting](#faq--troubleshooting)
+  - [License](#license)
+  - [This project is licensed under the MIT License.](#this-project-is-licensed-under-the-mit-license)
+  - [API Endpoint Reference](#api-endpoint-reference)
+  - [Authentication Guide](#authentication-guide)
+  - [Changelog](#changelog)
+  - [Contact / Support](#contact--support)
+  - [References](#references)
+  - [API Versioning](#api-versioning)
+  - [Documentation](#documentation)
+<!-- tocstop -->
 
 ---
 
@@ -149,7 +286,7 @@ A production-ready, secure, and extensible MCP server BMC AMI DevX Code Pipeline
 ---
 
 
-  # Removed duplicate VS Code Client Configuration section
+
 
 ## Quick Start
 
@@ -159,6 +296,7 @@ A production-ready, secure, and extensible MCP server BMC AMI DevX Code Pipeline
    ```
 2. **Configure environment:**
    - Copy `.env.example` to `.env` and set values (see below for example).
+
    ```env
    NODE_ENV=development
    PORT=3000
@@ -173,8 +311,9 @@ A production-ready, secure, and extensible MCP server BMC AMI DevX Code Pipeline
    ```sh
    docker-compose up --build
    ```
-   - The app will be available at http://localhost:3000
-   - Healthcheck: http://localhost:3000/healthz
+
+   - The app will be available at [http://localhost:3000](http://localhost:3000)
+   - Healthcheck: [http://localhost:3000/healthz](http://localhost:3000/healthz)
 5. **Build for production:**
    ```sh
    npm run build
@@ -187,23 +326,32 @@ A production-ready, secure, and extensible MCP server BMC AMI DevX Code Pipeline
 ---
 
 
+
 1. **Obtain a JWT Token:**  
    Use your authentication provider or the server's `/auth/login` endpoint (if enabled):
 
    ```sh
+   # Example: obtain a JWT token (replace with your actual credentials)
+   curl -X POST http://localhost:3000/auth/login \
+     -H "Content-Type: application/json" \
+     -d '{"username":"user","password":"pass"}'
    ```
+
 ---
 
 ## VS Code Client Configuration
 
+
 To connect to this MCP server from VS Code as a client:
 2. Add or update the following settings to configure the MCP server endpoint and authentication:
 
-  // MCP server base URL
+```json
+{
   "mcp.serverUrl": "http://localhost:3000/v1",
-  // JWT token for authentication (replace with your actual token)
   "mcp.jwtToken": "<your-jwt-token>",
   // Optionally, set request timeout (in ms)
+}
+```
 
 - **OpenAPI-to-MCP Tool Mapping:**
   - Auto-generates MCP tool endpoints from `config/openapi.json`.
@@ -238,7 +386,8 @@ To connect to this MCP server from VS Code as a client:
   - Multi-stage Dockerfile and Docker Compose
 - **Extensibility:**
   - Add new tools by editing `config/openapi.json`
-```
+
+```env
 PORT=3000
 JWT_SECRET=your_jwt_secret
 ```
@@ -247,18 +396,24 @@ JWT_SECRET=your_jwt_secret
 
 ## API Usage Examples
 
+
 ### Health Check
+
 ```sh
 curl http://localhost:3000/healthz
 ```
 
+
 ### 404/Error Handling Example
+
 ```sh
 curl http://localhost:3000/nonexistent
 # Returns 404 Not Found with error JSON
 ```
 
+
 ### MCP Tool Call (JSON-RPC 2.0)
+
 ```sh
 curl -X POST http://localhost:3000/tools/call \
   -H "Authorization: Bearer <JWT>" \
@@ -266,7 +421,9 @@ curl -X POST http://localhost:3000/tools/call \
   -d '{"jsonrpc":"2.0","method":"tools/call","params":{...},"id":1}'
 ```
 
+
 ### SSE Notifications
+
 ```sh
 curl http://localhost:3000/notifications/tools/list_changed -H "Accept: text/event-stream"
 ```
@@ -282,6 +439,8 @@ curl http://localhost:3000/notifications/tools/list_changed -H "Accept: text/eve
 - CORS and helmet.js for HTTP security
 - Rate limiting and request size limits
 - Audit logging and error monitoring
+- **HTTPS is enforced in production via reverse proxy (see Production Hardening).**
+- **Secrets and sensitive config are managed via `.env` files. Never commit secrets to version control.**
 - See `PROMPT.md` for full security requirements
 
 ---
@@ -292,6 +451,7 @@ curl http://localhost:3000/notifications/tools/list_changed -H "Accept: text/eve
 - Handlers auto-generated and registered
 - Plugin/middleware system for custom logic
 - See `PROMPT.md` for extensibility framework
+- **Code generation:** Use the provided scripts/CLI tools (see `scripts/` or `package.json` scripts) to auto-generate TypeScript types and handler templates from OpenAPI specs.
 
 ---
 
@@ -312,18 +472,28 @@ This project uses [Stryker](https://stryker-mutator.io/) for mutation testing to
 
 ### Running Mutation Tests
 
+
 1. Install Stryker and dependencies (if not already installed):
+
    ```sh
    npm install --save-dev @stryker-mutator/core @stryker-mutator/typescript-checker @stryker-mutator/jest-runner
    ```
+
 2. Run mutation tests:
+
    ```sh
    npx stryker run
    ```
+
+
 3. View the mutation report:
    Open the generated HTML report at `reports/mutation/mutation.html` for detailed results.
 
+**Note:** The current mutation score is 85%. Some low-level error branches and legacy code are not fully covered due to complexity or low risk. See the mutation report for details.
+
+
 ### Stryker Configuration
+
 - The configuration is in `stryker.conf.js`.
 - Thresholds are set to break the build if the mutation score is below 50%.
 
@@ -340,7 +510,9 @@ This project uses [Stryker](https://stryker-mutator.io/) for mutation testing to
 
 ## Documentation & Diagrams
 
+
 ### Bearer Token Authentication Flow
+
 ```mermaid
 sequenceDiagram
     participant Client
@@ -361,7 +533,9 @@ sequenceDiagram
     end
 ```
 
+
 ### OpenAPI-to-MCP Tools Mapping
+
 ```mermaid
 flowchart TD
     A[openapi.json] --> B[Parse OpenAPI]
@@ -372,7 +546,9 @@ flowchart TD
     F --> G[Expose /tools/list, /tools/call]
 ```
 
+
 ### MCP Protocol Message Flow
+
 ```mermaid
 sequenceDiagram
     participant Client
@@ -386,7 +562,9 @@ sequenceDiagram
     end
 ```
 
+
 ### Tool Execution and Response Handling
+
 ```mermaid
 sequenceDiagram
     participant Client
@@ -403,7 +581,9 @@ sequenceDiagram
     end
 ```
 
+
 ### Container Deployment & Observability
+
 ```mermaid
 flowchart TD
     subgraph Docker Compose
@@ -417,7 +597,9 @@ flowchart TD
     App --expose--> Internet
 ```
 
+
 ### Session Management and Security
+
 ```mermaid
 sequenceDiagram
     participant Client
@@ -431,7 +613,9 @@ sequenceDiagram
     end
 ```
 
+
 ### Rate Limiting Flow
+
 ```mermaid
 sequenceDiagram
     participant Client
@@ -446,7 +630,9 @@ sequenceDiagram
     end
 ```
 
+
 ### Error Handling Flow
+
 ```mermaid
 sequenceDiagram
     participant Client
@@ -464,7 +650,9 @@ sequenceDiagram
     end
 ```
 
+
 ### Observability Pipeline
+
 ```mermaid
 flowchart LR
     App -->|Traces| Jaeger
@@ -473,7 +661,9 @@ flowchart LR
     Jaeger --> Grafana
 ```
 
+
 ### JWT Token Lifecycle
+
 ```mermaid
 sequenceDiagram
     participant User
@@ -499,14 +689,19 @@ sequenceDiagram
 - The server integrates [OpenTelemetry](https://opentelemetry.io/) for distributed tracing.
 - Traces are exported in OTLP format and can be sent to Jaeger, Zipkin, or any compatible backend.
 - **How to view traces:**
+
   1. Run a local Jaeger instance:
+
      ```sh
      docker run -d --name jaeger -e COLLECTOR_ZIPKIN_HOST_PORT=:9411 -p 16686:16686 -p 4317:4317 -p 4318:4318 -p 14268:14268 jaegertracing/all-in-one:latest
      ```
+
   2. Set `OTEL_EXPORTER_OTLP_ENDPOINT` in your `.env`:
+
      ```env
      OTEL_EXPORTER_OTLP_ENDPOINT=http://localhost:4317
      ```
+
   3. Start the server and generate traffic.
   4. Open [http://localhost:16686](http://localhost:16686) to view traces.
 
@@ -518,7 +713,9 @@ sequenceDiagram
 
 - Prometheus metrics are exposed at `/metrics`.
 - To visualize metrics in Grafana:
+
   1. Run Prometheus and Grafana (example Docker Compose):
+
      ```yaml
      version: '3'
      services:
@@ -533,10 +730,15 @@ sequenceDiagram
          ports:
            - "3001:3000"
      ```
+
   2. Add a Prometheus data source in Grafana pointing to `http://localhost:9090`.
+
   3. Import example dashboards (see `docs/grafana/` for JSON files):
+
      - HTTP request rate, error rate, latency, and custom business metrics.
+
   4. Example Prometheus scrape config:
+
      ```yaml
      scrape_configs:
        - job_name: 'mcp-server'
@@ -548,10 +750,13 @@ sequenceDiagram
 
 ## Production Hardening
 
+
 ### Reverse Proxy and HTTPS
+
 - Deploy behind a reverse proxy (e.g., NGINX, Traefik, AWS ALB) for TLS termination, request buffering, and DDoS protection.
 - Always use HTTPS in production. Redirect HTTP to HTTPS at the proxy level.
 - Example NGINX config:
+
   ```nginx
   server {
     listen 443 ssl;
@@ -568,13 +773,17 @@ sequenceDiagram
   }
   ```
 
+
 ### Scaling and Resource Limits
+
 - Use Docker resource limits or Kubernetes requests/limits to prevent resource exhaustion.
 - Run multiple replicas behind a load balancer for high availability.
 - Use a process manager (e.g., PM2) or container orchestrator (Kubernetes, ECS) for automatic restarts and health checks.
 - Monitor memory and CPU usage; set alerts for abnormal patterns.
 
+
 ### Environment Hardening
+
 - Set `NODE_ENV=production` in production environments.
 - Use strong, unique secrets for `JWT_SECRET` and other credentials.
 - Restrict network access to the app and database (firewalls, security groups).
@@ -585,9 +794,11 @@ sequenceDiagram
 
 ---
 
+
 ## Contributing
 
 We welcome contributions! Please open issues or pull requests. To contribute:
+
 - Fork the repo and create a feature branch.
 - Run `npm install` and `npm test` to ensure all tests pass.
 - Follow the code style (lint/format/typecheck scripts).
@@ -598,30 +809,34 @@ We welcome contributions! Please open issues or pull requests. To contribute:
 
 ## FAQ / Troubleshooting
 
+
 **Q: Docker Compose fails to start?**
+
 - Ensure `docker-compose.yml` exists in the project root.
 - Check for port conflicts (default: 3000).
 - Ensure Docker is running and you have permissions.
 
 **Q: JWT errors?**
+
 - Ensure your `.env` has a valid `JWT_SECRET` and matches the signing algorithm.
 
 **Q: How do I access API docs?**
+
 - Visit `/docs` (Swagger UI/Redoc) when the server is running.
 
 ---
 
 ## License
-
-
+This project is licensed under the [MIT License](./LICENSE).
 ---
 
-## Quick Start Example
-
-Start the server (see [Quick Start](#quick-start)), then call the API:
+- Open an [issue](https://github.com/markbsigler/CodePipeline-MCP/issues)
+- Join the discussion on [GitHub Discussions](https://github.com/markbsigler/CodePipeline-MCP/discussions)
+- Email: <mark.sigler@protonmail.com>
 
 ```sh
 curl -X POST http://localhost:3000/v1/tools/call \
+If the changelog is not up to date, see the GitHub Releases page for the latest information.
   -H "Authorization: Bearer <your-jwt-token>" \
   -H "Content-Type: application/json" \
   -d '{"method":"toolName","params":{"key":"value"}}'
@@ -633,16 +848,16 @@ Replace `<your-jwt-token>` with a valid token (see [Security & Best Practices](#
 
 ## API Endpoint Reference
 
-| Endpoint                | Method | Description                        |
-|-------------------------|--------|------------------------------------|
-| `/v1/tools/list`        | POST   | List available tools               |
-| `/v1/tools/call`        | POST   | Call a tool                        |
-| `/v1/notifications`     | GET    | Stream notifications (SSE)         |
-| `/healthz`              | GET    | Health check                       |
-| `/metrics`              | GET    | Prometheus metrics                 |
-| `/docs`                 | GET    | API documentation (Swagger/Redoc)  |
+| Endpoint                | Method | Description                                 |
+|-------------------------|--------|---------------------------------------------|
+| `/v1/tools/list`        | POST   | List available MCP tools                    |
+| `/v1/tools/call`        | POST   | Call a specific MCP tool                    |
+| `/v1/notifications`     | GET    | Stream notifications (SSE)                  |
+| `/healthz`              | GET    | Health check (liveness probe)               |
+| `/metrics`              | GET    | Prometheus metrics for monitoring           |
+| `/docs`                 | GET    | API documentation (Swagger/Redoc UI)        |
 
-See the [OpenAPI spec](./config/openapi.json) or `/docs` endpoint for full details.
+See the [OpenAPI spec](./config/openapi.json) or [Swagger UI](/docs) for full details and try-it-out functionality.
 
 ---
 
@@ -650,6 +865,7 @@ See the [OpenAPI spec](./config/openapi.json) or `/docs` endpoint for full detai
 
 1. **Obtain a JWT Token:**  
    Use your authentication provider or the server's `/auth/login` endpoint (if enabled):
+
 
    ```sh
    curl -X POST http://localhost:3000/auth/login \
@@ -662,7 +878,8 @@ See the [OpenAPI spec](./config/openapi.json) or `/docs` endpoint for full detai
 2. **Use the Token:**  
    Add the token to the `Authorization` header for all API requests:
 
-   ```
+
+   ```text
    Authorization: Bearer <your-jwt-token>
    ```
 
@@ -678,11 +895,13 @@ See [CHANGELOG.md](./CHANGELOG.md) for release notes and recent changes.
 
 - Open an [issue](https://github.com/<your-org>/<your-repo>/issues)
 - Join the discussion on [GitHub Discussions](https://github.com/<your-org>/<your-repo>/discussions)
-- Email: support@example.com
+- Email: <support@example.com>
 
 ---
 
+
 ## References
+
 - [PROMPT.md](./PROMPT.md) – Full requirements and implementation details
 - [config/openapi.json](./config/openapi.json) – OpenAPI spec for tool mapping
 - [.env.example](./.env.example) – Example environment variables
