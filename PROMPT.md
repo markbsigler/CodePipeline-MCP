@@ -1,5 +1,58 @@
 # MCP Server TypeScript Node Project Generation Prompt
 
+> **For LLM/Copilot Agents:**  
+> This prompt is designed for full project bootstrapping. Follow all steps and requirements exactly.  
+> **Do not skip any section.**  
+> All code, configuration, and documentation must be generated so that a developer can clone, install, build, test, and run the project (including Docker and CI) with no manual steps omitted.
+
+## Project Bootstrap Instructions (Reproducibility Checklist)
+
+1. **Prerequisites**
+   - Node.js v20+ and npm v9+ (install from [nodejs.org](https://nodejs.org/))
+   - Docker and Docker Compose (install from [docker.com](https://www.docker.com/get-started/))
+   - Git
+   - (Optional) Stryker for mutation testing: `npm install -g stryker-cli`
+
+2. **Clone and Install**
+   ```sh
+   git clone <REPO_URL>
+   cd <PROJECT_DIR>
+   npm install
+   cp .env.example .env
+   ```
+
+3. **Run and Test**
+   - Start dev server: `npm run dev`
+   - Run tests: `npm test`
+   - Run mutation tests: `npx stryker run`
+   - Lint/format: `npm run lint && npm run format`
+   - Build: `npm run build`
+   - Start production: `npm start`
+
+4. **Docker**
+   - Build and run: `docker-compose up --build`
+   - Stop: `docker-compose down`
+
+5. **OpenAPI Spec**
+   - Validate: `npm run openapi:validate`
+   - Regenerate clients: `npm run openapi:client`
+
+6. **CI/CD**
+   - Configure GitHub Actions secrets if needed (see README).
+   - Push to trigger CI: `git push`
+
+7. **FAQ/Troubleshooting**
+   - See README for common issues (ports, Docker, JWT, etc).
+
+8. **Extending**
+   - To add new endpoints/tools, edit `config/openapi.json` and follow documented process.
+
+9. **Verification**
+   - Ensure all tests pass, coverage is reported, and the app runs in both local and Docker environments.
+   - All endpoints and tools must have example requests/responses in README and API docs.
+
+---
+
 Generate a production-ready TypeScript/Node.js MCP server project with the following best practices and security mitigations. All requirements below are mandatory unless otherwise noted.
 
 **Key additional requirements:**
