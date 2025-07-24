@@ -1,6 +1,5 @@
-import { json } from 'body-parser';
 import cors from 'cors';
-import express, { Application } from 'express';
+import express, { Application, Router, Request, Response, NextFunction, json } from 'express';
 import helmet from 'helmet';
 
 import {
@@ -27,7 +26,7 @@ export function createApp(): Application {
   app.use(requestLogger); // Log all requests
 
   // Health check endpoint
-  app.get('/healthz', (_req, res): void => { res.status(200).json({ status: 'ok' }); });
+  app.get('/healthz', (_req: Request, res: Response): void => { res.status(200).json({ status: 'ok' }); });
 
   app.use(authenticateJWT); // Protect all routes after this line
   app.use(sessionMiddleware); // Add session management after authentication
@@ -39,10 +38,10 @@ export function createApp(): Application {
 
   // Load OpenAPI and MCP tool definitions at startup
   const openapi = loadOpenApiSpec('config/openapi.json');
-  const mcpTools = extractMcpToolsFromOpenApi(openapi);
+  const mcpTools = extractMcpToolsFromOpenApi(openapi as Record<string, unknown>);
 
   // Versioned API router (v1)
-  const v1 = express.Router();
+  const v1 = Router();
 
   // MCP protocol endpoints under /v1/mcp
   v1.post('/mcp/tools/list', toolsListHandler(mcpTools));
@@ -63,7 +62,7 @@ export function createApp(): Application {
   );
 
   // Add a catch-all 404 handler before the error handler
-  app.use((_req, _res, next): void => {
+  app.use((_req: Request, _res: Response, next: NextFunction): void => {
     const err = new Error('Not Found') as Error & { status?: number };
     err.status = 404;
     next(err);

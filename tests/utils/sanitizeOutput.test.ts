@@ -37,7 +37,7 @@ describe('sanitizeOutput', () => {
       amp: 'a & b',
       quote: '"single\' and `backtick`',
     };
-    const result = sanitizeOutput(input);
+    const result = sanitizeOutput(input) as any;
     expect(result.html).toBe(
       '&lt;script&gt;alert(&quot;xss&quot;)&lt;/script&gt;',
     );
@@ -54,7 +54,7 @@ describe('sanitizeOutput', () => {
         deeper: { secret: 'bad', value: '<>' },
       },
     };
-    const result = sanitizeOutput(input);
+    const result = sanitizeOutput(input) as any;
     expect(result.arr[0]).toEqual({ safe: 'ok' });
     expect(result.arr[1]).toBe('&lt;tag&gt;');
     expect(result.nested.safe).toBe('ok');
@@ -71,19 +71,17 @@ describe('sanitizeOutput', () => {
     }
     const result = sanitizeOutput(deep);
     // At depth 21, value should be undefined
-    let d = result;
-    let count = 0;
+    let d = result as any;
     while (
       d &&
       typeof d === 'object' &&
       Object.keys(d).length > 0 &&
-      d.nest !== undefined
+      (d as any).nest !== undefined
     ) {
-      d = d.nest;
-      count++;
+      d = (d as any).nest;
     }
     // The robust logic will return undefined for the deepest nest, so count may be less than 20
-    expect(typeof d === 'object' ? d.nest : d).toBeUndefined();
+    expect(typeof d === 'object' ? (d as any).nest : d).toBeUndefined();
   });
 
   it('returns undefined exactly at max recursion depth', () => {
@@ -94,18 +92,16 @@ describe('sanitizeOutput', () => {
       curr = curr.nest;
     }
     const result = sanitizeOutput(deep);
-    let d = result;
-    let count = 0;
+    let d = result as any;
     while (
       d &&
       typeof d === 'object' &&
       Object.keys(d).length > 0 &&
-      d.nest !== undefined
+      (d as any).nest !== undefined
     ) {
-      d = d.nest;
-      count++;
+      d = (d as any).nest;
     }
-    expect(typeof d === 'object' ? d.nest : d).toBeUndefined();
+    expect(typeof d === 'object' ? (d as any).nest : d).toBeUndefined();
   });
 
   it('returns primitives unchanged (except strings)', () => {
@@ -124,15 +120,12 @@ describe('sanitizeOutput', () => {
       curr = curr.nest;
     }
     const result = sanitizeOutput(deep);
-    let d = result;
-    let count = 0;
-    while (d && d.nest !== undefined) {
+    let d = result as any;
+    while (d && (d as any).nest !== undefined) {
       // eslint-disable-next-line no-console
-      console.log('Depth', count, JSON.stringify(d));
-      d = d.nest;
-      count++;
+      d = (d as any).nest;
     }
     // eslint-disable-next-line no-console
-    console.log('Final depth', count, JSON.stringify(d));
+    console.log('Final depth', JSON.stringify(d));
   });
 });

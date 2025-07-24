@@ -1,7 +1,12 @@
+
+jest.mock('jsonwebtoken', () => ({
+  verify: jest.fn(),
+}));
+import { verify } from 'jsonwebtoken';
+import { authenticateJWT } from 'middleware/auth';
+
 process.env.JWT_SECRET = 'testsecret';
 process.env.JWT_ISSUER = 'testissuer';
-import jwt from 'jsonwebtoken';
-import { authenticateJWT } from 'middleware/auth';
 
 describe('authenticateJWT', () => {
   let req: any, res: any, next: any;
@@ -45,9 +50,9 @@ describe('authenticateJWT', () => {
   it('should call next and set req.user if token is valid', () => {
     req.headers['authorization'] = 'Bearer validtoken';
     const payload = { sub: 'user1' };
-    jest.spyOn(jwt, 'verify').mockReturnValue(payload);
+    (verify as jest.Mock).mockReturnValue(payload);
     authenticateJWT(req, res, next);
-    expect(jwt.verify).toHaveBeenCalledWith('validtoken', 'testsecret', {
+    expect(verify).toHaveBeenCalledWith('validtoken', 'testsecret', {
       issuer: 'testissuer',
     });
     expect(req.user).toEqual(payload);
@@ -56,7 +61,7 @@ describe('authenticateJWT', () => {
 
   it('should return 401 and not call next if token is invalid', () => {
     req.headers['authorization'] = 'Bearer invalidtoken';
-    jest.spyOn(jwt, 'verify').mockImplementation(() => {
+    (verify as jest.Mock).mockImplementation(() => {
       throw new Error('bad token');
     });
     authenticateJWT(req, res, next);
@@ -71,7 +76,7 @@ describe('authenticateJWT', () => {
     process.env.NODE_ENV = 'production';
     req.headers['authorization'] = 'Bearer invalidtoken';
     const spy = jest.spyOn(console, 'error').mockImplementation(() => {});
-    jest.spyOn(jwt, 'verify').mockImplementation(() => {
+    (verify as jest.Mock).mockImplementation(() => {
       throw new Error('bad token');
     });
     authenticateJWT(req, res, next);

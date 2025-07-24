@@ -1,5 +1,5 @@
 import express, { Request, Response } from 'express';
-import jwt from 'jsonwebtoken';
+import { sign } from 'jsonwebtoken';
 import request from 'supertest';
 
 import { authenticateJWT } from '../../src/middleware/auth';
@@ -45,7 +45,7 @@ describe('authenticateJWT middleware', () => {
   });
 
   it('should return 401 for an expired token', async () => {
-    const expiredToken = jwt.sign({ sub: 'test-user' }, JWT_SECRET, {
+    const expiredToken = sign({ sub: 'test-user' }, JWT_SECRET, {
       issuer: JWT_ISSUER,
       expiresIn: '-1s', // Expires 1 second ago
     });
@@ -61,7 +61,7 @@ describe('authenticateJWT middleware', () => {
 
   it('should call next() and attach user payload for a valid token', async () => {
     const userPayload = { sub: 'test-user', role: 'admin' };
-    const validToken = jwt.sign(userPayload, JWT_SECRET, {
+    const validToken = sign(userPayload, JWT_SECRET, {
       issuer: JWT_ISSUER,
       expiresIn: '1h',
     });

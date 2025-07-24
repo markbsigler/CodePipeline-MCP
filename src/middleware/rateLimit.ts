@@ -1,5 +1,5 @@
-import { Request , Response, NextFunction } from 'express';
-import rateLimit, { RateLimitRequestHandler, Options } from 'express-rate-limit';
+import { Request, Response, NextFunction } from 'express';
+import { rateLimit, RateLimitRequestHandler, Options } from 'express-rate-limit';
 
 // Example config: { '/v1/mcp/tools/list': { max: 30 }, '/v1/mcp/tools/call': { max: 10 } }
 const endpointRateLimits: Record<string, { max: number }> = {
@@ -7,8 +7,6 @@ const endpointRateLimits: Record<string, { max: number }> = {
   '/v1/mcp/tools/call': { max: 10 },
 };
 
-// Factory to create a rate limiter for a given endpoint and user role
-import rateLimit from 'express-rate-limit';
 
 function createRateLimiter(max: number): RateLimitRequestHandler {
   return rateLimit({

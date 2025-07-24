@@ -1,6 +1,12 @@
-import express from 'express';
-import { toolsListHandler, toolsCallHandler , notificationsListChangedHandler } from 'handlers/mcpHandlers';
+
+import express, { json } from 'express';
+import { toolsListHandler, toolsCallHandler, notificationsListChangedHandler } from 'handlers/mcpHandlers';
 import request from 'supertest';
+import { toolZodSchemas } from 'types/toolZodSchemas';
+import * as sanitize from 'utils/sanitizeOutput';
+import * as streamStateStore from 'utils/streamStateStore';
+
+import { immediateSetTimeout } from '../../utils/immediateSetTimeout';
 
 describe('toolsListHandler', function toolsListHandlerDescribe(): void {
   const mcpTools = Array.from({ length: 50 }, (_, i) => ({
@@ -53,7 +59,7 @@ describe('toolsCallHandler', function toolsCallHandlerDescribe(): void {
 
   beforeEach(function beforeEachHook(): void {
     app = express();
-    app.use(express.json());
+    app.use(json());
     app.post('/call', toolsCallHandler(mcpTools, openapi));
   });
 
@@ -73,11 +79,6 @@ describe('toolsCallHandler', function toolsCallHandlerDescribe(): void {
     expect(res.body.error).toMatch(/validation schema not found/i);
   });
 });
-import { toolZodSchemas } from 'types/toolZodSchemas';
-import * as sanitize from 'utils/sanitizeOutput';
-import * as streamStateStore from 'utils/streamStateStore';
-
-import { immediateSetTimeout } from '../../utils/immediateSetTimeout';
 
 const mockRes = function mockRes(): any {
   const res: any = {};

@@ -1,7 +1,8 @@
-// OpenTelemetry and Prometheus metrics setup
 import { getNodeAutoInstrumentations } from '@opentelemetry/auto-instrumentations-node';
 import { ExpressInstrumentation } from '@opentelemetry/instrumentation-express';
 import { NodeSDK } from '@opentelemetry/sdk-node';
+import { Request, Response, NextFunction, Application } from 'express';
+import { Counter, register } from 'prom-client';
 
 /**
  * Initializes observability (OpenTelemetry) for the app.
@@ -22,16 +23,11 @@ export function initObservability(): void {
   }
 }
 
-// prom-client for custom metrics
-import client from 'prom-client';
-
-export const httpRequestCounter = new client.Counter({
+export const httpRequestCounter = new Counter({
   name: 'http_requests_total',
   help: 'Total HTTP requests',
   labelNames: ['method', 'route', 'status'],
 });
-
-import { Request, Response, NextFunction, Application } from 'express';
 
 export function metricsMiddleware(req: Request, res: Response, next: NextFunction): void {
   res.on('finish', () => {
@@ -47,8 +43,8 @@ export function metricsMiddleware(req: Request, res: Response, next: NextFunctio
 
 
 export function exposePrometheusMetrics(app: Application): void {
-app.get('/metrics', async function metricsHandler(_req: Request, res: Response): Promise<void> {
-    res.set('Content-Type', client.register.contentType);
-    res.end(await client.register.metrics());
+  app.get('/metrics', async function metricsHandler(_req: Request, res: Response): Promise<void> {
+    res.set('Content-Type', register.contentType);
+    res.end(await register.metrics());
   });
 }

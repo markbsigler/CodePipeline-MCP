@@ -1,8 +1,8 @@
 import fs from 'fs';
 import path from 'path';
 
-import pino from 'pino';
-import pinoHttp from 'pino-http';
+import { pino, destination } from 'pino';
+import { pinoHttp } from 'pino-http';
 
 const logDir = process.env.LOG_DIR || 'logs';
 if (!fs.existsSync(logDir)) {
@@ -20,7 +20,7 @@ const logger = pino(
           }
         : undefined,
   },
-  pino.destination({
+  destination({
     dest: path.join(logDir, 'app.log'),
     minLength: 4096,
     sync: false,
