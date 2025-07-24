@@ -72,11 +72,6 @@
     "typescript-eslint": "^8.35.1"
   },
   "license": "MIT",
-  "lint-staged": {
-    "*.ts": [
-      "eslint --fix --max-warnings 0",
-      "NODE_ENV=test jest --bail --findRelatedTests --passWithNoTests"
-    ]
-  },
+
   "type": "module"
 }

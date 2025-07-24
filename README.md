@@ -11,79 +11,7 @@ A production-ready, secure, and extensible MCP server BMC AMI DevX Code Pipeline
 
 ---
 
-## Configuration Notes (2025)
 
-
-### ESLint
-
-- Migrated to flat config (`eslint.config.js`).
-- `.eslintrc.json` and `.eslintignore` are deprecated and no longer used.
-
-
-### Jest
-
-- All Jest configuration is now in `jest.config.cjs`.
-- `jest.config.js` is deprecated and only present as a stub.
-
-
-
-### Logger Test Mocking
-
-- Logger tests (`tests/utils/logger.test.ts`) now mock both `pino` and `pino-http`.
-- `pino.destination` is also mocked to avoid file descriptor errors.
-- Example:
-
-```typescript
-jest.mock('pino', () => Object.assign(() => ({ info: jest.fn(), error: jest.fn() }), { destination: jest.fn(() => process.stdout) }));
-jest.mock('pino-http', () => () => ({ logger: { info: jest.fn(), error: jest.fn() } }));
-```
-
-- This ensures logger tests pass in all environments.
-
-
-
-### Observability & Rate Limiting
-
-- New observability and rate limiting middleware integrated into the Express app (`src/index.ts`).
-- `/metrics` endpoint and tracing are now available.
-
-
-
-
-### Error Handling & Observability (2025)
-
-- **Server Startup:**
-  - All error branches in server startup (`startServer.ts`) are now robustly handled and logged.
-  - Errors in `createApp` and `app.listen` are caught, logged with `console.error`, and do not crash the process.
-
-- **Observability Initialization:**
-  - Errors during OpenTelemetry `NodeSDK` initialization are caught and logged.
-  - The server continues to run even if observability fails to initialize.
-
-- **Testing:**
-  - All error-handling branches for startup and observability are now fully covered by Jest tests.
-  - Tests use Jest spies and module mocks to simulate and verify error conditions and logging.
-  - Achieves 98%+ overall coverage, 100% for critical files.
-
-
-
-### Running Tests
-
-- Run all tests with:
-
-```sh
-npm test
-```
-
-- To check coverage:
-
-```sh
-npm test -- --coverage
-```
-
-- All tests should pass, including error-handling and logging verification for startup and observability.
-
----
 
 
 
@@ -91,18 +19,9 @@ npm test -- --coverage
 
 ## Table of Contents
 
-
 <!-- toc -->
 - [BMC AMI DevX Code Pipeline MCP Server](#bmc-ami-devx-code-pipeline-mcp-server)
-  - [Configuration Notes (2025)](#configuration-notes-2025)
-    - [ESLint](#eslint)
-    - [Jest](#jest)
-    - [Logger Test Mocking](#logger-test-mocking)
-    - [Observability \& Rate Limiting](#observability--rate-limiting)
-    - [Error Handling \& Observability (2025)](#error-handling--observability-2025)
-    - [Running Tests](#running-tests)
   - [Table of Contents](#table-of-contents)
-    - [Maintaining the Table of Contents](#maintaining-the-table-of-contents)
   - [Features \& Architecture](#features--architecture)
   - [Project Structure](#project-structure)
   - [Quick Start](#quick-start)
@@ -115,9 +34,9 @@ npm test -- --coverage
   - [Security \& Best Practices](#security--best-practices)
   - [Extending the Server](#extending-the-server)
   - [Testing \& Quality](#testing--quality)
-  - [Mutation Testing with Stryker](#mutation-testing-with-stryker)
-    - [Running Mutation Tests](#running-mutation-tests)
-    - [Stryker Configuration](#stryker-configuration)
+    - [Mutation Testing with Stryker](#mutation-testing-with-stryker)
+      - [Running Mutation Tests](#running-mutation-tests)
+      - [Stryker Configuration](#stryker-configuration)
   - [CI/CD \& Deployment](#cicd--deployment)
   - [Documentation \& Diagrams](#documentation--diagrams)
     - [Bearer Token Authentication Flow](#bearer-token-authentication-flow)
@@ -140,76 +59,10 @@ npm test -- --coverage
   - [Contributing](#contributing)
   - [FAQ / Troubleshooting](#faq--troubleshooting)
   - [License](#license)
-  - [This project is licensed under the MIT License.](#this-project-is-licensed-under-the-mit-license)
+  - [Contact / Support](#contact--support)
   - [API Endpoint Reference](#api-endpoint-reference)
   - [Authentication Guide](#authentication-guide)
   - [Changelog](#changelog)
-  - [Contact / Support](#contact--support)
-  - [References](#references)
-  - [API Versioning](#api-versioning)
-  - [Documentation](#documentation)
-### Maintaining the Table of Contents
-
-The Table of Contents above is auto-generated using [markdown-toc](https://github.com/jonschlinkert/markdown-toc). To update it after editing headings, run:
-
-```sh
-npx markdown-toc -i README.md
-```
-
-This will regenerate the TOC between the `<!-- toc -->` and `<!-- tocstop -->` markers in place. You can also use the "Markdown All in One" VS Code extension for TOC management.
-
-- [BMC AMI DevX Code Pipeline MCP Server](#bmc-ami-devx-code-pipeline-mcp-server)
-  - [Configuration Notes (2025)](#configuration-notes-2025)
-    - [ESLint](#eslint)
-    - [Jest](#jest)
-    - [Logger Test Mocking](#logger-test-mocking)
-    - [Observability \& Rate Limiting](#observability--rate-limiting)
-    - [Error Handling \& Observability (2025)](#error-handling--observability-2025)
-    - [Running Tests](#running-tests)
-  - [Table of Contents](#table-of-contents)
-    - [Maintaining the Table of Contents](#maintaining-the-table-of-contents)
-  - [Features \& Architecture](#features--architecture)
-  - [Project Structure](#project-structure)
-  - [Quick Start](#quick-start)
-  - [VS Code Client Configuration](#vs-code-client-configuration)
-  - [API Usage Examples](#api-usage-examples)
-    - [Health Check](#health-check)
-    - [404/Error Handling Example](#404error-handling-example)
-    - [MCP Tool Call (JSON-RPC 2.0)](#mcp-tool-call-json-rpc-20)
-    - [SSE Notifications](#sse-notifications)
-  - [Security \& Best Practices](#security--best-practices)
-  - [Extending the Server](#extending-the-server)
-  - [Testing \& Quality](#testing--quality)
-  - [Mutation Testing with Stryker](#mutation-testing-with-stryker)
-    - [Running Mutation Tests](#running-mutation-tests)
-    - [Stryker Configuration](#stryker-configuration)
-  - [CI/CD \& Deployment](#cicd--deployment)
-  - [Documentation \& Diagrams](#documentation--diagrams)
-    - [Bearer Token Authentication Flow](#bearer-token-authentication-flow)
-    - [OpenAPI-to-MCP Tools Mapping](#openapi-to-mcp-tools-mapping)
-    - [MCP Protocol Message Flow](#mcp-protocol-message-flow)
-    - [Tool Execution and Response Handling](#tool-execution-and-response-handling)
-    - [Container Deployment \& Observability](#container-deployment--observability)
-    - [Session Management and Security](#session-management-and-security)
-    - [Rate Limiting Flow](#rate-limiting-flow)
-    - [Error Handling Flow](#error-handling-flow)
-    - [Observability Pipeline](#observability-pipeline)
-    - [JWT Token Lifecycle](#jwt-token-lifecycle)
-  - [Advanced Observability](#advanced-observability)
-    - [Distributed Tracing with OpenTelemetry](#distributed-tracing-with-opentelemetry)
-    - [Metrics and Grafana Dashboards](#metrics-and-grafana-dashboards)
-  - [Production Hardening](#production-hardening)
-    - [Reverse Proxy and HTTPS](#reverse-proxy-and-https)
-    - [Scaling and Resource Limits](#scaling-and-resource-limits)
-    - [Environment Hardening](#environment-hardening)
-  - [Contributing](#contributing)
-  - [FAQ / Troubleshooting](#faq--troubleshooting)
-  - [License](#license)
-  - [This project is licensed under the MIT License.](#this-project-is-licensed-under-the-mit-license)
-  - [API Endpoint Reference](#api-endpoint-reference)
-  - [Authentication Guide](#authentication-guide)
-  - [Changelog](#changelog)
-  - [Contact / Support](#contact--support)
   - [References](#references)
   - [API Versioning](#api-versioning)
   - [Documentation](#documentation)
@@ -291,11 +144,13 @@ This will regenerate the TOC between the `<!-- toc -->` and `<!-- tocstop -->` m
 ## Quick Start
 
 1. **Install dependencies:**
+
    ```sh
    npm install
    ```
 2. **Configure environment:**
    - Copy `.env.example` to `.env` and set values (see below for example).
+
 
    ```env
    NODE_ENV=development
@@ -303,22 +158,28 @@ This will regenerate the TOC between the `<!-- toc -->` and `<!-- tocstop -->` m
    JWT_SECRET=your_jwt_secret
    ```
 3. **Run in development:**
+
    ```sh
    npm run dev
-
    ```
+
 4. **Run with Docker Compose:**
+
    ```sh
    docker-compose up --build
    ```
 
    - The app will be available at [http://localhost:3000](http://localhost:3000)
    - Healthcheck: [http://localhost:3000/healthz](http://localhost:3000/healthz)
+
 5. **Build for production:**
+
    ```sh
    npm run build
    ```
+
 6. **Run tests:**
+
    ```sh
    npm test
    ```
@@ -386,6 +247,7 @@ To connect to this MCP server from VS Code as a client:
   - Multi-stage Dockerfile and Docker Compose
 - **Extensibility:**
   - Add new tools by editing `config/openapi.json`
+
 
 ```env
 PORT=3000
@@ -455,6 +317,7 @@ curl http://localhost:3000/notifications/tools/list_changed -H "Accept: text/eve
 
 ---
 
+
 ## Testing & Quality
 
 - Run all tests: `npm test`
@@ -464,14 +327,11 @@ curl http://localhost:3000/notifications/tools/list_changed -H "Accept: text/eve
 - Pre-commit hooks: `husky`
 - Type checking: `npm run typecheck`
 
----
-
-## Mutation Testing with Stryker
+### Mutation Testing with Stryker
 
 This project uses [Stryker](https://stryker-mutator.io/) for mutation testing to ensure the robustness of the test suite.
 
-### Running Mutation Tests
-
+#### Running Mutation Tests
 
 1. Install Stryker and dependencies (if not already installed):
 
@@ -485,14 +345,12 @@ This project uses [Stryker](https://stryker-mutator.io/) for mutation testing to
    npx stryker run
    ```
 
-
 3. View the mutation report:
    Open the generated HTML report at `reports/mutation/mutation.html` for detailed results.
 
 **Note:** The current mutation score is 85%. Some low-level error branches and legacy code are not fully covered due to complexity or low risk. See the mutation report for details.
 
-
-### Stryker Configuration
+#### Stryker Configuration
 
 - The configuration is in `stryker.conf.js`.
 - Thresholds are set to break the build if the mutation score is below 50%.
@@ -826,21 +684,29 @@ We welcome contributions! Please open issues or pull requests. To contribute:
 
 ---
 
+
 ## License
+
 This project is licensed under the [MIT License](./LICENSE).
+
 ---
+
+## Contact / Support
 
 - Open an [issue](https://github.com/markbsigler/CodePipeline-MCP/issues)
 - Join the discussion on [GitHub Discussions](https://github.com/markbsigler/CodePipeline-MCP/discussions)
 - Email: <mark.sigler@protonmail.com>
 
+
+
 ```sh
 curl -X POST http://localhost:3000/v1/tools/call \
-If the changelog is not up to date, see the GitHub Releases page for the latest information.
   -H "Authorization: Bearer <your-jwt-token>" \
   -H "Content-Type: application/json" \
   -d '{"method":"toolName","params":{"key":"value"}}'
 ```
+
+If the changelog is not up to date, see the GitHub Releases page for the latest information.
 
 Replace `<your-jwt-token>` with a valid token (see [Security & Best Practices](#security--best-practices)).
 
@@ -891,13 +757,7 @@ See [CHANGELOG.md](./CHANGELOG.md) for release notes and recent changes.
 
 ---
 
-## Contact / Support
 
-- Open an [issue](https://github.com/<your-org>/<your-repo>/issues)
-- Join the discussion on [GitHub Discussions](https://github.com/<your-org>/<your-repo>/discussions)
-- Email: <support@example.com>
-
----
 
 
 ## References
