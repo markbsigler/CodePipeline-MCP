@@ -48,7 +48,12 @@ export function toolsCallHandler(mcpTools: unknown[], _openapi: unknown): (req: 
         typeof (obj as Record<string, unknown>).id === 'string'
       );
     }
-    const found = mcpTools.find(isTool);
+    // Find tool by name or id, with type assertion
+    type Tool = { name: string; id?: string };
+    const toolsArr = mcpTools as Tool[];
+    const found = toolsArr.find(
+      (t) => t.name === tool || t.id === tool
+    );
     if (!found) {
       res.status(404).json({ error: 'Tool not found' });
       return;
@@ -56,13 +61,15 @@ export function toolsCallHandler(mcpTools: unknown[], _openapi: unknown): (req: 
     // Try to get schema by name or id
     const zodSchemas =
       toolZodSchemas[tool] ||
-      toolZodSchemas[found?.name] ||
-      toolZodSchemas[found?.id];
-    if (!zodSchemas?.input) {
+      toolZodSchemas[found.name] ||
+      (found.id ? toolZodSchemas[found.id] : undefined);
+    // Type assertion for Zod schema
+    const zodInput = zodSchemas?.input as import('zod').ZodTypeAny | undefined;
+    if (!zodInput || typeof zodInput.safeParse !== 'function') {
       res.status(500).json({ error: 'Validation schema not found for tool' });
       return;
     }
-    const result = zodSchemas.input.safeParse(params);
+    const result = zodInput.safeParse(params);
     if (!result.success) {
       res
         .status(400)

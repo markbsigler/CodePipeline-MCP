@@ -26,10 +26,10 @@ describe('jsonSchemaToTypeScriptType', () => {
 
   it('returns any type for undefined or non-object schema', () => {
     expect(jsonSchemaToTypeScriptType(undefined, 'Test')).toBe(
-      'type Test = any;',
+      'type Test = unknown;',
     );
     expect(jsonSchemaToTypeScriptType('string', 'Test')).toBe(
-      'type Test = any;',
+      'type Test = unknown;',
     );
   });
 });
@@ -62,8 +62,8 @@ describe('jsonSchemaTypeToTs', () => {
     ).toBe('{ foo: string; bar: number }');
   });
   it('returns any for unknown or missing schema', () => {
-    expect(jsonSchemaTypeToTs(undefined)).toBe('any');
-    expect(jsonSchemaTypeToTs({})).toBe('any');
+    expect(jsonSchemaTypeToTs(undefined)).toBe('unknown');
+    expect(jsonSchemaTypeToTs({})).toBe('unknown');
   });
 });
 

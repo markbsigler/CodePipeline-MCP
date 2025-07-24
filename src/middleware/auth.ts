@@ -1,5 +1,7 @@
+
 import { Request, Response, NextFunction } from 'express';
 import { verify } from 'jsonwebtoken';
+import logger from '../utils/logger';
 
 const JWT_SECRET = process.env.JWT_SECRET ?? 'changeme';
 const JWT_ISSUER = process.env.JWT_ISSUER ?? 'codepipeline-mcp-server';
@@ -19,8 +21,10 @@ export function authenticateJWT(
     const payload = verify(token, JWT_SECRET as string, { issuer: JWT_ISSUER });
     (req as { user?: unknown }).user = payload;
     next();
-  } catch {
-    // Logging removed to comply with lint rules
+  } catch (err) {
+    if (process.env.NODE_ENV !== 'test') {
+      logger.error('JWT authentication error', err);
+    }
     res.status(401).json({ error: 'Invalid, expired, or unauthorized token' });
   }
 }

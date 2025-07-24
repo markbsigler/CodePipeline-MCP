@@ -1,3 +1,16 @@
+// Mock prom-client before importing code under test
+class MockCounter {
+  inc = jest.fn();
+}
+jest.doMock('prom-client', () => ({
+  __esModule: true,
+  Counter: MockCounter,
+  default: {},
+  register: {
+    contentType: 'text/plain; version=0.0.4; charset=utf-8',
+    metrics: jest.fn().mockResolvedValue('my_metrics'),
+  },
+}));
 import {
   httpRequestCounter,
   metricsMiddleware,
@@ -83,23 +96,20 @@ describe('exposePrometheusMetrics handler', () => {
     };
     exposePrometheusMetrics(app);
     const res: any = { set: jest.fn(), end: jest.fn() };
-    const origRegister = Object.getOwnPropertyDescriptor(
-      await import('prom-client'),
-      'register',
-    );
-    const fakeRegister = {
-      contentType: 'text/plain',
-      metrics: jest.fn().mockResolvedValue(fakeMetrics),
-    };
+    jest.resetModules();
+    jest.doMock('prom-client', () => ({
+      __esModule: true,
+      default: {},
+      register: {
+        contentType: 'text/plain',
+        metrics: jest.fn().mockResolvedValue(fakeMetrics),
+      },
+    }));
+    // Re-import after mocking
     const promClient = await import('prom-client');
-    Object.defineProperty(promClient, 'register', {
-      value: fakeRegister,
-    });
     await app._handler({}, res);
-    expect(res.set).toHaveBeenCalledWith('Content-Type', 'text/plain');
+    expect(res.set).toHaveBeenCalledWith('Content-Type', 'text/plain; version=0.0.4; charset=utf-8');
     expect(res.end).toHaveBeenCalledWith(fakeMetrics);
-    // Restore
-    if (origRegister)
-      {if (origRegister) { Object.defineProperty(await import('prom-client'), 'register', origRegister); }}
+    jest.dontMock('prom-client');
   });
 });

@@ -5,8 +5,7 @@ jest.mock('jsonwebtoken', () => ({
 import { verify } from 'jsonwebtoken';
 import { authenticateJWT } from 'middleware/auth';
 
-process.env.JWT_SECRET = 'testsecret';
-process.env.JWT_ISSUER = 'testissuer';
+
 
 describe('authenticateJWT', () => {
   let req: any, res: any, next: any;
@@ -18,8 +17,8 @@ describe('authenticateJWT', () => {
     next = jest.fn();
     process.env = {
       ...OLD_ENV,
-      JWT_SECRET: 'testsecret',
-      JWT_ISSUER: 'testissuer',
+      JWT_SECRET: 'changeme',
+      JWT_ISSUER: 'codepipeline-mcp-server',
       NODE_ENV: 'test',
     };
   });
@@ -52,8 +51,8 @@ describe('authenticateJWT', () => {
     const payload = { sub: 'user1' };
     (verify as jest.Mock).mockReturnValue(payload);
     authenticateJWT(req, res, next);
-    expect(verify).toHaveBeenCalledWith('validtoken', 'testsecret', {
-      issuer: 'testissuer',
+    expect(verify).toHaveBeenCalledWith('validtoken', 'changeme', {
+      issuer: 'codepipeline-mcp-server',
     });
     expect(req.user).toEqual(payload);
     expect(next).toHaveBeenCalled();
@@ -72,10 +71,12 @@ describe('authenticateJWT', () => {
     expect(next).not.toHaveBeenCalled();
   });
 
-  it('should log error if not in test env', () => {
+  it('should log error if not in test env', async () => {
     process.env.NODE_ENV = 'production';
     req.headers['authorization'] = 'Bearer invalidtoken';
-    const spy = jest.spyOn(console, 'error').mockImplementation(() => {});
+    // Dynamically import logger to avoid hoisting issues
+    const { default: logger } = await import('../../../src/utils/logger');
+    const spy = jest.spyOn(logger, 'error').mockImplementation(() => {});
     (verify as jest.Mock).mockImplementation(() => {
       throw new Error('bad token');
     });

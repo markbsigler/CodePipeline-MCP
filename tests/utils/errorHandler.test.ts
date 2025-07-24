@@ -1,11 +1,11 @@
+
 jest.mock('../../src/utils/logger', () => ({
   __esModule: true,
   default: { error: jest.fn() },
 }));
 
 import { errorHandler } from '../../src/middleware/errorHandler';
-
-const logger = (await import('../../src/utils/logger')).default;
+import logger from '../../src/utils/logger';
 
 const OLD_ENV = process.env;
 

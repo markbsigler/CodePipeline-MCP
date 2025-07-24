@@ -37,8 +37,8 @@ describe('jsonSchemaToTypeScriptType', () => {
     const result = jsonSchemaToTypeScriptType(schema, 'TestArr');
     expect(result).toContain('TestArr = number[]');
   });
-  it('should return any for unknown schema', () => {
-    expect(jsonSchemaToTypeScriptType(null, 'X')).toContain('any');
+  it('should return unknown for unknown schema', () => {
+    expect(jsonSchemaToTypeScriptType(null, 'X')).toContain('unknown');
   });
 });
 
@@ -48,7 +48,7 @@ describe('jsonSchemaTypeToTs', () => {
     expect(jsonSchemaTypeToTs({ type: 'number' })).toBe('number');
     expect(jsonSchemaTypeToTs({ type: 'integer' })).toBe('number');
     expect(jsonSchemaTypeToTs({ type: 'boolean' })).toBe('boolean');
-    expect(jsonSchemaTypeToTs({})).toBe('any');
+    expect(jsonSchemaTypeToTs({})).toBe('unknown');
   });
 });
 
@@ -84,12 +84,12 @@ describe('jsonSchemaToTypeScriptType edge cases', () => {
     expect(result).toContain('ArrObj = { x: boolean }[]');
   });
   it('handles missing schema', () => {
-    expect(jsonSchemaToTypeScriptType(undefined, 'Missing')).toContain('any');
+    expect(jsonSchemaToTypeScriptType(undefined, 'Missing')).toContain('unknown');
   });
   it('handles object with no properties', () => {
     const schema = { type: 'object' };
     const result = jsonSchemaToTypeScriptType(schema, 'NoProps');
-    expect(result).toContain('type NoProps = any;');
+    expect(result).toContain('type NoProps = unknown;');
   });
 });
 
@@ -113,7 +113,7 @@ describe('jsonSchemaTypeToTs edge cases', () => {
     expect(result).toBe('number[][]');
   });
   it('handles missing type', () => {
-    expect(jsonSchemaTypeToTs({})).toBe('any');
+    expect(jsonSchemaTypeToTs({})).toBe('unknown');
   });
 });
 

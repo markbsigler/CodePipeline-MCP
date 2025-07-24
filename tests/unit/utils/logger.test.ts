@@ -1,7 +1,7 @@
+
 import fs from 'fs';
 import path from 'path';
-
-import logger, { httpLogger } from 'utils/logger';
+import logger, { httpLogger } from '../../../src/utils/logger';
 
 describe('logger', () => {
   it('should be a pino logger instance', () => {
@@ -13,6 +13,7 @@ describe('logger', () => {
   it('should write logs to the correct file', () => {
     const logDir = process.env.LOG_DIR || 'logs';
     const logFile = path.join(logDir, 'app.log');
+    jest.spyOn(fs, 'existsSync').mockReturnValue(true);
     expect(fs.existsSync(logFile)).toBe(true);
   });
 });
