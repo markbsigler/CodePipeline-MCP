@@ -12,7 +12,7 @@ RUN apk update && apk upgrade && npm ci --ignore-scripts
 COPY src ./src
 COPY config ./config
 COPY tsconfig*.json ./
-COPY .env.example ./
+COPY .env ./
 RUN npm run build
 
 # --- Production Stage ---
@@ -27,7 +27,7 @@ COPY --from=build /usr/src/app/dist ./dist
 COPY --from=build /usr/src/app/package.json ./
 COPY --from=build /usr/src/app/package-lock.json ./
 COPY --from=build /usr/src/app/config ./config
-COPY --from=build /usr/src/app/.env.example ./
+COPY --from=build /usr/src/app/.env ./
 COPY --from=build /usr/src/app/tsconfig*.json ./
 RUN npm ci --omit=dev --ignore-scripts && npm prune --omit=dev \
     # Ensure logs directory exists and is owned by nodeuser after all COPYs
