@@ -1,23 +1,7 @@
+
 # syntax=docker/dockerfile:1
 
-
-# --- Build Stage ---
-FROM node:20-alpine3.19 AS build
-ARG CACHEBUST=1
-
-# Ensure npm is up to date for override support
-WORKDIR /usr/src/app
-COPY package.json package-lock.json ./
-RUN apk update && apk upgrade && npm install -g npm@latest && npm --version && npm ci --ignore-scripts
-# Copy only necessary files for build
-COPY src ./src
-COPY config ./config
-COPY tsconfig*.json ./
-COPY .env.example .env
-RUN npm run build
-
-# --- Production Stage ---
-FROM node:20-alpine3.19 AS prod
+FROM node:18-alpine3.19
 ARG CACHEBUST=1
 
 WORKDIR /usr/src/app
@@ -25,16 +9,22 @@ RUN addgroup -g 1001 -S nodegroup \
     && adduser -S nodeuser -u 1001 -G nodegroup \
     && apk update && apk upgrade && apk add --no-cache curl \
     && npm install -g npm@latest && npm --version
-COPY --from=build /usr/src/app/dist ./dist
-COPY --from=build /usr/src/app/package.json ./
-COPY --from=build /usr/src/app/package-lock.json ./
-COPY --from=build /usr/src/app/config ./config
-COPY --from=build /usr/src/app/.env ./
-COPY --from=build /usr/src/app/tsconfig*.json ./
-RUN npm ci --omit=dev --ignore-scripts && npm prune --omit=dev \
+
+# Copy all necessary files
+COPY package.json package-lock.json ./
+COPY src ./src
+COPY config ./config
+COPY tsconfig*.json ./
+COPY .env.example .env
+
+# Install dependencies and build
+RUN npm ci --ignore-scripts \
+    && npm run build \
+    && npm ci --omit=dev --ignore-scripts && npm prune --omit=dev \
     # Ensure logs directory exists and is owned by nodeuser after all COPYs
     && mkdir -p /usr/src/app/logs \
     && chown -R nodeuser:nodegroup /usr/src/app/logs
+
 USER nodeuser
 ENV NODE_ENV=production
 ENV NODE_OPTIONS="--enable-source-maps --no-deprecation"
