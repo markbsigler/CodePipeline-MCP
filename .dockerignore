@@ -1,0 +1,24 @@
+# Node
+node_modules
+
+# Build output
+dist
+coverage
+logs
+
+# Git
+.git
+.gitignore
+
+# Env files
+.env
+.env.*
+
+# Tests and configs
+tests
+*.log
+*.md
+.vscode
+*.tsbuildinfo
+stryker.conf.cjs
+jest*.cjs

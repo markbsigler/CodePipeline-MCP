@@ -1,1 +1,23 @@
+# Node
+node_modules/
+
+# Build output
+dist/
+coverage/
+logs/
+
+# Env files
+.env
+.env.*
+
+# System
 .DS_Store
+
+# Test
+*.log
+
+# VSCode
+.vscode/
+
+# Misc
+*.tsbuildinfo
