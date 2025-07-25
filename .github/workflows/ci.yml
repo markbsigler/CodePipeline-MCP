@@ -57,7 +57,7 @@ jobs:
       - name: Wait for container health
         run: |
           for i in {1..20}; do
-            STATUS=$(docker compose ps --format json | jq -r '.[] | select(.Service=="app") | .Health')
+            STATUS=$(docker inspect --format='{{.State.Health.Status}}' mcp-server 2>/dev/null || echo "starting")
             if [ "$STATUS" = "healthy" ]; then
               echo "Container is healthy!"
               exit 0
