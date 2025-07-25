@@ -7,8 +7,9 @@ services:
       dockerfile: Dockerfile
     container_name: mcp-server
     restart: unless-stopped
-    env_file:
-      - .env
+    environment:
+      - JWT_SECRET
+      - DB_PASSWORD
     ports:
       - "3000:3000"
     healthcheck:

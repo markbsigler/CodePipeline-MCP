@@ -43,6 +43,9 @@ jobs:
           ignore-unfixed: true
       - name: Start containers
         run: docker-compose up --abort-on-container-exit -d
+        env:
+          JWT_SECRET: ${{ secrets.JWT_SECRET }}
+          DB_PASSWORD: ${{ secrets.DB_PASSWORD }}
       - name: Wait for healthcheck
         run: |
           for i in {1..20}; do
