@@ -1,6 +1,10 @@
 {
-  "*.ts": [
-    "eslint --fix --max-warnings 0",
-    "NODE_ENV=test jest --bail --findRelatedTests --passWithNoTests"
+  "src/**/*.ts": [
+    "eslint --fix",
+    "prettier --write"
+  ],
+  "tests/**/*.ts": [
+    "eslint --fix",
+    "prettier --write"
   ]
 }
