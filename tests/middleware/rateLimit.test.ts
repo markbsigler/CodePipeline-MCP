@@ -102,7 +102,11 @@ describe("mcpRateLimiter", () => {
     );
     let res = undefined;
     for (let i = 0; i < 61; i++) {
+      // Await each request and check for errors
       res = await request(app).get("/other");
+      if (!res || !res.status) {
+        throw new Error("Request failed or returned no status");
+      }
     }
     expect(res).toBeDefined();
     expect(res!.status).toBe(429);
