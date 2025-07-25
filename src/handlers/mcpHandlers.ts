@@ -38,16 +38,7 @@ export function toolsListHandler(mcpTools: unknown[]): (req: Request, res: Respo
 export function toolsCallHandler(mcpTools: unknown[], _openapi: unknown): (req: Request, res: Response) => Promise<void> {
   return async (_req: Request, res: Response): Promise<void> => {
     const { tool, params, resumeSessionId } = res.req.body;
-    function isTool(obj: unknown): obj is { name: string; id: string } {
-      return (
-        typeof obj === 'object' &&
-        obj !== null &&
-        'name' in obj &&
-        'id' in obj &&
-        typeof (obj as Record<string, unknown>).name === 'string' &&
-        typeof (obj as Record<string, unknown>).id === 'string'
-      );
-    }
+    // ...existing code...
     // Find tool by name or id, with type assertion
     type Tool = { name: string; id?: string };
     const toolsArr = mcpTools as Tool[];

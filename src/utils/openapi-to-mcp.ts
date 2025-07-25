@@ -7,10 +7,14 @@ import { jsonSchemaToZod } from './jsonSchemaToZod';
  * Loads and parses the OpenAPI JSON file.
  * @param openapiPath Path to the OpenAPI JSON file
  */
-export function loadOpenApiSpec(openapiPath: string): unknown {
+export function loadOpenApiSpec(openapiPath: string): Record<string, unknown> {
   const fullPath = path.resolve(openapiPath);
   const raw = fs.readFileSync(fullPath, 'utf-8');
-  return JSON.parse(raw);
+  const parsed = JSON.parse(raw);
+  if (typeof parsed !== 'object' || parsed === null || Array.isArray(parsed)) {
+    throw new Error('OpenAPI spec must be a non-null object');
+  }
+  return parsed as Record<string, unknown>;
 }
 
 /**
