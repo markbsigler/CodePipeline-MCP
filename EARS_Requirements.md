@@ -1,255 +1,239 @@
-# BMC AMI DevX Code Pipeline MCP Server - EARS Requirements
+
+# BMC AMI DevX Code Pipeline MCP Server - EARS Requirements (Comprehensive)
+
 
 ## 1. System Overview Requirements
 
-**REQ-001**: The system SHALL be a production-ready, secure, and extensible MCP server for BMC AMI DevX Code Pipeline.
+**REQ-001**: The system SHALL be a production-ready, secure, observable, and extensible MCP server for BMC AMI DevX Code Pipeline, following all best practices for Node.js, TypeScript, and Express.
 
-**REQ-002**: The system SHALL auto-generate MCP tools from OpenAPI specifications.
+**REQ-002**: The system SHALL auto-generate MCP tool endpoints, TypeScript types, and handler templates from OpenAPI specifications in `config/openapi.json`.
 
-**REQ-003**: The system SHALL implement best practices for security, streaming, testing, and CI/CD.
+**REQ-003**: The system SHALL implement best practices for security, streaming, error handling, observability, testing, CI/CD, and documentation, as described in the project README and PROMPT.
 
-## 2. Configuration Requirements
 
-**REQ-004**: WHEN the system starts, it SHALL use flat config ESLint configuration (`eslint.config.js`).
+## 2. Configuration and Environment Requirements
 
-**REQ-005**: WHEN running tests, the system SHALL use Jest configuration in `jest.config.cjs`.
+**REQ-004**: WHEN the system starts, it SHALL validate all environment variables using schema validation (zod or joi) and support multi-environment configurations (development, staging, production).
 
-**REQ-006**: WHEN testing logger functionality, the system SHALL mock both `pino` and `pino-http` to avoid file descriptor errors.
+**REQ-005**: WHEN the system starts, it SHALL use flat config ESLint configuration (`eslint.config.js`) and Prettier for formatting, enforcing zero lint errors and warnings.
 
-**REQ-007**: WHEN the system is deployed, it SHALL include observability and rate limiting middleware in the Express app.
+**REQ-006**: WHEN running tests, the system SHALL use Jest configuration in `jest.config.cjs` and enforce 90%+ code coverage, with 100% for critical logic and edge cases.
+
+**REQ-007**: WHEN testing logger functionality, the system SHALL mock both `pino` and `pino-http` to avoid file descriptor errors.
+
+**REQ-008**: WHEN the system is deployed, it SHALL include observability (OpenTelemetry, Prometheus) and rate limiting middleware in the Express app.
+
 
 ## 3. OpenAPI-to-MCP Tool Mapping Requirements
 
-**REQ-008**: WHEN the system processes OpenAPI specifications, it SHALL auto-generate MCP tool endpoints from `config/openapi.json`.
+**REQ-009**: WHEN the system processes OpenAPI specifications, it SHALL auto-generate MCP tool endpoints, TypeScript types, and handler templates from `config/openapi.json`.
 
-**REQ-009**: The system SHALL support `tools/list`, `tools/call`, and notifications endpoints.
+**REQ-010**: The system SHALL support `tools/list` (with pagination), `tools/call`, and notifications endpoints, and declare `tools` capability with `listChanged` support.
 
-**REQ-010**: WHEN a new tool is added to `config/openapi.json`, the system SHALL automatically generate TypeScript types and handler templates.
+**REQ-011**: WHEN a new tool is added to `config/openapi.json`, the system SHALL automatically generate and register TypeScript types and handler templates, and update API documentation.
 
-## 4. HTTP API Requirements
+**REQ-012**: The system SHALL auto-generate and publish TypeScript/JavaScript API clients from the OpenAPI spec, and validate the spec in CI.
 
-**REQ-011**: The system SHALL implement JSON-RPC 2.0 over HTTP protocol.
 
-**REQ-012**: WHEN handling responses, the system SHALL support chunked/streamed responses using Node.js streams.
+## 4. HTTP API and Protocol Requirements
 
-**REQ-013**: WHEN providing notifications, the system SHALL use Server-Sent Events (SSE).
+**REQ-013**: The system SHALL implement JSON-RPC 2.0 over HTTP protocol for all tool calls.
 
-**REQ-014**: WHEN managing streams, the system SHALL support resumable streams with secure session management.
+**REQ-014**: WHEN handling responses, the system SHALL support chunked/streamed responses using Node.js streams, and provide robust error handling and recovery for streaming failures.
 
-## 5. Security Requirements
+**REQ-015**: WHEN providing notifications, the system SHALL use Server-Sent Events (SSE) and support resumable streams with secure session management.
 
-**REQ-015**: WHEN a client makes a request, the system SHALL authenticate using Bearer token authentication with JWT validation.
+**REQ-016**: The system SHALL provide versioned endpoints under `/v1/` prefix, and maintain backward compatibility for legacy endpoints.
 
-**REQ-016**: The system SHALL NOT allow token passthrough; all tokens MUST be issued for this server.
+**REQ-017**: The system SHALL conform to a standard JSON error schema (`code`, `message`, `details`) for all error responses, and document this schema in OpenAPI and README.
 
-**REQ-017**: WHEN creating sessions, the system SHALL generate secure, non-deterministic session IDs in format `<user_id>:<session_id>`.
 
-**REQ-018**: The system SHALL use sessions for state management only, NOT for authentication.
+## 5. Security and Compliance Requirements
 
-**REQ-019**: WHEN processing requests, the system SHALL implement CORS and security headers using helmet.js.
+**REQ-018**: WHEN a client makes a request, the system SHALL authenticate using Bearer token authentication with JWT validation (RS256, key rotation support), and SHALL NOT allow token passthrough; all tokens MUST be issued for this server.
 
-**REQ-020**: WHEN validating input, the system SHALL perform strict input validation and sanitization everywhere, including integer enforcement and pattern checks.
+**REQ-019**: WHEN creating sessions, the system SHALL generate secure, non-deterministic session IDs in format `<user_id>:<session_id>`, and use sessions for state management only, NOT for authentication.
 
-**REQ-021**: WHEN handling requests, the system SHALL implement rate limiting and request size limits.
+**REQ-020**: WHEN processing requests, the system SHALL implement CORS and security headers using helmet.js, and restrict CORS origins to trusted domains in production.
 
-**REQ-022**: WHEN logging events, the system SHALL use structured logging (Winston or Pino).
+**REQ-021**: WHEN validating input, the system SHALL perform strict input validation and sanitization everywhere, including integer enforcement, pattern checks, and output escaping.
 
-**REQ-023**: WHEN errors occur, the system SHALL provide robust error handling including 404 and rate limiting responses.
+**REQ-022**: WHEN handling requests, the system SHALL implement rate limiting and request size limits, and track limits per client/IP address.
 
-## 6. Authentication Flow Requirements
+**REQ-023**: WHEN logging events, the system SHALL use structured logging (Winston or Pino), include correlation/request IDs, and forward logs to centralized logging in production.
 
-**REQ-024**: WHEN a client sends a request with Authorization header, the system SHALL validate JWT signature and claims.
+**REQ-024**: WHEN errors occur, the system SHALL provide robust error handling, including 404, 429, 440, and rate limiting responses, and SHALL NOT leak stack traces or sensitive info in production.
 
-**REQ-025**: IF JWT validation fails, the system SHALL return 401 Unauthorized with invalid signature message.
+**REQ-025**: The system SHALL store secrets securely using a secrets manager in production, and all JWT/session secrets MUST be at least 32 bytes and generated securely.
 
-**REQ-026**: IF JWT claims are invalid or expired, the system SHALL return 401 Unauthorized with invalid claims message.
 
-**REQ-027**: IF JWT is valid, the system SHALL process the request normally.
+## 6. Authentication and Authorization Flow Requirements
 
-## 7. Health and Monitoring Requirements
+**REQ-026**: WHEN a client sends a request with Authorization header, the system SHALL validate JWT signature and claims, and return 401 Unauthorized with a generic error message if validation fails (no user enumeration).
 
-**REQ-028**: The system SHALL provide a `/healthz` endpoint for health checks.
+**REQ-027**: IF JWT claims are invalid or expired, the system SHALL return 401 Unauthorized with an appropriate error message.
 
-**REQ-029**: The system SHALL expose metrics at `/metrics` endpoint for Prometheus monitoring.
+**REQ-028**: IF JWT is valid, the system SHALL process the request normally, and check user roles/permissions for all endpoints (least privilege).
 
-**REQ-030**: WHEN running, the system SHALL provide performance monitoring capabilities.
+
+## 7. Health, Monitoring, and Observability Requirements
+
+**REQ-029**: The system SHALL provide a `/healthz` endpoint for health checks, and expose Prometheus-compatible metrics at `/metrics` for monitoring.
+
+**REQ-030**: WHEN running, the system SHALL provide performance monitoring, distributed tracing (OpenTelemetry), and log all errors and spans for observability.
+
+**REQ-031**: The system SHALL provide a "Monitoring and Alerting" section in documentation, and all logs must include correlation/request IDs.
+
 
 ## 8. Configuration Management Requirements
 
-**REQ-031**: WHEN starting, the system SHALL validate environment variables using schema validation (zod or joi).
+**REQ-032**: WHEN starting, the system SHALL validate environment variables using schema validation (zod or joi), and support multi-environment configurations (development, staging, production).
 
-**REQ-032**: The system SHALL support multi-environment configurations (development, staging, production).
+**REQ-033**: WHEN in production, the system SHALL set `NODE_ENV=production` and restrict debug endpoints.
 
-**REQ-033**: WHEN in production, the system SHALL set `NODE_ENV=production`.
 
-## 9. Testing and Quality Requirements
+## 9. Testing, Quality Assurance, and Verification Requirements
 
-**REQ-034**: The system SHALL maintain 90%+ code coverage with Jest testing framework.
+**REQ-034**: The system SHALL maintain 90%+ code coverage with Jest, and 100% for all critical files (handlers, utils, middleware, error handling, streaming logic).
 
-**REQ-035**: WHEN testing critical logic and edge cases, the system SHALL achieve 100% code coverage.
+**REQ-035**: The system SHALL include robust integration, edge case, and negative test coverage for input validation, error handling, and rate limiting.
 
-**REQ-036**: The system SHALL include robust integration and edge case test coverage for input validation, error handling, and rate limiting.
+**REQ-036**: WHEN code is committed, the system SHALL enforce linting and formatting using eslint, prettier, and husky, and fail CI on any errors.
 
-**REQ-037**: WHEN code is committed, the system SHALL enforce linting and formatting using eslint, prettier, and husky.
+**REQ-037**: The system SHALL use TypeScript strict mode for type checking, and all code and tests must be fully type-safe.
 
-**REQ-038**: The system SHALL use TypeScript strict mode for type checking.
+**REQ-038**: WHEN building, the system SHALL perform security scanning using `npm audit --production` and `snyk`, and fail the build on vulnerabilities.
 
-**REQ-039**: WHEN building, the system SHALL perform security scanning using `npm audit` and `snyk`.
+**REQ-039**: The system SHALL include contract and mutation testing (Stryker) for protocol and critical logic, and upload coverage/mutation reports as CI artifacts.
+
 
 ## 10. Mutation Testing Requirements
 
-**REQ-040**: WHEN running mutation tests, the system SHALL use Stryker for mutation testing.
+**REQ-040**: WHEN running mutation tests, the system SHALL use Stryker for mutation testing, and break the build if the mutation score is below 50%.
 
-**REQ-041**: IF mutation score is below 50%, the system SHALL break the build.
+**REQ-041**: WHEN mutation tests complete, the system SHALL generate HTML reports at `reports/mutation/mutation.html` and upload them as CI artifacts.
 
-**REQ-042**: WHEN mutation tests complete, the system SHALL generate HTML reports at `reports/mutation/mutation.html`.
 
-## 11. API Endpoint Requirements
+## 11. API Endpoint and Documentation Requirements
 
-**REQ-043**: The system SHALL provide `/v1/tools/list` endpoint via POST method to list available tools.
+**REQ-042**: The system SHALL provide `/v1/tools/list` (POST), `/v1/tools/call` (POST), `/v1/notifications` (GET, SSE), `/healthz` (GET), `/metrics` (GET), and `/docs` (GET, Swagger/Redoc UI) endpoints.
 
-**REQ-044**: The system SHALL provide `/v1/tools/call` endpoint via POST method to call tools.
+**REQ-043**: WHEN a client requests a non-existent endpoint, the system SHALL return 404 Not Found with a standard error JSON.
 
-**REQ-045**: The system SHALL provide `/v1/notifications` endpoint via GET method for SSE notifications.
+**REQ-044**: The system SHALL auto-generate and serve up-to-date API documentation, including example requests/responses, error schemas, and usage examples for every endpoint/tool.
 
-**REQ-046**: The system SHALL provide `/docs` endpoint via GET method for API documentation.
-
-**REQ-047**: WHEN a client requests a non-existent endpoint, the system SHALL return 404 Not Found with error JSON.
 
 ## 12. Rate Limiting Requirements
 
-**REQ-048**: WHEN a client exceeds rate limits, the system SHALL return 429 Too Many Requests.
+**REQ-045**: WHEN a client exceeds rate limits, the system SHALL return 429 Too Many Requests, and allow requests within configured limits, tracking limits per client/IP address.
 
-**REQ-049**: WHEN checking rate limits, the system SHALL allow requests within configured limits.
-
-**REQ-050**: The system SHALL track rate limits per client/IP address.
 
 ## 13. Session Management Requirements
 
-**REQ-051**: WHEN a client authenticates with JWT, the system SHALL generate sessionId as userId:random.
+**REQ-046**: WHEN a client authenticates with JWT, the system SHALL generate sessionId as userId:random, and use sessions for state management only.
 
-**REQ-052**: WHEN a session expires or becomes invalid, the system SHALL return 440 Session Expired.
+**REQ-047**: WHEN a session expires or becomes invalid, the system SHALL return 440 Session Expired.
 
-**REQ-053**: The system SHALL use sessions for state management only, not for authentication.
 
 ## 14. Error Handling Requirements
 
-**REQ-054**: WHEN an error occurs, the system SHALL log the error with structured logging.
+**REQ-048**: WHEN an error occurs, the system SHALL log the error with structured logging, record spans/errors in distributed tracing, and return appropriate HTTP status codes and error messages using the standard error schema.
 
-**REQ-055**: WHEN an error occurs, the system SHALL record spans/errors in distributed tracing.
-
-**REQ-056**: WHEN an error occurs, the system SHALL return appropriate HTTP status codes and error messages.
 
 ## 15. Streaming Requirements
 
-**REQ-057**: WHEN handling tool calls, the system SHALL support streaming responses for large datasets.
+**REQ-049**: WHEN handling tool calls, the system SHALL support streaming responses for large datasets, provide graceful error handling and recovery for streaming failures, and maintain state using secure session management for resumable streams.
 
-**REQ-058**: WHEN streaming fails, the system SHALL provide graceful error handling and recovery.
 
-**REQ-059**: WHEN resuming streams, the system SHALL maintain state using secure session management.
+## 16. Docker, Deployment, and Infrastructure Requirements
 
-## 16. Docker and Deployment Requirements
+**REQ-050**: The system SHALL provide a production-ready multi-stage Dockerfile (non-root user, healthcheck, minimal image) and Docker Compose configuration for local development and production.
 
-**REQ-060**: The system SHALL provide multi-stage Dockerfile for containerization.
+**REQ-051**: WHEN building Docker images, the system SHALL support multi-arch builds (linux/amd64, linux/arm64), scan images for vulnerabilities in CI, and publish with both `latest` and version tags.
 
-**REQ-061**: The system SHALL provide Docker Compose configuration for local development.
+**REQ-052**: WHEN deployed, the system SHALL run health checks on container startup, enforce resource limits, and support zero-downtime deployment strategies.
 
-**REQ-062**: WHEN building Docker images, the system SHALL support multi-arch builds (linux/amd64, linux/arm64).
 
-**REQ-063**: WHEN deployed, the system SHALL run health checks on container startup.
+## 17. CI/CD Pipeline Requirements
 
-## 17. CI/CD Requirements
+**REQ-053**: WHEN code is pushed, the system SHALL trigger GitHub Actions workflow for build, lint, test, coverage, mutation, security, and Docker builds, and fail the build on any errors or vulnerabilities.
 
-**REQ-064**: WHEN code is pushed, the system SHALL trigger GitHub Actions workflow for build, lint, test, coverage, security, and Docker builds.
+**REQ-054**: WHEN tests or security scans fail, the system SHALL prevent deployment to production.
 
-**REQ-065**: WHEN security scanning detects vulnerabilities, the system SHALL fail the build process.
+**REQ-055**: The CI pipeline SHALL upload build/test artifacts (coverage, mutation, etc.) as downloadable assets, and check for uncommitted changes after build/test/lint.
 
-**REQ-066**: WHEN tests fail, the system SHALL prevent deployment to production.
 
-## 18. Observability Requirements
+## 18. Observability, Monitoring, and Accessibility Requirements
 
-**REQ-067**: WHEN processing requests, the system SHALL generate distributed traces using OpenTelemetry.
+**REQ-056**: WHEN processing requests, the system SHALL generate distributed traces using OpenTelemetry, support OTLP format for Jaeger/Zipkin, and expose Prometheus-compatible metrics.
 
-**REQ-068**: WHEN exporting traces, the system SHALL support OTLP format for Jaeger, Zipkin, or compatible backends.
+**REQ-057**: WHEN tracing operations, the system SHALL create custom spans for key operations (tool execution, streaming, error handling), and all logs must include correlation/request IDs.
 
-**REQ-069**: WHEN generating metrics, the system SHALL expose Prometheus-compatible metrics.
+**REQ-058**: All served UIs/docs SHALL pass basic accessibility (a11y) checks and support internationalization (i18n) or document how to do so.
 
-**REQ-070**: WHEN tracing operations, the system SHALL create custom spans for key operations (tool execution, streaming, error handling).
 
-## 19. Production Hardening Requirements
+## 19. Production Hardening and Security Requirements
 
-**REQ-071**: WHEN deployed in production, the system SHALL run behind a reverse proxy for TLS termination.
+**REQ-059**: WHEN deployed in production, the system SHALL run behind a reverse proxy for TLS termination, redirect HTTP to HTTPS at the proxy level, and restrict network access to trusted sources.
 
-**REQ-072**: WHEN handling HTTPS, the system SHALL redirect HTTP to HTTPS at the proxy level.
+**REQ-060**: WHEN scaling, the system SHALL support multiple replicas behind a load balancer, and enforce Docker/Kubernetes resource limits.
 
-**REQ-073**: WHEN scaling, the system SHALL support multiple replicas behind a load balancer.
+**REQ-061**: WHEN storing secrets, the system SHALL use strong, unique secrets for JWT_SECRET and all credentials, and never commit secrets to version control.
 
-**REQ-074**: WHEN managing resources, the system SHALL enforce Docker resource limits or Kubernetes requests/limits.
 
-**REQ-075**: WHEN storing secrets, the system SHALL use strong, unique secrets for JWT_SECRET and other credentials.
+## 20. Input Validation and Error Schema Requirements
 
-## 20. Input Validation Requirements
+**REQ-062**: WHEN receiving API requests, the system SHALL validate all input parameters against defined schemas, enforce integer type validation, apply pattern checks and sanitization, and return 400 Bad Request with detailed error messages using the standard error schema.
 
-**REQ-076**: WHEN receiving API requests, the system SHALL validate all input parameters against defined schemas.
 
-**REQ-077**: WHEN processing integers, the system SHALL enforce integer type validation.
+## 21. Logging and Audit Requirements
 
-**REQ-078**: WHEN processing strings, the system SHALL apply pattern checks and sanitization.
+**REQ-063**: WHEN events occur, the system SHALL log structured messages with appropriate log levels, include full error details (stack traces in development), and implement log rotation to prevent disk space issues.
 
-**REQ-079**: WHEN validation fails, the system SHALL return 400 Bad Request with detailed error messages.
+**REQ-064**: WHEN in production, the system SHALL forward logs to centralized logging systems, and redact sensitive information from logs.
 
-## 21. Logging Requirements
 
-**REQ-080**: WHEN events occur, the system SHALL log structured messages with appropriate log levels.
+## 22. API Versioning and Deprecation Requirements
 
-**REQ-081**: WHEN errors occur, the system SHALL log full error details including stack traces.
+**REQ-065**: WHEN serving API endpoints, the system SHALL provide versioned endpoints under `/v1/` prefix, support legacy endpoints for backward compatibility, and provide migration notices and timelines for deprecated endpoints.
 
-**REQ-082**: WHEN in production, the system SHALL forward logs to centralized logging systems.
 
-**REQ-083**: WHEN logging, the system SHALL implement log rotation to prevent disk space issues.
+## 23. Documentation and Example Requirements
 
-## 22. API Versioning Requirements
+**REQ-066**: WHEN serving documentation, the system SHALL provide interactive API docs via Swagger UI/Redoc at `/docs`, and update OpenAPI specifications automatically.
 
-**REQ-084**: WHEN serving API endpoints, the system SHALL provide versioned endpoints under `/v1/` prefix.
+**REQ-067**: All documentation SHALL include usage examples (curl, TypeScript/Node.js) and error response schemas for every endpoint/tool, and provide a "How to Upgrade" section for dependencies and OpenAPI spec changes.
 
-**REQ-085**: WHEN maintaining backward compatibility, the system SHALL support legacy unversioned endpoints.
+**REQ-068**: The README SHALL include a project structure overview, FAQ/Troubleshooting, Common Pitfalls, Support/Contact, Changelog, and License sections.
 
-**REQ-086**: WHEN deprecating endpoints, the system SHALL provide migration notices and timelines.
 
-## 23. Documentation Requirements
+## 24. Extensibility and Plugin Requirements
 
-**REQ-087**: WHEN serving documentation, the system SHALL provide interactive API docs via Swagger UI/Redoc.
+**REQ-069**: WHEN extending functionality, the system SHALL support a documented plugin/middleware system for custom processing, with lifecycle hooks (init, pre-request, post-response, error).
 
-**REQ-088**: WHEN updating APIs, the system SHALL automatically update OpenAPI specifications.
+**REQ-070**: WHEN adding or modifying tools, the system SHALL auto-generate handlers and TypeScript types from OpenAPI specifications, and update documentation and tests accordingly.
 
-**REQ-089**: WHEN documenting, the system SHALL include usage examples and error response schemas.
-
-## 24. Extensibility Requirements
-
-**REQ-090**: WHEN extending functionality, the system SHALL support plugin/middleware system for custom processing.
-
-**REQ-091**: WHEN adding new tools, the system SHALL auto-generate handlers from OpenAPI specifications.
-
-**REQ-092**: WHEN modifying tools, the system SHALL regenerate TypeScript types automatically.
 
 ## 25. Environment-Specific Requirements
 
-**REQ-093**: WHEN running in development, the system SHALL enable debug logging and hot reloading.
+**REQ-071**: WHEN running in development, the system SHALL enable debug logging and hot reloading.
 
-**REQ-094**: WHEN running in staging, the system SHALL mirror production configuration with test data.
+**REQ-072**: WHEN running in staging, the system SHALL mirror production configuration with test data.
 
-**REQ-095**: WHEN running in production, the system SHALL disable debug endpoints and enable security hardening.
+**REQ-073**: WHEN running in production, the system SHALL disable debug endpoints and enable all security hardening features.
+
 
 ## 26. JWT Token Lifecycle Requirements
 
-**REQ-096**: WHEN a user logs in, the authentication server SHALL issue a JWT token.
+**REQ-074**: WHEN a user logs in, the authentication server SHALL issue a JWT token, and the system SHALL validate signature and claims before processing requests.
 
-**REQ-097**: WHEN a JWT token is used, the system SHALL validate signature and claims before processing requests.
+**REQ-075**: WHEN a JWT token expires, the system SHALL return 401 Unauthorized and require re-authentication.
 
-**REQ-098**: WHEN a JWT token expires, the system SHALL return 401 Unauthorized and require re-authentication.
 
-## 27. Backup and Recovery Requirements
+## 27. Backup, Recovery, and Reliability Requirements
 
-**REQ-099**: WHEN system data exists, the system SHALL provide mechanisms for data backup and recovery.
+**REQ-076**: WHEN system data exists, the system SHALL provide mechanisms for data backup and recovery, and support automatic restarts and health checks via process managers or orchestrators.
 
-**REQ-100**: WHEN failures occur, the system SHALL support automatic restarts and health checks via process managers or orchestrators.
+---
+
+**End of Comprehensive EARS Requirements**
