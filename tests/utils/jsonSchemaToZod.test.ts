@@ -1,6 +1,41 @@
 import { jsonSchemaToZod } from '../../src/utils/jsonSchemaToZod';
 
 describe('jsonSchemaToZod', () => {
+  it('returns z.any for empty enum array', () => {
+    const schema = { enum: [] };
+    const zodSchema = jsonSchemaToZod(schema);
+    expect(zodSchema.safeParse('anything').success).toBe(true);
+    expect(zodSchema.safeParse(123).success).toBe(true);
+  });
+
+  it('returns z.literal for single non-string enum', () => {
+    const schema = { enum: [42] };
+    const zodSchema = jsonSchemaToZod(schema);
+    expect(zodSchema.safeParse(42).success).toBe(true);
+    expect(zodSchema.safeParse(43).success).toBe(false);
+  });
+
+  it('returns z.any for const as object or array', () => {
+    const schemaObj = { const: { foo: 'bar' } };
+    const schemaArr = { const: [1, 2, 3] };
+    const zodSchemaObj = jsonSchemaToZod(schemaObj);
+    const zodSchemaArr = jsonSchemaToZod(schemaArr);
+    expect(zodSchemaObj.safeParse({ foo: 'bar' }).success).toBe(true);
+    expect(zodSchemaArr.safeParse([1, 2, 3]).success).toBe(true);
+    // z.any allows anything
+    expect(zodSchemaObj.safeParse('anything').success).toBe(true);
+  });
+
+  it('handles oneOf/anyOf with single schema', () => {
+    const schemaOneOf = { oneOf: [{ type: 'string' }] };
+    const schemaAnyOf = { anyOf: [{ type: 'number' }] };
+    const zodSchemaOneOf = jsonSchemaToZod(schemaOneOf);
+    const zodSchemaAnyOf = jsonSchemaToZod(schemaAnyOf);
+    expect(zodSchemaOneOf.safeParse('ok').success).toBe(true);
+    expect(zodSchemaOneOf.safeParse(1).success).toBe(false);
+    expect(zodSchemaAnyOf.safeParse(5).success).toBe(true);
+    expect(zodSchemaAnyOf.safeParse('no').success).toBe(false);
+  });
   it('converts string schema', () => {
     const schema = { type: 'string', minLength: 2, maxLength: 5 };
     const zodSchema = jsonSchemaToZod(schema);
