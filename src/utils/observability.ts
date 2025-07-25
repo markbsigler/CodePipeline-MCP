@@ -1,8 +1,8 @@
-import { getNodeAutoInstrumentations } from '@opentelemetry/auto-instrumentations-node';
-import { ExpressInstrumentation } from '@opentelemetry/instrumentation-express';
-import { NodeSDK } from '@opentelemetry/sdk-node';
-import { Request, Response, NextFunction, Application } from 'express';
-import { Counter, register } from 'prom-client';
+import { getNodeAutoInstrumentations } from "@opentelemetry/auto-instrumentations-node";
+import { ExpressInstrumentation } from "@opentelemetry/instrumentation-express";
+import { NodeSDK } from "@opentelemetry/sdk-node";
+import { Request, Response, NextFunction, Application } from "express";
+import { Counter, register } from "prom-client";
 
 /**
  * Initializes observability (OpenTelemetry) for the app.
@@ -18,19 +18,22 @@ export function initObservability(): void {
     });
     sdk.start();
   } catch (err) {
-    // eslint-disable-next-line no-console
-    console.error('Failed to initialize observability:', err);
+    console.error("Failed to initialize observability:", err);
   }
 }
 
 export const httpRequestCounter = new Counter({
-  name: 'http_requests_total',
-  help: 'Total HTTP requests',
-  labelNames: ['method', 'route', 'status'],
+  name: "http_requests_total",
+  help: "Total HTTP requests",
+  labelNames: ["method", "route", "status"],
 });
 
-export function metricsMiddleware(req: Request, res: Response, next: NextFunction): void {
-  res.on('finish', () => {
+export function metricsMiddleware(
+  req: Request,
+  res: Response,
+  next: NextFunction,
+): void {
+  res.on("finish", () => {
     httpRequestCounter.inc({
       method: req.method,
       route: req.route ? req.route.path : req.path,
@@ -40,11 +43,12 @@ export function metricsMiddleware(req: Request, res: Response, next: NextFunctio
   next();
 }
 
-
-
 export function exposePrometheusMetrics(app: Application): void {
-  app.get('/metrics', async function metricsHandler(_req: Request, res: Response): Promise<void> {
-    res.set('Content-Type', register.contentType);
-    res.end(await register.metrics());
-  });
+  app.get(
+    "/metrics",
+    async function metricsHandler(_req: Request, res: Response): Promise<void> {
+      res.set("Content-Type", register.contentType);
+      res.end(await register.metrics());
+    },
+  );
 }

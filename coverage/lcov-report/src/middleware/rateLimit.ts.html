@@ -117,12 +117,26 @@
 <a name='L52'></a><a href='#L52'>52</a>
 <a name='L53'></a><a href='#L53'>53</a>
 <a name='L54'></a><a href='#L54'>54</a>
-<a name='L55'></a><a href='#L55'>55</a></td><td class="line-coverage quiet"><span class="cline-any cline-neutral">&nbsp;</span>
+<a name='L55'></a><a href='#L55'>55</a>
+<a name='L56'></a><a href='#L56'>56</a>
+<a name='L57'></a><a href='#L57'>57</a>
+<a name='L58'></a><a href='#L58'>58</a>
+<a name='L59'></a><a href='#L59'>59</a>
+<a name='L60'></a><a href='#L60'>60</a>
+<a name='L61'></a><a href='#L61'>61</a>
+<a name='L62'></a><a href='#L62'>62</a>
+<a name='L63'></a><a href='#L63'>63</a>
+<a name='L64'></a><a href='#L64'>64</a>
+<a name='L65'></a><a href='#L65'>65</a>
+<a name='L66'></a><a href='#L66'>66</a></td><td class="line-coverage quiet"><span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-yes">16x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">16x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">16x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -135,6 +149,11 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-yes">185x</span>
 <span class="cline-any cline-yes">185x</span>
 <span class="cline-any cline-yes">185x</span>
@@ -155,8 +174,11 @@
 <span class="cline-any cline-yes">16x</span>
 <span class="cline-any cline-yes">16x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-yes">16x</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-yes">292x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-yes">292x</span>
@@ -171,15 +193,18 @@
 <span class="cline-any cline-yes">292x</span>
 <span class="cline-any cline-yes">292x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span></td><td class="text"><pre class="prettyprint lang-js">import { Request, Response, NextFunction } from 'express';
-import { rateLimit, RateLimitRequestHandler, Options } from 'express-rate-limit';
+<span class="cline-any cline-neutral">&nbsp;</span></td><td class="text"><pre class="prettyprint lang-js">import { Request, Response, NextFunction } from "express";
+import {
+  rateLimit,
+  RateLimitRequestHandler,
+  Options,
+} from "express-rate-limit";
 &nbsp;
 // Example config: { '/v1/mcp/tools/list': { max: 30 }, '/v1/mcp/tools/call': { max: 10 } }
 const endpointRateLimits: Record&lt;string, { max: number }&gt; = {
-  '/v1/mcp/tools/list': { max: 30 },
-  '/v1/mcp/tools/call': { max: 10 },
+  "/v1/mcp/tools/list": { max: 30 },
+  "/v1/mcp/tools/call": { max: 10 },
 };
-&nbsp;
 &nbsp;
 function createRateLimiter(max: number): RateLimitRequestHandler {
   return rateLimit({
@@ -187,12 +212,17 @@ function createRateLimiter(max: number): RateLimitRequestHandler {
     max,
     standardHeaders: true,
     legacyHeaders: false,
-    message: { error: 'Too many requests, please try again later.' },
-    handler: (_req: Request, response: Response, _next: NextFunction, options: Options) =&gt; {
-      response.set('X-RateLimit-Limit', (options.max ?? <span class="branch-1 cbranch-no" title="branch not covered" >60)</span>.toString());
-      response.set('X-RateLimit-Remaining', '0');
+    message: { error: "Too many requests, please try again later." },
+    handler: (
+      _req: Request,
+      response: Response,
+      _next: NextFunction,
+      options: Options,
+    ) =&gt; {
+      response.set("X-RateLimit-Limit", (options.max ?? <span class="branch-1 cbranch-no" title="branch not covered" >60)</span>.toString());
+      response.set("X-RateLimit-Remaining", "0");
       response.set(
-        'X-RateLimit-Reset',
+        "X-RateLimit-Reset",
         (Math.floor(Date.now() / 1000) + 60).toString(),
       );
       response.status(429).json(options.message);
@@ -206,21 +236,24 @@ Object.entries(endpointRateLimits).forEach(([route, { max }]) =&gt; {
   limiters[`${route}:user`] = createRateLimiter(max);
   limiters[`${route}:admin`] = createRateLimiter(1000);
 });
-limiters['default:user'] = createRateLimiter(60);
-limiters['default:admin'] = createRateLimiter(1000);
+limiters["default:user"] = createRateLimiter(60);
+limiters["default:admin"] = createRateLimiter(1000);
 &nbsp;
-&nbsp;
-export function mcpRateLimiter(req: Request, res: Response, next: NextFunction): void {
+export function mcpRateLimiter(
+  req: Request,
+  res: Response,
+  next: NextFunction,
+): void {
   const key = req.baseUrl + req.path;
   // Defensive: req.user may be string, JwtPayload, or undefined
-  let role = 'user';
+  let role = "user";
   if (
-    typeof req.user === 'object' &amp;&amp;
+    typeof req.user === "object" &amp;&amp;
     req.user !== null &amp;&amp;
-    'role' in req.user &amp;&amp;
-    req.user.role === 'admin'
+    "role" in req.user &amp;&amp;
+    req.user.role === "admin"
   ) {
-    role = 'admin';
+    role = "admin";
   }
   const limiter = limiters[`${key}:${role}`] || limiters[`default:${role}`];
   return limiter(req, res, next);
@@ -232,7 +265,7 @@ export function mcpRateLimiter(req: Request, res: Response, next: NextFunction):
             <div class='footer quiet pad2 space-top1 center small'>
                 Code coverage generated by
                 <a href="https://istanbul.js.org/" target="_blank" rel="noopener noreferrer">istanbul</a>
-                at 2025-07-25T15:50:22.723Z
+                at 2025-07-25T19:06:54.635Z
             </div>
         <script src="../../prettify.js"></script>
         <script>

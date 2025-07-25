@@ -1,22 +1,21 @@
-
-jest.mock('../../src/utils/logger', () => ({
+jest.mock("../../src/utils/logger", () => ({
   __esModule: true,
   default: { error: jest.fn() },
 }));
 
-import { errorHandler } from '../../src/middleware/errorHandler';
-import logger from '../../src/utils/logger';
+import { errorHandler } from "../../src/middleware/errorHandler";
+import logger from "../../src/utils/logger";
 
 const OLD_ENV = process.env;
 
-describe('errorHandler', (): void => {
+describe("errorHandler", (): void => {
   let req: any, res: any, next: any;
   beforeEach(() => {
     req = {
-      originalUrl: '/fail',
-      method: 'GET',
-      user: { sub: 'user1' },
-      sessionId: 'sess',
+      originalUrl: "/fail",
+      method: "GET",
+      user: { sub: "user1" },
+      sessionId: "sess",
     };
     res = {
       status: jest.fn().mockReturnThis(),
@@ -32,106 +31,106 @@ describe('errorHandler', (): void => {
     process.env = OLD_ENV;
   });
 
-  it('logs and returns error response with code and stack (non-prod)', () => {
+  it("logs and returns error response with code and stack (non-prod)", () => {
     errorHandler(
-      { message: 'fail', status: 400, code: 'ERR_TEST', stack: 'STACK' },
+      { message: "fail", status: 400, code: "ERR_TEST", stack: "STACK" },
       req,
       res,
       next,
     );
     expect(res.status).toHaveBeenCalledWith(400);
     expect(res.setHeader).toHaveBeenCalledWith(
-      'Content-Type',
-      'application/json',
+      "Content-Type",
+      "application/json",
     );
     expect(res.json).toHaveBeenCalledWith({
-      error: 'fail',
-      code: 'ERR_TEST',
-      stack: 'STACK',
+      error: "fail",
+      code: "ERR_TEST",
+      stack: "STACK",
     });
     expect(logger.error).toHaveBeenCalled();
   });
 
-  it('omits stack/details in production', () => {
-    process.env.NODE_ENV = 'production';
+  it("omits stack/details in production", () => {
+    process.env.NODE_ENV = "production";
     errorHandler(
       {
-        message: 'fail',
+        message: "fail",
         status: 400,
-        code: 'ERR_TEST',
-        stack: 'STACK',
+        code: "ERR_TEST",
+        stack: "STACK",
         details: { foo: 1 },
       },
       req,
       res,
       next,
     );
-    expect(res.json).toHaveBeenCalledWith({ error: 'fail', code: 'ERR_TEST' });
+    expect(res.json).toHaveBeenCalledWith({ error: "fail", code: "ERR_TEST" });
   });
 
-  it('omits details in production even if present', () => {
-    process.env.NODE_ENV = 'production';
+  it("omits details in production even if present", () => {
+    process.env.NODE_ENV = "production";
     errorHandler(
-      { message: 'fail', status: 400, code: 'ERR_TEST', details: { foo: 1 } },
+      { message: "fail", status: 400, code: "ERR_TEST", details: { foo: 1 } },
       req,
       res,
       next,
     );
-    expect(res.json).toHaveBeenCalledWith({ error: 'fail', code: 'ERR_TEST' });
+    expect(res.json).toHaveBeenCalledWith({ error: "fail", code: "ERR_TEST" });
   });
 
-  it('includes details in non-prod if present', () => {
-    process.env.NODE_ENV = 'development';
+  it("includes details in non-prod if present", () => {
+    process.env.NODE_ENV = "development";
     errorHandler(
-      { message: 'fail', status: 400, code: 'ERR_TEST', details: { foo: 1 } },
+      { message: "fail", status: 400, code: "ERR_TEST", details: { foo: 1 } },
       req,
       res,
       next,
     );
     expect(res.json).toHaveBeenCalledWith({
-      error: 'fail',
-      code: 'ERR_TEST',
+      error: "fail",
+      code: "ERR_TEST",
       details: { foo: 1 },
       stack: undefined,
     });
   });
 
-  it('omits stack if missing in non-prod', () => {
+  it("omits stack if missing in non-prod", () => {
     errorHandler(
-      { message: 'fail', status: 400, code: 'ERR_TEST' },
+      { message: "fail", status: 400, code: "ERR_TEST" },
       req,
       res,
       next,
     );
     expect(res.json).toHaveBeenCalledWith({
-      error: 'fail',
-      code: 'ERR_TEST',
+      error: "fail",
+      code: "ERR_TEST",
       stack: undefined,
     });
   });
 
-  it('defaults code to ERR_INTERNAL if missing', () => {
-    errorHandler({ message: 'fail', status: 400 }, req, res, next);
+  it("defaults code to ERR_INTERNAL if missing", () => {
+    errorHandler({ message: "fail", status: 400 }, req, res, next);
     expect(res.json).toHaveBeenCalledWith({
-      error: 'fail',
-      code: 'ERR_INTERNAL',
+      error: "fail",
+      code: "ERR_INTERNAL",
       stack: undefined,
     });
   });
 
-  it('handles missing message/status/code', () => {
+  it("handles missing message/status/code", () => {
     errorHandler({}, req, res, next);
     expect(res.status).toHaveBeenCalledWith(500);
     expect(res.json).toHaveBeenCalledWith({
-      error: 'Internal Server Error',
-      code: 'ERR_INTERNAL',
+      error: "Internal Server Error",
+      code: "ERR_INTERNAL",
       stack: undefined,
     });
   });
 
-  it('calls next if headersSent', () => {
+  it("calls next if headersSent", () => {
     res.headersSent = true;
-    errorHandler({ message: 'fail' }, req, res, next);
+    errorHandler({ message: "fail" }, req, res, next);
     expect(next).toHaveBeenCalled();
   });
 });

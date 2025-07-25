@@ -113,7 +113,11 @@
 <a name='L48'></a><a href='#L48'>48</a>
 <a name='L49'></a><a href='#L49'>49</a>
 <a name='L50'></a><a href='#L50'>50</a>
-<a name='L51'></a><a href='#L51'>51</a></td><td class="line-coverage quiet"><span class="cline-any cline-yes">4x</span>
+<a name='L51'></a><a href='#L51'>51</a>
+<a name='L52'></a><a href='#L52'>52</a>
+<a name='L53'></a><a href='#L53'>53</a>
+<a name='L54'></a><a href='#L54'>54</a>
+<a name='L55'></a><a href='#L55'>55</a></td><td class="line-coverage quiet"><span class="cline-any cline-yes">4x</span>
 <span class="cline-any cline-yes">4x</span>
 <span class="cline-any cline-yes">4x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -133,7 +137,6 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-yes">1x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -145,6 +148,10 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-yes">4x</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-yes">6x</span>
 <span class="cline-any cline-yes">5x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -155,19 +162,20 @@
 <span class="cline-any cline-yes">6x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-yes">4x</span>
 <span class="cline-any cline-yes">3x</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-yes">4x</span>
 <span class="cline-any cline-yes">4x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span></td><td class="text"><pre class="prettyprint lang-js">import { getNodeAutoInstrumentations } from '@opentelemetry/auto-instrumentations-node';
-import { ExpressInstrumentation } from '@opentelemetry/instrumentation-express';
-import { NodeSDK } from '@opentelemetry/sdk-node';
-import { Request, Response, NextFunction, Application } from 'express';
-import { Counter, register } from 'prom-client';
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span></td><td class="text"><pre class="prettyprint lang-js">import { getNodeAutoInstrumentations } from "@opentelemetry/auto-instrumentations-node";
+import { ExpressInstrumentation } from "@opentelemetry/instrumentation-express";
+import { NodeSDK } from "@opentelemetry/sdk-node";
+import { Request, Response, NextFunction, Application } from "express";
+import { Counter, register } from "prom-client";
 &nbsp;
 /**
  * Initializes observability (OpenTelemetry) for the app.
@@ -183,19 +191,22 @@ export function initObservability(): void {
     });
 <span class="cstat-no" title="statement not covered" >    sdk.start();</span>
   } catch (err) {
-    // eslint-disable-next-line no-console
-    console.error('Failed to initialize observability:', err);
+    console.error("Failed to initialize observability:", err);
   }
 }
 &nbsp;
 export const httpRequestCounter = new Counter({
-  name: 'http_requests_total',
-  help: 'Total HTTP requests',
-  labelNames: ['method', 'route', 'status'],
+  name: "http_requests_total",
+  help: "Total HTTP requests",
+  labelNames: ["method", "route", "status"],
 });
 &nbsp;
-export function metricsMiddleware(req: Request, res: Response, next: NextFunction): void {
-  res.on('finish', () =&gt; {
+export function metricsMiddleware(
+  req: Request,
+  res: Response,
+  next: NextFunction,
+): void {
+  res.on("finish", () =&gt; {
     httpRequestCounter.inc({
       method: req.method,
       route: req.route ? req.route.path : req.path,
@@ -205,13 +216,14 @@ export function metricsMiddleware(req: Request, res: Response, next: NextFunctio
   next();
 }
 &nbsp;
-&nbsp;
-&nbsp;
 export function exposePrometheusMetrics(app: Application): void {
-  app.get('/metrics', async function metricsHandler(_req: Request, res: Response): Promise&lt;void&gt; {
-    res.set('Content-Type', register.contentType);
-    res.end(await register.metrics());
-  });
+  app.get(
+    "/metrics",
+    async function metricsHandler(_req: Request, res: Response): Promise&lt;void&gt; {
+      res.set("Content-Type", register.contentType);
+      res.end(await register.metrics());
+    },
+  );
 }
 &nbsp;</pre></td></tr></table></pre>
 
@@ -220,7 +232,7 @@ export function exposePrometheusMetrics(app: Application): void {
             <div class='footer quiet pad2 space-top1 center small'>
                 Code coverage generated by
                 <a href="https://istanbul.js.org/" target="_blank" rel="noopener noreferrer">istanbul</a>
-                at 2025-07-25T15:50:22.723Z
+                at 2025-07-25T19:06:54.635Z
             </div>
         <script src="../../prettify.js"></script>
         <script>

@@ -1,18 +1,18 @@
-import { extractMcpToolsFromOpenApi } from '../../src/utils/openapi-to-mcp';
+import { extractMcpToolsFromOpenApi } from "../../src/utils/openapi-to-mcp";
 
-describe('openapi-to-mcp param schema fallback', () => {
+describe("openapi-to-mcp param schema fallback", () => {
   it('should use { type: "string" } if param.schema is missing', () => {
     const openapi = {
       paths: {
-        '/foo': {
+        "/foo": {
           post: {
-            operationId: 'testTool',
+            operationId: "testTool",
             parameters: [
-              { name: 'bar' }, // no schema
+              { name: "bar" }, // no schema
             ],
             responses: {
-              '200': {
-                content: { 'application/json': { schema: { type: 'string' } } },
+              "200": {
+                content: { "application/json": { schema: { type: "string" } } },
               },
             },
           },
@@ -20,6 +20,6 @@ describe('openapi-to-mcp param schema fallback', () => {
       },
     };
     const tools = extractMcpToolsFromOpenApi(openapi) as any[];
-    expect(tools[0].inputSchema.properties.bar).toEqual({ type: 'string' });
+    expect(tools[0].inputSchema.properties.bar).toEqual({ type: "string" });
   });
 });

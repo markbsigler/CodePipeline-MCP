@@ -44,9 +44,9 @@
         
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">88.88% </span>
+                <span class="strong">89.13% </span>
                 <span class="quiet">Lines</span>
-                <span class='fraction'>40/45</span>
+                <span class='fraction'>41/46</span>
             </div>
         
             
@@ -152,12 +152,28 @@
 <a name='L87'></a><a href='#L87'>87</a>
 <a name='L88'></a><a href='#L88'>88</a>
 <a name='L89'></a><a href='#L89'>89</a>
-<a name='L90'></a><a href='#L90'>90</a></td><td class="line-coverage quiet"><span class="cline-any cline-yes">15x</span>
+<a name='L90'></a><a href='#L90'>90</a>
+<a name='L91'></a><a href='#L91'>91</a>
+<a name='L92'></a><a href='#L92'>92</a>
+<a name='L93'></a><a href='#L93'>93</a>
+<a name='L94'></a><a href='#L94'>94</a>
+<a name='L95'></a><a href='#L95'>95</a>
+<a name='L96'></a><a href='#L96'>96</a>
+<a name='L97'></a><a href='#L97'>97</a>
+<a name='L98'></a><a href='#L98'>98</a>
+<a name='L99'></a><a href='#L99'>99</a></td><td class="line-coverage quiet"><span class="cline-any cline-yes">15x</span>
 <span class="cline-any cline-yes">15x</span>
-<span class="cline-any cline-yes">15x</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-yes">15x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">15x</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -167,7 +183,6 @@
 <span class="cline-any cline-yes">15x</span>
 <span class="cline-any cline-yes">15x</span>
 <span class="cline-any cline-yes">15x</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -180,7 +195,9 @@
 <span class="cline-any cline-yes">12x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">12x</span>
 <span class="cline-any cline-yes">73x</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-yes">12x</span>
 <span class="cline-any cline-yes">12x</span>
@@ -195,6 +212,8 @@
 <span class="cline-any cline-yes">12x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-yes">12x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -230,7 +249,6 @@
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -241,72 +259,82 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span></td><td class="text"><pre class="prettyprint lang-js">import cors from 'cors';
-import express, { Application, Router, Request, Response, NextFunction, json } from 'express';
-import helmet from 'helmet';
+<span class="cline-any cline-neutral">&nbsp;</span></td><td class="text"><pre class="prettyprint lang-js">import cors from "cors";
+import express, {
+  Application,
+  Router,
+  Request,
+  Response,
+  NextFunction,
+  json,
+} from "express";
+import helmet from "helmet";
 &nbsp;
 import {
   toolsListHandler,
   toolsCallHandler,
   notificationsListChangedHandler,
-} from './handlers/mcpHandlers';
-import { authenticateJWT } from './middleware/auth';
-import { errorHandler } from './middleware/errorHandler';
-import { mcpRateLimiter } from './middleware/rateLimit';
-import { requestLogger } from './middleware/requestLogger';
-import { sessionMiddleware } from './middleware/session';
+} from "./handlers/mcpHandlers";
+import { authenticateJWT } from "./middleware/auth";
+import { errorHandler } from "./middleware/errorHandler";
+import { mcpRateLimiter } from "./middleware/rateLimit";
+import { requestLogger } from "./middleware/requestLogger";
+import { sessionMiddleware } from "./middleware/session";
 import {
   loadOpenApiSpec,
   extractMcpToolsFromOpenApi,
-} from './utils/openapi-to-mcp';
-&nbsp;
+} from "./utils/openapi-to-mcp";
 &nbsp;
 export function createApp(): Application {
   const app = express();
-  app.use(json({ limit: '1mb' }));
+  app.use(json({ limit: "1mb" }));
   app.use(cors());
   app.use(helmet());
   app.use(requestLogger); // Log all requests
 &nbsp;
   // Health check endpoint
-  app.get('/healthz', (_req: Request, res: Response): void =&gt; { res.status(200).json({ status: 'ok' }); });
+  app.get("/healthz", (_req: Request, res: Response): void =&gt; {
+    res.status(200).json({ status: "ok" });
+  });
 &nbsp;
   app.use(authenticateJWT); // Protect all routes after this line
   app.use(sessionMiddleware); // Add session management after authentication
 &nbsp;
   // Apply rate limiting to all routes after this line, but disable it for tests
-  if (process.env.NODE_ENV !== 'test') {
+  if (process.env.NODE_ENV !== "test") {
     app.use(mcpRateLimiter);
   }
 &nbsp;
   // Load OpenAPI and MCP tool definitions at startup
-  const openapi = loadOpenApiSpec('config/openapi.json');
-  const mcpTools = extractMcpToolsFromOpenApi(openapi as Record&lt;string, unknown&gt;);
+  const openapi = loadOpenApiSpec("config/openapi.json");
+  const mcpTools = extractMcpToolsFromOpenApi(
+    openapi as Record&lt;string, unknown&gt;,
+  );
 &nbsp;
   // Versioned API router (v1)
   const v1 = Router();
 &nbsp;
   // MCP protocol endpoints under /v1/mcp
-  v1.post('/mcp/tools/list', toolsListHandler(mcpTools));
-  v1.post('/mcp/tools/call', toolsCallHandler(mcpTools, openapi));
+  v1.post("/mcp/tools/list", toolsListHandler(mcpTools));
+  v1.post("/mcp/tools/call", toolsCallHandler(mcpTools, openapi));
   v1.get(
-    '/mcp/notifications/tools/list_changed',
+    "/mcp/notifications/tools/list_changed",
     notificationsListChangedHandler(),
   );
 &nbsp;
-  app.use('/v1', v1);
+  app.use("/v1", v1);
 &nbsp;
   // Legacy (unversioned) endpoints for backward compatibility (optional, can deprecate later)
-  app.post('/mcp/tools/list', toolsListHandler(mcpTools));
-  app.post('/mcp/tools/call', toolsCallHandler(mcpTools, openapi));
+  app.post("/mcp/tools/list", toolsListHandler(mcpTools));
+  app.post("/mcp/tools/call", toolsCallHandler(mcpTools, openapi));
   app.get(
-    '/mcp/notifications/tools/list_changed',
+    "/mcp/notifications/tools/list_changed",
     notificationsListChangedHandler(),
   );
 &nbsp;
   // Add a catch-all 404 handler before the error handler
   app.use((_req: Request, _res: Response, next: NextFunction): void =&gt; {
-    const err = new Error('Not Found') as Error &amp; { status?: number };
+    const err = new Error("Not Found") as Error &amp; { status?: number };
     err.status = 404;
     next(err);
   });
@@ -319,16 +347,15 @@ export function <span class="fstat-no" title="function not covered" >startServer
   const app = <span class="cstat-no" title="statement not covered" >createApp();</span>
   const port = <span class="cstat-no" title="statement not covered" >process.env.PORT || 3000;</span>
 <span class="cstat-no" title="statement not covered" >  app.listen(port, <span class="fstat-no" title="function not covered" >() =</span>&gt; {</span>
-    // eslint-disable-next-line no-console
 <span class="cstat-no" title="statement not covered" >    console.log(`MCP server listening on port ${port}`);</span>
   });
 }
 &nbsp;
 // Start the server only if this file is run directly (not imported as a module)
-const isMainModule = typeof require !== 'undefined' &amp;&amp; require.main === module;
+const isMainModule = typeof require !== "undefined" &amp;&amp; require.main === module;
 <span class="missing-if-branch" title="if path not taken" >I</span>if (isMainModule) {
   // Dynamically import to avoid circular dependency and keep startup logic testable
-<span class="cstat-no" title="statement not covered" ><span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >  import('</span>./startServer').t</span>hen(<span class="fstat-no" title="function not covered" >(m</span>od) =&gt; <span class="cstat-no" title="statement not covered" >mod.startServer())</span>;</span>
+<span class="cstat-no" title="statement not covered" ><span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >  import("</span>./startServer").t</span>hen(<span class="fstat-no" title="function not covered" >(m</span>od) =&gt; <span class="cstat-no" title="statement not covered" >mod.startServer())</span>;</span>
 }
 &nbsp;</pre></td></tr></table></pre>
 
@@ -337,7 +364,7 @@ const isMainModule = typeof require !== 'undefined' &amp;&amp; require.main === 
             <div class='footer quiet pad2 space-top1 center small'>
                 Code coverage generated by
                 <a href="https://istanbul.js.org/" target="_blank" rel="noopener noreferrer">istanbul</a>
-                at 2025-07-25T15:50:22.723Z
+                at 2025-07-25T19:06:54.635Z
             </div>
         <script src="../prettify.js"></script>
         <script>

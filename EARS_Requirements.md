@@ -1,6 +1,4 @@
-
 # BMC AMI DevX Code Pipeline MCP Server - EARS Requirements (Comprehensive)
-
 
 ## 1. System Overview Requirements
 
@@ -9,7 +7,6 @@
 **REQ-002**: The system SHALL auto-generate MCP tool endpoints, TypeScript types, and handler templates from OpenAPI specifications in `config/openapi.json`.
 
 **REQ-003**: The system SHALL implement best practices for security, streaming, error handling, observability, testing, CI/CD, and documentation, as described in the project README and PROMPT.
-
 
 ## 2. Configuration and Environment Requirements
 
@@ -23,7 +20,6 @@
 
 **REQ-008**: WHEN the system is deployed, it SHALL include observability (OpenTelemetry, Prometheus) and rate limiting middleware in the Express app.
 
-
 ## 3. OpenAPI-to-MCP Tool Mapping Requirements
 
 **REQ-009**: WHEN the system processes OpenAPI specifications, it SHALL auto-generate MCP tool endpoints, TypeScript types, and handler templates from `config/openapi.json`.
@@ -33,7 +29,6 @@
 **REQ-011**: WHEN a new tool is added to `config/openapi.json`, the system SHALL automatically generate and register TypeScript types and handler templates, and update API documentation.
 
 **REQ-012**: The system SHALL auto-generate and publish TypeScript/JavaScript API clients from the OpenAPI spec, and validate the spec in CI.
-
 
 ## 4. HTTP API and Protocol Requirements
 
@@ -46,7 +41,6 @@
 **REQ-016**: The system SHALL provide versioned endpoints under `/v1/` prefix, and maintain backward compatibility for legacy endpoints.
 
 **REQ-017**: The system SHALL conform to a standard JSON error schema (`code`, `message`, `details`) for all error responses, and document this schema in OpenAPI and README.
-
 
 ## 5. Security and Compliance Requirements
 
@@ -66,7 +60,6 @@
 
 **REQ-025**: The system SHALL store secrets securely using a secrets manager in production, and all JWT/session secrets MUST be at least 32 bytes and generated securely.
 
-
 ## 6. Authentication and Authorization Flow Requirements
 
 **REQ-026**: WHEN a client sends a request with Authorization header, the system SHALL validate JWT signature and claims, and return 401 Unauthorized with a generic error message if validation fails (no user enumeration).
@@ -74,7 +67,6 @@
 **REQ-027**: IF JWT claims are invalid or expired, the system SHALL return 401 Unauthorized with an appropriate error message.
 
 **REQ-028**: IF JWT is valid, the system SHALL process the request normally, and check user roles/permissions for all endpoints (least privilege).
-
 
 ## 7. Health, Monitoring, and Observability Requirements
 
@@ -84,13 +76,11 @@
 
 **REQ-031**: The system SHALL provide a "Monitoring and Alerting" section in documentation, and all logs must include correlation/request IDs.
 
-
 ## 8. Configuration Management Requirements
 
 **REQ-032**: WHEN starting, the system SHALL validate environment variables using schema validation (zod or joi), and support multi-environment configurations (development, staging, production).
 
 **REQ-033**: WHEN in production, the system SHALL set `NODE_ENV=production` and restrict debug endpoints.
-
 
 ## 9. Testing, Quality Assurance, and Verification Requirements
 
@@ -106,13 +96,11 @@
 
 **REQ-039**: The system SHALL include contract and mutation testing (Stryker) for protocol and critical logic, and upload coverage/mutation reports as CI artifacts.
 
-
 ## 10. Mutation Testing Requirements
 
 **REQ-040**: WHEN running mutation tests, the system SHALL use Stryker for mutation testing, and break the build if the mutation score is below 50%.
 
 **REQ-041**: WHEN mutation tests complete, the system SHALL generate HTML reports at `reports/mutation/mutation.html` and upload them as CI artifacts.
-
 
 ## 11. API Endpoint and Documentation Requirements
 
@@ -122,11 +110,9 @@
 
 **REQ-044**: The system SHALL auto-generate and serve up-to-date API documentation, including example requests/responses, error schemas, and usage examples for every endpoint/tool.
 
-
 ## 12. Rate Limiting Requirements
 
 **REQ-045**: WHEN a client exceeds rate limits, the system SHALL return 429 Too Many Requests, and allow requests within configured limits, tracking limits per client/IP address.
-
 
 ## 13. Session Management Requirements
 
@@ -134,16 +120,13 @@
 
 **REQ-047**: WHEN a session expires or becomes invalid, the system SHALL return 440 Session Expired.
 
-
 ## 14. Error Handling Requirements
 
 **REQ-048**: WHEN an error occurs, the system SHALL log the error with structured logging, record spans/errors in distributed tracing, and return appropriate HTTP status codes and error messages using the standard error schema.
 
-
 ## 15. Streaming Requirements
 
 **REQ-049**: WHEN handling tool calls, the system SHALL support streaming responses for large datasets, provide graceful error handling and recovery for streaming failures, and maintain state using secure session management for resumable streams.
-
 
 ## 16. Docker, Deployment, and Infrastructure Requirements
 
@@ -153,7 +136,6 @@
 
 **REQ-052**: WHEN deployed, the system SHALL run health checks on container startup, enforce resource limits, and support zero-downtime deployment strategies.
 
-
 ## 17. CI/CD Pipeline Requirements
 
 **REQ-053**: WHEN code is pushed, the system SHALL trigger GitHub Actions workflow for build, lint, test, coverage, mutation, security, and Docker builds, and fail the build on any errors or vulnerabilities.
@@ -161,7 +143,6 @@
 **REQ-054**: WHEN tests or security scans fail, the system SHALL prevent deployment to production.
 
 **REQ-055**: The CI pipeline SHALL upload build/test artifacts (coverage, mutation, etc.) as downloadable assets, and check for uncommitted changes after build/test/lint.
-
 
 ## 18. Observability, Monitoring, and Accessibility Requirements
 
@@ -171,7 +152,6 @@
 
 **REQ-058**: All served UIs/docs SHALL pass basic accessibility (a11y) checks and support internationalization (i18n) or document how to do so.
 
-
 ## 19. Production Hardening and Security Requirements
 
 **REQ-059**: WHEN deployed in production, the system SHALL run behind a reverse proxy for TLS termination, redirect HTTP to HTTPS at the proxy level, and restrict network access to trusted sources.
@@ -180,11 +160,9 @@
 
 **REQ-061**: WHEN storing secrets, the system SHALL use strong, unique secrets for JWT_SECRET and all credentials, and never commit secrets to version control.
 
-
 ## 20. Input Validation and Error Schema Requirements
 
 **REQ-062**: WHEN receiving API requests, the system SHALL validate all input parameters against defined schemas, enforce integer type validation, apply pattern checks and sanitization, and return 400 Bad Request with detailed error messages using the standard error schema.
-
 
 ## 21. Logging and Audit Requirements
 
@@ -192,11 +170,9 @@
 
 **REQ-064**: WHEN in production, the system SHALL forward logs to centralized logging systems, and redact sensitive information from logs.
 
-
 ## 22. API Versioning and Deprecation Requirements
 
 **REQ-065**: WHEN serving API endpoints, the system SHALL provide versioned endpoints under `/v1/` prefix, support legacy endpoints for backward compatibility, and provide migration notices and timelines for deprecated endpoints.
-
 
 ## 23. Documentation and Example Requirements
 
@@ -206,13 +182,11 @@
 
 **REQ-068**: The README SHALL include a project structure overview, FAQ/Troubleshooting, Common Pitfalls, Support/Contact, Changelog, and License sections.
 
-
 ## 24. Extensibility and Plugin Requirements
 
 **REQ-069**: WHEN extending functionality, the system SHALL support a documented plugin/middleware system for custom processing, with lifecycle hooks (init, pre-request, post-response, error).
 
 **REQ-070**: WHEN adding or modifying tools, the system SHALL auto-generate handlers and TypeScript types from OpenAPI specifications, and update documentation and tests accordingly.
-
 
 ## 25. Environment-Specific Requirements
 
@@ -222,13 +196,11 @@
 
 **REQ-073**: WHEN running in production, the system SHALL disable debug endpoints and enable all security hardening features.
 
-
 ## 26. JWT Token Lifecycle Requirements
 
 **REQ-074**: WHEN a user logs in, the authentication server SHALL issue a JWT token, and the system SHALL validate signature and claims before processing requests.
 
 **REQ-075**: WHEN a JWT token expires, the system SHALL return 401 Unauthorized and require re-authentication.
-
 
 ## 27. Backup, Recovery, and Reliability Requirements
 

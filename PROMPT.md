@@ -1,4 +1,3 @@
-
 # MCP Server TypeScript Node Project Generation Prompt (Comprehensive, Reproducible, Production-Ready)
 
 > **For LLM/Copilot/GenAI Agents:**
@@ -14,9 +13,6 @@
 
 ## Project Bootstrap & Reproducibility Checklist
 
-
-
-
 1. **Prerequisites**
 
 - Node.js v20+ and npm v9+ ([nodejs.org](https://nodejs.org/))
@@ -26,9 +22,6 @@
 - (Optional) k6 or Artillery for load testing
 - (Optional) jq, curl, and make (for scripts)
 
-
-
-
 1. **Clone and Install**
 
 ```sh
@@ -37,9 +30,6 @@ cd <PROJECT_DIR>
 npm install
 cp .env.example .env
 ```
-
-
-
 
 1. **Run and Test**
 
@@ -52,17 +42,11 @@ cp .env.example .env
 - Generate and view coverage: `npm run coverage`
 - View coverage report: open `coverage/lcov-report/index.html`
 
-
-
-
 1. **Docker**
 
 - Build and run: `docker-compose up --build`
 - Stop: `docker-compose down`
 - (Optional) Run with production profile: `docker-compose --profile prod up --build`
-
-
-
 
 1. **OpenAPI Spec**
 
@@ -70,17 +54,11 @@ cp .env.example .env
 - Regenerate clients: `npm run openapi:client`
 - Lint OpenAPI: `npm run openapi:lint`
 
-
-
-
 1. **CI/CD**
 
 - Configure GitHub Actions secrets if needed (see README).
 - Push to trigger CI: `git push`
 - Download CI artifacts: coverage, mutation, build logs
-
-
-
 
 1. **Verification**
 
@@ -88,39 +66,25 @@ cp .env.example .env
 - All endpoints and tools must have example requests/responses in README and API docs.
 - After all steps, output a summary table of successful steps and their expected outputs (e.g., “npm test: All tests pass”, “npm run build: dist/ created”).
 
-
-
-
 1. **FAQ/Troubleshooting**
 
 - See README for common issues (ports, Docker, JWT, Node version, etc).
 - “Common Pitfalls” and “Support/Contact” sections must be present in README.
 
-
-
-
 1. **Extending**
 
 - To add new endpoints/tools, edit `config/openapi.json` and follow documented process in README.
-
-
-
 
 1. **Project Structure Overview**
 
 - README must include a tree view and brief description of each top-level directory/file.
 
-
-
-
 Generate a **production-ready, fully reproducible, and extensible TypeScript/Node.js MCP server project** with the following best practices, security mitigations, and reproducibility requirements. **All requirements below are mandatory unless otherwise noted.**
-
 
 **Key additional requirements:**
 
 - Every endpoint/tool in the generated README and API docs must include at least one copy-paste runnable example request and response (curl and TypeScript/Node.js).
 - All error responses must conform to a standard JSON error schema (with `code`, `message`, and `details` fields), and this schema must be documented in the OpenAPI spec and README. Example:
-
 
 ```json
 {
@@ -131,6 +95,7 @@ Generate a **production-ready, fully reproducible, and extensible TypeScript/Nod
   }
 }
 ```
+
 - The OpenAPI spec must be validated and linted in CI; the project must fail to build if the spec is invalid or missing required fields.
 - The README must include a “How to Upgrade” section for dependencies and OpenAPI spec changes, with commands and manual steps.
 - The README must include instructions for reporting security issues (e.g., via email or GitHub Security Advisories).
@@ -145,13 +110,10 @@ Generate a **production-ready, fully reproducible, and extensible TypeScript/Nod
 
 ---
 
-
 ## 1. Project Structure, Standards, and Verification
-
 
 - Use Node.js v20+, TypeScript v5+, Jest v29+, and specify all dependency versions in `package.json`.
 - Directory structure (example):
-
 
 ```
 .
@@ -172,6 +134,7 @@ Generate a **production-ready, fully reproducible, and extensible TypeScript/Nod
 ├── LICENSE
 └── ...
 ```
+
 - Enforce strict TypeScript config with `tsconfig.json` and `tsconfig.build.json`.
 - Use `eslint`, `prettier`, and `@typescript-eslint/parser` for linting/formatting.
 - Provide `.gitignore`, `.dockerignore`, and `.env.example` with all required environment variables and example values.
@@ -272,9 +235,7 @@ Generate a **production-ready, fully reproducible, and extensible TypeScript/Nod
 
 ---
 
-
 ## 7. Testing, Quality Assurance, and Verification
-
 
 - Use **Jest** for all tests.
 - Minimum 90% code coverage (unit, integration, e2e). **Critical files (handlers, utils, middleware, error handling, streaming logic) must have 100% coverage.**
@@ -331,7 +292,6 @@ Generate a **production-ready, fully reproducible, and extensible TypeScript/Nod
 
 - Provide a sample `config/openapi.json`:
 
-
 ```json
 {
   "openapi": "3.0.0",
@@ -379,6 +339,7 @@ Generate a **production-ready, fully reproducible, and extensible TypeScript/Nod
   }
 }
 ```
+
 - Example `.env.example` (see above).
 
 ---
@@ -431,9 +392,7 @@ Generate a **production-ready, fully reproducible, and extensible TypeScript/Nod
 
 ---
 
-
 ## Additional Requirements and Best Practices (Mandatory)
-
 
 ### 1. Badges, Documentation, and Changelog
 
@@ -516,7 +475,6 @@ Generate a **production-ready, fully reproducible, and extensible TypeScript/Nod
 ---
 
 ---
-
 
 The resulting project **must be robust, secure, observable, and easily extensible, automatically exposing OpenAPI operations as MCP tools, following all security best practices, and ready for production and CI/CD. All requirements above are mandatory unless otherwise noted.**
 
