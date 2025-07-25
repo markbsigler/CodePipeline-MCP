@@ -8,7 +8,7 @@ import {
 // This script generates and exports all Zod schemas for tool input/output
 const openapiPath = path.resolve(__dirname, '../../config/openapi.json');
 const openapi = loadOpenApiSpec(openapiPath);
-const mcpTools = extractMcpToolsFromOpenApi(openapi);
+const mcpTools = extractMcpToolsFromOpenApi(openapi as Record<string, unknown>);
 
 // Export all schemas for use in validation middleware
 export const toolZodSchemas = mcpTools.reduce(
