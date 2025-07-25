@@ -5,4 +5,4 @@ import { ZodTypeAny } from "zod";
  *
  * Note: Cognitive complexity is high due to JSON Schema branching. Consider refactoring for maintainability if needed.
  */
-export declare function jsonSchemaToZod(schema: any): ZodTypeAny;
+export declare function jsonSchemaToZod(schema: unknown): ZodTypeAny;

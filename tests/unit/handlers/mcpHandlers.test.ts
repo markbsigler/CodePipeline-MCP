@@ -18,7 +18,7 @@ describe("toolsListHandler", function toolsListHandlerDescribe(): void {
     id: `tool${i + 1}`,
     name: `Tool ${i + 1}`,
   }));
-  let app: import('express').Express;
+  let app: import("express").Express;
 
   beforeEach(function beforeEachHook(): void {
     app = express();
@@ -55,7 +55,7 @@ describe("toolsListHandler", function toolsListHandlerDescribe(): void {
 });
 
 describe("toolsCallHandler", function toolsCallHandlerDescribe(): void {
-  let app: import('express').Express;
+  let app: import("express").Express;
   const mcpTools = [
     { id: "tool1", name: "Tool 1" },
     { id: "tool2", name: "Tool 2" },
@@ -224,7 +224,6 @@ describe("mcpHandlers", function mcpHandlersDescribe(): void {
       // Patch global setTimeout to call immediately for this test
       const origSetTimeout = global.setTimeout;
 
- 
       global.setTimeout = function patchedSetTimeout(
         fn: any,
         _ms: any,

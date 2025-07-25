@@ -13,7 +13,6 @@ describe("index.ts (createApp)", () => {
     let didThrow = false;
     try {
       require("../src/index"); // Import the main entry file
-     
     } catch (_e) {
       didThrow = true; // Set flag if an error is thrown
     } finally {

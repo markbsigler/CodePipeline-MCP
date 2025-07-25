@@ -112,7 +112,7 @@ describe("exposePrometheusMetrics handler", () => {
       },
     }));
     // Re-import after mocking
-     
+
     const promClient = await import("prom-client");
     await app._handler({}, res);
     expect(res.set).toHaveBeenCalledWith(

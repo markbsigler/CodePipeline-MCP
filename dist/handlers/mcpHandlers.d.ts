@@ -1,12 +1,12 @@
 import { Request, Response } from "express";
 export declare function toolsListHandler(
-  mcpTools: any[],
-): (_req: Request, res: Response) => void;
+  mcpTools: unknown[],
+): (_req: Request, _res: Response) => void;
 export declare function toolsCallHandler(
-  mcpTools: any[],
-  _openapi: any,
-): (_req: Request, res: Response) => Promise<void>;
+  mcpTools: unknown[],
+  _openapi: unknown,
+): (_req: Request, _res: Response) => Promise<void>;
 export declare function notificationsListChangedHandler(): (
-  _req: Request,
+  req: Request,
   res: Response,
 ) => void;

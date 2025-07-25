@@ -1,4 +1,3 @@
-
 /* eslint-disable no-unused-vars */
 // import { Request, Response } from 'express';
 
@@ -17,9 +16,8 @@ import {
 
 export function toolsListHandler(
   mcpTools: unknown[],
-  ): (_req: Request, _res: Response) => void {
-     
-    return (_req: Request, _res: Response): void => {
+): (_req: Request, _res: Response) => void {
+  return (_req: Request, _res: Response): void => {
     // Pagination support
     let page = parseInt((_req.query.page as string) || "1", 10);
     let pageSize = parseInt((_req.query.pageSize as string) || "20", 10);
@@ -47,9 +45,8 @@ export function toolsListHandler(
 export function toolsCallHandler(
   mcpTools: unknown[],
   _openapi: unknown,
-  ): (_req: Request, _res: Response) => Promise<void> {
-     
-    return async (_req: Request, _res: Response): Promise<void> => {
+): (_req: Request, _res: Response) => Promise<void> {
+  return async (_req: Request, _res: Response): Promise<void> => {
     const { tool, params, resumeSessionId } = _res.req.body;
     // ...existing code...
     // Find tool by name or id, with type assertion
@@ -79,7 +76,8 @@ export function toolsCallHandler(
       return;
     }
     const sessionId = (_res.req as { sessionId?: string }).sessionId;
-    const userId = (_res.req as { user?: { sub?: string } }).user?.sub ?? "anon";
+    const userId =
+      (_res.req as { user?: { sub?: string } }).user?.sub ?? "anon";
     type StreamState = {
       tool: string;
       params: unknown;
@@ -182,7 +180,6 @@ export function notificationsListChangedHandler(): (
   req: Request,
   res: Response,
 ) => void {
-   
   return (_req: Request, res: Response): void => {
     // For now, just return a static notification
     res.json({ changed: false });

@@ -1,2 +1,3 @@
-export declare function createApp(): import("express-serve-static-core").Express;
+import { Application } from "express";
+export declare function createApp(): Application;
 export declare function startServer(): void;

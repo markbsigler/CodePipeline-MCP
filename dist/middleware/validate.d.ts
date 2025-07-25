@@ -1,8 +1,5 @@
 import { Request, Response, NextFunction } from "express";
+import { ZodTypeAny } from "zod";
 export declare function validateBody(
-  schema: any,
-): (
-  req: Request,
-  res: Response,
-  next: NextFunction,
-) => Response<any, Record<string, any>> | undefined;
+  schema: ZodTypeAny,
+): (req: Request, res: Response, next: NextFunction) => void;

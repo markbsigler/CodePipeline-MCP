@@ -1,1 +1,1 @@
-export declare function sanitizeOutput(obj: any, depth?: number): any;
+export declare function sanitizeOutput(obj: unknown, depth?: number): unknown;

@@ -1,14 +1,14 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.mcpRateLimiter = mcpRateLimiter;
+const express_rate_limit_1 = require("express-rate-limit");
 // Example config: { '/v1/mcp/tools/list': { max: 30 }, '/v1/mcp/tools/call': { max: 10 } }
 const endpointRateLimits = {
   "/v1/mcp/tools/list": { max: 30 },
   "/v1/mcp/tools/call": { max: 10 },
 };
-// Factory to create a rate limiter for a given endpoint and user role
 function createRateLimiter(max) {
-  return require("express-rate-limit")({
+  return (0, express_rate_limit_1.rateLimit)({
     windowMs: 60 * 1000,
     max,
     standardHeaders: true,

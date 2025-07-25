@@ -1,8 +1,11 @@
 interface StreamState {
   tool: string;
-  params: any;
+  params: unknown;
   progress: number;
-  resultChunks: any[];
+  resultChunks: Array<{
+    progress: string;
+    partialResult?: unknown;
+  }>;
   completed: boolean;
   userId: string;
 }

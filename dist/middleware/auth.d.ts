@@ -3,4 +3,4 @@ export declare function authenticateJWT(
   req: Request,
   res: Response,
   next: NextFunction,
-): Response<any, Record<string, any>> | undefined;
+): void;

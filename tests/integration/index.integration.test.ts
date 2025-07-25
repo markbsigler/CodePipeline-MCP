@@ -24,7 +24,6 @@ describe("index.ts (Express app)", function (): void {
 
     it("should 404 for unknown route (auth bypassed)", async function should404ForUnknownRoute(): Promise<void> {
       jest.doMock("../../src/middleware/auth", () => ({
-         
         authenticateJWT: (_req: any, _res: any, next: any): void => next(),
       }));
       const { createApp: freshCreateApp } = await import("../../src/index");
@@ -42,7 +41,7 @@ describe("index.ts (Express app)", function (): void {
       const { createApp: freshCreateApp } = await import("../../src/index");
       const appNoAuth = freshCreateApp();
       // Register /throw before any requests
-       
+
       appNoAuth.get("/throw", function throwRoute(_req: any, _res: any): void {
         throw new Error("fail!"); // Updated to silence no-unused-vars warning
       });

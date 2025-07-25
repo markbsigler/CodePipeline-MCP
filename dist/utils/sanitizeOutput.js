@@ -17,7 +17,9 @@ const SENSITIVE_KEYS = [
 const POLLUTION_KEYS = ["__proto__", "constructor", "prototype"];
 const MAX_DEPTH = 20;
 function sanitizeOutput(obj, depth = 0) {
-  if (depth >= MAX_DEPTH) return undefined;
+  if (depth >= MAX_DEPTH) {
+    return undefined;
+  }
   if (Array.isArray(obj)) {
     return obj.map((item) => sanitizeOutput(item, depth + 1));
   }
@@ -25,15 +27,21 @@ function sanitizeOutput(obj, depth = 0) {
     const clean = {};
     for (const [k, v] of Object.entries(obj)) {
       const keyLower = k.toLowerCase();
-      if (SENSITIVE_KEYS.some((s) => keyLower.includes(s))) continue;
-      if (POLLUTION_KEYS.includes(k)) continue;
+      if (SENSITIVE_KEYS.some((s) => keyLower.includes(s))) {
+        continue;
+      }
+      if (POLLUTION_KEYS.includes(k)) {
+        continue;
+      }
       const sanitized = sanitizeOutput(v, depth + 1);
       if (sanitized !== undefined) {
         clean[k] = sanitized;
       }
     }
     // If the object is empty, return undefined (unless it's the root)
-    if (Object.keys(clean).length === 0 && depth !== 0) return undefined;
+    if (Object.keys(clean).length === 0 && depth !== 0) {
+      return undefined;
+    }
     return clean;
   }
   if (typeof obj === "string") {

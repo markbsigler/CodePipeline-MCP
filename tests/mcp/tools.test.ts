@@ -25,17 +25,14 @@ jest.mock("../../src/handlers/mcpHandlers", () => ({
   mcpTools: mockMcpTools,
   toolsListHandler:
     (): ((req: any, res: any) => void) =>
-     
     (req: any, res: any): void =>
       res.json({ tools: mockMcpTools }),
   toolsCallHandler:
     (): ((req: any, res: any) => void) =>
-     
     (req: any, res: any): void =>
       res.json({ result: "mocked" }),
   notificationsListChangedHandler:
     (): ((req: any, res: any) => void) =>
-     
     (req: any, res: any): void =>
       res.json({ changed: false }),
 }));

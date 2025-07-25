@@ -1,2 +1,6 @@
-import { Request } from "express";
-export declare function mcpRateLimiter(req: Request, res: any, next: any): void;
+import { Request, Response, NextFunction } from "express";
+export declare function mcpRateLimiter(
+  req: Request,
+  res: Response,
+  next: NextFunction,
+): void;
