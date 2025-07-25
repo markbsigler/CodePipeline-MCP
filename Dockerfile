@@ -1,7 +1,7 @@
 
 # syntax=docker/dockerfile:1
 
-FROM node:18-alpine3.19
+FROM node:20-alpine3.19
 ARG CACHEBUST=1
 
 WORKDIR /usr/src/app
