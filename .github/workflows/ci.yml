@@ -33,7 +33,7 @@ jobs:
       - name: Install dependencies
         run: npm ci
       - name: Build Docker image
-        run: docker build -t mcp-server:ci .
+        run: docker build --no-cache -t mcp-server:ci .
       - name: Run Trivy scan
         uses: aquasecurity/trivy-action@master
         with:
