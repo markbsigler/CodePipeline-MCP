@@ -5,7 +5,7 @@ FROM node:20-alpine3.19 AS build
 WORKDIR /usr/src/app
 # Copy only package files first for better layer caching
 COPY package*.json ./
-RUN apk update && apk upgrade && npm ci --omit=dev
+RUN apk update && apk upgrade && npm ci --ignore-scripts
 # Copy only necessary files for build
 COPY src ./src
 COPY config ./config
@@ -16,14 +16,18 @@ RUN npm run build
 # --- Production Stage ---
 FROM node:20-alpine3.19 AS prod
 WORKDIR /usr/src/app
-# Create non-root user
-RUN addgroup -g 1001 -S nodegroup && adduser -S nodeuser -u 1001 -G nodegroup && apk update && apk upgrade && apk add --no-cache curl
+RUN addgroup -g 1001 -S nodegroup \
+    && adduser -S nodeuser -u 1001 -G nodegroup \
+    && apk update && apk upgrade && apk add --no-cache curl
 COPY --from=build /usr/src/app/dist ./dist
 COPY --from=build /usr/src/app/package*.json ./
 COPY --from=build /usr/src/app/config ./config
 COPY --from=build /usr/src/app/.env.example ./
 COPY --from=build /usr/src/app/tsconfig*.json ./
-RUN npm ci --omit=dev --ignore-scripts && npm prune --omit=dev
+RUN npm ci --omit=dev --ignore-scripts && npm prune --omit=dev \
+    # Ensure logs directory exists and is owned by nodeuser after all COPYs
+    && mkdir -p /usr/src/app/logs \
+    && chown -R nodeuser:nodegroup /usr/src/app/logs
 USER nodeuser
 ENV NODE_ENV=production
 ENV NODE_OPTIONS="--enable-source-maps --no-deprecation"
