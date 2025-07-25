@@ -12,6 +12,7 @@ logs
 
 # Env files
 .env
+!.env.example
 .env.*
 
 # Tests and configs
