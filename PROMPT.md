@@ -1,110 +1,186 @@
-# MCP Server TypeScript Node Project Generation Prompt
 
-> **For LLM/Copilot Agents:**  
-> This prompt is designed for full project bootstrapping. Follow all steps and requirements exactly.  
-> **Do not skip any section.**  
-> All code, configuration, and documentation must be generated so that a developer can clone, install, build, test, and run the project (including Docker and CI) with no manual steps omitted.
+# MCP Server TypeScript Node Project Generation Prompt (Comprehensive, Reproducible, Production-Ready)
 
-## Project Bootstrap Instructions (Reproducibility Checklist)
-
-1. **Prerequisites**
-   - Node.js v20+ and npm v9+ (install from [nodejs.org](https://nodejs.org/))
-   - Docker and Docker Compose (install from [docker.com](https://www.docker.com/get-started/))
-   - Git
-   - (Optional) Stryker for mutation testing: `npm install -g stryker-cli`
-
-2. **Clone and Install**
-   ```sh
-   git clone <REPO_URL>
-   cd <PROJECT_DIR>
-   npm install
-   cp .env.example .env
-   ```
-
-3. **Run and Test**
-   - Start dev server: `npm run dev`
-   - Run tests: `npm test`
-   - Run mutation tests: `npx stryker run`
-   - Lint/format: `npm run lint && npm run format`
-   - Build: `npm run build`
-   - Start production: `npm start`
-
-4. **Docker**
-   - Build and run: `docker-compose up --build`
-   - Stop: `docker-compose down`
-
-5. **OpenAPI Spec**
-   - Validate: `npm run openapi:validate`
-   - Regenerate clients: `npm run openapi:client`
-
-6. **CI/CD**
-   - Configure GitHub Actions secrets if needed (see README).
-   - Push to trigger CI: `git push`
-
-7. **FAQ/Troubleshooting**
-   - See README for common issues (ports, Docker, JWT, etc).
-
-8. **Extending**
-   - To add new endpoints/tools, edit `config/openapi.json` and follow documented process.
-
-9. **Verification**
-   - Ensure all tests pass, coverage is reported, and the app runs in both local and Docker environments.
-   - All endpoints and tools must have example requests/responses in README and API docs.
+> **For LLM/Copilot/GenAI Agents:**
+> This prompt is for full, end-to-end project bootstrapping. **Follow every step and requirement exactly.**
+> **Do not skip or summarize any section.**
+> All code, configuration, and documentation must be generated so that a developer can clone, install, build, test, and run the project (including Docker and CI) with no manual steps omitted, on any major OS (macOS, Linux, Windows).
+> All generated files must be present, non-empty, and up-to-date with the latest stable dependency versions.
+> All code and docs must pass all lint, type, and test checks on first clone/install, with no manual fixes.
+> All scripts and commands must be cross-platform or document any OS-specific caveats.
+> All code must be self-contained and not depend on unpublished/private packages unless documented.
 
 ---
 
-Generate a production-ready TypeScript/Node.js MCP server project with the following best practices and security mitigations. All requirements below are mandatory unless otherwise noted.
+## Project Bootstrap & Reproducibility Checklist
+
+
+
+
+1. **Prerequisites**
+
+- Node.js v20+ and npm v9+ ([nodejs.org](https://nodejs.org/))
+- Docker & Docker Compose ([docker.com](https://www.docker.com/get-started/))
+- Git
+- (Optional) Stryker for mutation testing: `npm install -g stryker-cli`
+- (Optional) k6 or Artillery for load testing
+- (Optional) jq, curl, and make (for scripts)
+
+
+
+
+1. **Clone and Install**
+
+```sh
+git clone <REPO_URL>
+cd <PROJECT_DIR>
+npm install
+cp .env.example .env
+```
+
+
+
+
+1. **Run and Test**
+
+- Start dev server: `npm run dev`
+- Run tests: `npm test`
+- Run mutation tests: `npx stryker run`
+- Lint/format: `npm run lint && npm run format`
+- Build: `npm run build`
+- Start production: `npm start`
+- Generate and view coverage: `npm run coverage`
+- View coverage report: open `coverage/lcov-report/index.html`
+
+
+
+
+1. **Docker**
+
+- Build and run: `docker-compose up --build`
+- Stop: `docker-compose down`
+- (Optional) Run with production profile: `docker-compose --profile prod up --build`
+
+
+
+
+1. **OpenAPI Spec**
+
+- Validate: `npm run openapi:validate`
+- Regenerate clients: `npm run openapi:client`
+- Lint OpenAPI: `npm run openapi:lint`
+
+
+
+
+1. **CI/CD**
+
+- Configure GitHub Actions secrets if needed (see README).
+- Push to trigger CI: `git push`
+- Download CI artifacts: coverage, mutation, build logs
+
+
+
+
+1. **Verification**
+
+- Ensure all tests pass, coverage is reported, and the app runs in both local and Docker environments.
+- All endpoints and tools must have example requests/responses in README and API docs.
+- After all steps, output a summary table of successful steps and their expected outputs (e.g., “npm test: All tests pass”, “npm run build: dist/ created”).
+
+
+
+
+1. **FAQ/Troubleshooting**
+
+- See README for common issues (ports, Docker, JWT, Node version, etc).
+- “Common Pitfalls” and “Support/Contact” sections must be present in README.
+
+
+
+
+1. **Extending**
+
+- To add new endpoints/tools, edit `config/openapi.json` and follow documented process in README.
+
+
+
+
+1. **Project Structure Overview**
+
+- README must include a tree view and brief description of each top-level directory/file.
+
+
+
+
+Generate a **production-ready, fully reproducible, and extensible TypeScript/Node.js MCP server project** with the following best practices, security mitigations, and reproducibility requirements. **All requirements below are mandatory unless otherwise noted.**
+
 
 **Key additional requirements:**
 
-- Every endpoint/tool in the generated README and API docs must include at least one example request and response (curl and TypeScript/Node.js).
+- Every endpoint/tool in the generated README and API docs must include at least one copy-paste runnable example request and response (curl and TypeScript/Node.js).
 - All error responses must conform to a standard JSON error schema (with `code`, `message`, and `details` fields), and this schema must be documented in the OpenAPI spec and README. Example:
-  ```json
-  {
-    "error": {
-      "code": "ERR_CODE",
-      "message": "Human-readable error message.",
-      "details": { "field": "description" }
-    }
+
+
+```json
+{
+  "error": {
+    "code": "ERR_CODE",
+    "message": "Human-readable error message.",
+    "details": { "field": "description" }
   }
-  ```
-- The OpenAPI spec must be validated in CI; the project must fail to build if the spec is invalid.
+}
+```
+- The OpenAPI spec must be validated and linted in CI; the project must fail to build if the spec is invalid or missing required fields.
 - The README must include a “How to Upgrade” section for dependencies and OpenAPI spec changes, with commands and manual steps.
 - The README must include instructions for reporting security issues (e.g., via email or GitHub Security Advisories).
-- All served UIs/docs must be accessible (a11y best practices).
+- All served UIs/docs must be accessible (a11y best practices) and pass basic a11y checks (axe-core, Lighthouse).
 - Generated API clients must be published to a package registry (npm, GitHub Packages, etc.) and include usage instructions in the README.
-- If there are specific performance SLAs, these must be documented and tested.
+- If there are specific performance SLAs, these must be documented and tested, and load/stress test scripts must be included.
 - Use consistent terminology throughout (e.g., “tool” vs. “endpoint”, “handler” vs. “controller”).
+- All generated files must include copyright/license headers.
+- All scripts and commands must be cross-platform (macOS, Linux, Windows) or document any OS-specific caveats.
+- All code and docs must be up-to-date with the latest stable dependency versions at the time of generation.
+- All code must be self-contained and not depend on unpublished/private packages unless documented.
 
 ---
 
-## 1. Project Structure and Standards
+
+## 1. Project Structure, Standards, and Verification
+
 
 - Use Node.js v20+, TypeScript v5+, Jest v29+, and specify all dependency versions in `package.json`.
 - Directory structure (example):
-  ```
-  .
-  ├── src/
-  │   ├── handlers/
-  │   ├── middleware/
-  │   ├── types/
-  │   ├── utils/
-  ├── config/
-  │   └── openapi.json
-  ├── tests/
-  ├── .github/
-  │   └── workflows/
-  ├── .env.example
-  ├── Dockerfile
-  ├── docker-compose.yml
-  ├── README.md
-  ├── LICENSE
-  └── ...
-  ```
+
+
+```
+.
+├── src/
+│   ├── handlers/
+│   ├── middleware/
+│   ├── types/
+│   ├── utils/
+├── config/
+│   └── openapi.json
+├── tests/
+├── .github/
+│   └── workflows/
+├── .env.example
+├── Dockerfile
+├── docker-compose.yml
+├── README.md
+├── LICENSE
+└── ...
+```
 - Enforce strict TypeScript config with `tsconfig.json` and `tsconfig.build.json`.
 - Use `eslint`, `prettier`, and `@typescript-eslint/parser` for linting/formatting.
 - Provide `.gitignore`, `.dockerignore`, and `.env.example` with all required environment variables and example values.
 - **API versioning:** All endpoints must be versioned (e.g., `/v1/tools/list`).
+- All generated files must be present and non-empty (no placeholder stubs unless documented as such).
+- All scripts and commands must be cross-platform or document any OS-specific caveats.
+- README must include a “Project Structure Overview” section with a tree view and brief description of each top-level directory/file.
+- README must include a “Common Pitfalls” and “Support/Contact” section.
+- After running all install/build/test steps, output a summary table of all successful steps and their expected outputs.
 
 ---
 
@@ -196,17 +272,25 @@ Generate a production-ready TypeScript/Node.js MCP server project with the follo
 
 ---
 
-## 7. Testing and Quality Assurance
+
+## 7. Testing, Quality Assurance, and Verification
+
 
 - Use **Jest** for all tests.
-- Minimum 90% code coverage (unit, integration, e2e).
+- Minimum 90% code coverage (unit, integration, e2e). **Critical files (handlers, utils, middleware, error handling, streaming logic) must have 100% coverage.**
+- All test files must include at least one negative test (failure path) for each handler/middleware.
+- All tests must be deterministic and not depend on external services unless mocked.
+- All test output must be clean (no console.log or warnings).
+- Test coverage and mutation score thresholds must be enforced in CI (e.g., minimum 80% mutation score, fail if lower).
 - Test all handlers, middleware, protocol endpoints, tool mapping, security, streams, and schema validation.
 - Include `jest --coverage` in scripts.
 - Linting/formatting checks with pre-commit hooks (`husky`).
 - TypeScript type checking in CI.
-- Security scanning (`npm audit`, `snyk`).
+- Security scanning (`npm audit --production`, `snyk`).
 - **Contract and mutation testing:** Implement contract tests (e.g., Pact) for MCP protocol compatibility and mutation testing (e.g., Stryker) for critical logic.
 - **Load/stress testing:** Include load/stress testing scripts (e.g., k6, Artillery) and document performance SLAs.
+- CI pipeline must upload build/test artifacts (coverage, mutation, etc.) as downloadable assets.
+- CI pipeline must check for uncommitted changes after build/test/lint (to catch auto-fixers).
 
 ---
 
@@ -246,41 +330,42 @@ Generate a production-ready TypeScript/Node.js MCP server project with the follo
 ## 11. Example Files
 
 - Provide a sample `config/openapi.json`:
-  ```json
-  {
-    "openapi": "3.0.0",
-    "info": { "title": "Example API", "version": "1.0.0" },
-    "paths": {
-      "/hello": {
-        "get": {
-          "operationId": "sayHello",
-          "description": "Returns a greeting.",
-          "responses": {
-            "200": {
-              "description": "Greeting response",
-              "content": {
-                "application/json": {
-                  "schema": {
-                    "type": "object",
-                    "properties": { "message": { "type": "string" } }
-                  }
+
+
+```json
+{
+  "openapi": "3.0.0",
+  "info": { "title": "Example API", "version": "1.0.0" },
+  "paths": {
+    "/hello": {
+      "get": {
+        "operationId": "sayHello",
+        "description": "Returns a greeting.",
+        "responses": {
+          "200": {
+            "description": "Greeting response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": { "message": { "type": "string" } }
                 }
               }
-            },
-            "default": {
-              "description": "Error response",
-              "content": {
-                "application/json": {
-                  "schema": {
-                    "type": "object",
-                    "properties": {
-                      "error": {
-                        "type": "object",
-                        "properties": {
-                          "code": { "type": "string" },
-                          "message": { "type": "string" },
-                          "details": { "type": "object" }
-                        }
+            }
+          },
+          "default": {
+            "description": "Error response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "error": {
+                      "type": "object",
+                      "properties": {
+                        "code": { "type": "string" },
+                        "message": { "type": "string" },
+                        "details": { "type": "object" }
                       }
                     }
                   }
@@ -292,7 +377,8 @@ Generate a production-ready TypeScript/Node.js MCP server project with the follo
       }
     }
   }
-  ```
+}
+```
 - Example `.env.example` (see above).
 
 ---
@@ -345,14 +431,18 @@ Generate a production-ready TypeScript/Node.js MCP server project with the follo
 
 ---
 
-## Additional Requirements and Best Practices
 
-### 1. Badges and Documentation
+## Additional Requirements and Best Practices (Mandatory)
+
+
+### 1. Badges, Documentation, and Changelog
 
 - Generated README must include build, coverage, and license badges.
 - Add a table of contents for easy navigation.
 - Provide direct links to API docs (e.g., `/docs` for Swagger UI/Redoc).
-- README and API docs must include at least one example request and response (curl and TypeScript/Node.js) for every endpoint/tool.
+- README and API docs must include at least one copy-paste runnable example request and response (curl and TypeScript/Node.js) for every endpoint/tool.
+- README must include a “Changelog” or release notes section/file.
+- README must include a “License” section and a valid `LICENSE` file.
 
 ### 2. Security and Compliance
 
@@ -360,6 +450,10 @@ Generate a production-ready TypeScript/Node.js MCP server project with the follo
 - All endpoints must check user roles/permissions (least privilege).
 - No stack traces or sensitive info in production error responses.
 - Document how to report security issues (README must include a Security Reporting section).
+- All secrets in `.env.example` must be clearly marked as example/placeholder and never valid for production.
+- All JWT and session secrets must be at least 32 bytes and generated securely.
+- All endpoints must return a generic error message for authentication/authorization failures (no user enumeration).
+- All dependencies must be checked for known vulnerabilities in CI (`npm audit --production`).
 
 ### 3. Testing and Quality
 
@@ -367,35 +461,65 @@ Generate a production-ready TypeScript/Node.js MCP server project with the follo
 - All branches and lines in critical files must be covered by tests.
 - CI must fail on lint, format, or type errors.
 - Include contract and mutation testing for protocol and critical logic.
+- All test output must be clean (no console.log or warnings).
+- “Test Coverage Report” artifact must be available in CI.
 
 ### 4. Extensibility and Upgrades
 
 - Document the process for adding new tools, plugins, or middleware.
 - Provide a clear upgrade path for dependencies and OpenAPI specs.
 - Require a "How to Upgrade" section in the README, with commands and manual steps.
+- Require a “Plugin/Extension Example” in the codebase and README.
+- Require a “How to Write a Custom Middleware/Plugin” section in the docs.
+- All extension points must be covered by at least one test.
 
 ### 5. Docker and Deployment
 
 - Add a quick start for Docker Compose in the README and provide a production-ready `docker-compose.yml` in the project root.
 - Multi-stage Dockerfile must use a non-root user and include healthchecks. Provide a production-ready `Dockerfile` in the project root using best practices for Node.js/TypeScript apps (multi-stage build, non-root user, healthcheck, minimal image).
 - Document multi-arch builds and deployment best practices.
+- Docker images must be scanned for vulnerabilities in CI.
+- Docker images must be published with both `latest` and version tags.
+- Docker Compose must support both development and production profiles.
+- All containers must run as non-root and drop all unnecessary Linux capabilities.
+- “Zero Downtime Deployment” note or strategy must be included if relevant.
 
 ### 6. Example-Driven Documentation
 
-- README and generated docs must include at least one example request and response (curl and TypeScript/Node.js) for all endpoints/tools.
+- README and generated docs must include at least one copy-paste runnable example request and response (curl and TypeScript/Node.js) for all endpoints/tools.
 - Provide a minimal but complete example OpenAPI spec, including error schema.
 - Inline example `.env` in README for clarity.
 
 ### 7. FAQ and Troubleshooting
 
 - Add a FAQ/Troubleshooting section to the README for common issues (Docker, JWT, ports, etc).
+- README must include a “Common Pitfalls” and “Support/Contact” section.
 
 ### 8. Contributing
 
 - Add a contributing section and reference `CONTRIBUTING.md` if present.
 
+### 9. Observability, Monitoring, and Accessibility
+
+- All logs must include a correlation/request ID.
+- Prometheus metrics must be available at `/metrics` and documented.
+- All errors must be logged with stack traces in development, but not in production responses.
+- README must include a “Monitoring and Alerting” section.
+- All served UIs/docs must pass basic a11y checks (axe-core, Lighthouse).
+- All user-facing text must be externalized for i18n, or document how to do so.
+
+### 10. Miscellaneous
+
+- All scripts must be documented in `package.json` and README.
+- All generated files must include copyright/license headers.
+
 ---
 
-The resulting project should be robust, secure, observable, and easily extensible, automatically exposing OpenAPI operations as MCP tools, following all security best practices, and ready for production and CI/CD. All requirements above are mandatory unless otherwise noted.
+---
+
+
+The resulting project **must be robust, secure, observable, and easily extensible, automatically exposing OpenAPI operations as MCP tools, following all security best practices, and ready for production and CI/CD. All requirements above are mandatory unless otherwise noted.**
+
+---
 
 ---
