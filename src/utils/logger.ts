@@ -5,9 +5,7 @@ import pino, { destination } from "pino";
 import pinoHttp from "pino-http";
 
 const logDir = process.env.LOG_DIR || "logs";
-if (!fs.existsSync(logDir)) {
-  fs.mkdirSync(logDir);
-}
+fs.mkdirSync(logDir, { recursive: true });
 
 const logger = pino(
   {
