@@ -54,12 +54,20 @@ jobs:
         env:
           JWT_SECRET: ${{ secrets.JWT_SECRET }}
           DB_PASSWORD: ${{ secrets.DB_PASSWORD }}
-      - name: Wait for healthcheck
+      - name: Wait for container health
         run: |
           for i in {1..20}; do
-            if curl -sf http://localhost:3000/healthz; then exit 0; fi
+            STATUS=$(docker compose ps --format json | jq -r '.[] | select(.Service=="app") | .Health')
+            if [ "$STATUS" = "healthy" ]; then
+              echo "Container is healthy!"
+              exit 0
+            fi
+            echo "Waiting for container health... (status: $STATUS)"
             sleep 2
           done
+          echo "Container did not become healthy in time."
+          docker compose ps
+          docker compose logs
           exit 1
       - name: Run integration tests
         run: npm run test:integration
