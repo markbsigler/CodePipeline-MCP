@@ -69,6 +69,8 @@ jobs:
           docker compose ps
           docker compose logs
           exit 1
+      - name: Ensure logs/app.log exists
+        run: mkdir -p logs && touch logs/app.log
       - name: Run integration tests
         run: npm run test:integration
       - name: Run coverage
