@@ -5,9 +5,10 @@
 FROM node:20-alpine3.19 AS build
 ARG CACHEBUST=1
 
+# Ensure npm is up to date for override support
 WORKDIR /usr/src/app
 COPY package.json package-lock.json ./
-RUN apk update && apk upgrade && npm ci --ignore-scripts
+RUN apk update && apk upgrade && npm install -g npm@latest && npm --version && npm ci --ignore-scripts
 # Copy only necessary files for build
 COPY src ./src
 COPY config ./config
@@ -22,7 +23,8 @@ ARG CACHEBUST=1
 WORKDIR /usr/src/app
 RUN addgroup -g 1001 -S nodegroup \
     && adduser -S nodeuser -u 1001 -G nodegroup \
-    && apk update && apk upgrade && apk add --no-cache curl
+    && apk update && apk upgrade && apk add --no-cache curl \
+    && npm install -g npm@latest && npm --version
 COPY --from=build /usr/src/app/dist ./dist
 COPY --from=build /usr/src/app/package.json ./
 COPY --from=build /usr/src/app/package-lock.json ./
