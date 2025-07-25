@@ -1,7 +1,10 @@
 # syntax=docker/dockerfile:1
 
+
 # --- Build Stage ---
 FROM node:20-alpine3.19 AS build
+ARG CACHEBUST=1
+
 WORKDIR /usr/src/app
 COPY package.json package-lock.json ./
 RUN apk update && apk upgrade && npm ci --ignore-scripts
@@ -14,6 +17,8 @@ RUN npm run build
 
 # --- Production Stage ---
 FROM node:20-alpine3.19 AS prod
+ARG CACHEBUST=1
+
 WORKDIR /usr/src/app
 RUN addgroup -g 1001 -S nodegroup \
     && adduser -S nodeuser -u 1001 -G nodegroup \
