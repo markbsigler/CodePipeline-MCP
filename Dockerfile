@@ -3,8 +3,7 @@
 # --- Build Stage ---
 FROM node:20-alpine3.19 AS build
 WORKDIR /usr/src/app
-# Copy only package files first for better layer caching
-COPY package*.json ./
+COPY package.json package-lock.json ./
 RUN apk update && apk upgrade && npm ci --ignore-scripts
 # Copy only necessary files for build
 COPY src ./src
@@ -20,7 +19,8 @@ RUN addgroup -g 1001 -S nodegroup \
     && adduser -S nodeuser -u 1001 -G nodegroup \
     && apk update && apk upgrade && apk add --no-cache curl
 COPY --from=build /usr/src/app/dist ./dist
-COPY --from=build /usr/src/app/package*.json ./
+COPY --from=build /usr/src/app/package.json ./
+COPY --from=build /usr/src/app/package-lock.json ./
 COPY --from=build /usr/src/app/config ./config
 COPY --from=build /usr/src/app/.env.example ./
 COPY --from=build /usr/src/app/tsconfig*.json ./
