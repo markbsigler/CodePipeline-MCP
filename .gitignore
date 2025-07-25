@@ -7,7 +7,7 @@ coverage/
 logs/
 
 # Env files
-.env
+/.env
 .env.*
 
 # System

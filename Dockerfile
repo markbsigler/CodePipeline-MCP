@@ -12,7 +12,7 @@ RUN apk update && apk upgrade && npm ci --ignore-scripts
 COPY src ./src
 COPY config ./config
 COPY tsconfig*.json ./
-COPY .env ./
+COPY .env.example .env
 RUN npm run build
 
 # --- Production Stage ---
