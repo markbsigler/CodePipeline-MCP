@@ -28,6 +28,12 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: 20
+      - name: Install Docker Compose V2
+        run: |
+          mkdir -p ~/.docker/cli-plugins/
+          curl -SL https://github.com/docker/compose/releases/download/v2.29.2/docker-compose-linux-x86_64 -o ~/.docker/cli-plugins/docker-compose
+          chmod +x ~/.docker/cli-plugins/docker-compose
+          docker compose version
       - name: Run npm audit (SCA)
         run: npm audit --audit-level=high || true
       - name: Install dependencies
@@ -44,7 +50,7 @@ jobs:
           exit-code: 1
           ignore-unfixed: true
       - name: Start containers
-        run: docker-compose up --abort-on-container-exit -d
+        run: docker compose up --abort-on-container-exit -d
         env:
           JWT_SECRET: ${{ secrets.JWT_SECRET }}
           DB_PASSWORD: ${{ secrets.DB_PASSWORD }}
@@ -68,5 +74,5 @@ jobs:
         run: |
           docker run --rm -i grafana/k6 run - < tests/load/streaming.k6.js
       - name: Stop containers
-        run: docker-compose down
+        run: docker compose down
 # If you split jobs in the future, add 'needs:' to control job dependencies.
