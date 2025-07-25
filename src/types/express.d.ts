@@ -1,6 +1,6 @@
-import type { Request as ExpressRequest } from 'express';
+/* eslint-disable no-unused-vars */
+import type { Request as ExpressRequest } from "express";
 
- 
 export type Request = ExpressRequest & {
   user?: {
     id: string;
