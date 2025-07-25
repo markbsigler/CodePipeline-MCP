@@ -6,7 +6,7 @@ import * as observability from "../../src/utils/observability";
 describe("observability", function observabilityDescribe(): void {
   let app: express.Express;
 
-  beforeAll(function beforeAllHook(): void {
+  beforeEach(function beforeEachHook(): void {
     app = express();
     observability.exposePrometheusMetrics(app);
     app.use(observability.metricsMiddleware);

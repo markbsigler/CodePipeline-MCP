@@ -23,7 +23,9 @@ describe("mcpRateLimiter", () => {
 
   beforeEach(() => {
     app = express();
-    // Simulate user middleware
+  });
+
+  it("should allow requests under the limit for /v1/mcp/tools/list", async () => {
     app.use((req, _res, next) => {
       req.user = undefined;
       next();
@@ -31,15 +33,6 @@ describe("mcpRateLimiter", () => {
     app.use("/v1/mcp/tools/list", mcpRateLimiter, (_req, res) =>
       res.status(200).send("ok"),
     );
-    app.use("/v1/mcp/tools/call", mcpRateLimiter, (_req, res) =>
-      res.status(200).send("ok"),
-    );
-    app.use("/other", mcpRateLimiter, (_req, res) =>
-      res.status(200).send("ok"),
-    );
-  });
-
-  it("should allow requests under the limit for /v1/mcp/tools/list", async () => {
     for (let i = 0; i < 30; i++) {
       const res = await request(app).get("/v1/mcp/tools/list");
       expect(res.status).toBe(200);
@@ -47,6 +40,13 @@ describe("mcpRateLimiter", () => {
   });
 
   it("should rate limit after max for /v1/mcp/tools/list", async () => {
+    app.use((req, _res, next) => {
+      req.user = undefined;
+      next();
+    });
+    app.use("/v1/mcp/tools/list", mcpRateLimiter, (_req, res) =>
+      res.status(200).send("ok"),
+    );
     let lastRes = undefined;
     for (let i = 0; i < 31; i++) {
       lastRes = await request(app).get("/v1/mcp/tools/list");
@@ -59,6 +59,13 @@ describe("mcpRateLimiter", () => {
   });
 
   it("should use default limit for unknown endpoint", async () => {
+    app.use((req, _res, next) => {
+      req.user = undefined;
+      next();
+    });
+    app.use("/other", mcpRateLimiter, (_req, res) =>
+      res.status(200).send("ok"),
+    );
     let res;
     let got429 = false;
     for (let i = 0; i < 100; i++) {
@@ -71,13 +78,11 @@ describe("mcpRateLimiter", () => {
       }
     }
     expect(got429).toBe(true);
-    expect(res.body.error).toMatch(/too many requests/i);
-    expect(res.headers["x-ratelimit-limit"]).toBe("60");
+    expect(res?.body.error).toMatch(/too many requests/i);
+    expect(res?.headers["x-ratelimit-limit"]).toBe("60");
   });
 
   it("should allow higher limit for admin user", async () => {
-    // Patch user to admin for this test and use a known endpoint
-    app = express();
     app.use((req: any, _res: any, next: any) => {
       req.user = { role: "admin" };
       next();
@@ -92,7 +97,6 @@ describe("mcpRateLimiter", () => {
     }
   });
   it("should default to user role if req.user is a string", async () => {
-    app = express();
     app.use((req, _res, next) => {
       req.user = "some-string";
       next();
@@ -104,17 +108,16 @@ describe("mcpRateLimiter", () => {
     for (let i = 0; i < 61; i++) {
       // Await each request and check for errors
       res = await request(app).get("/other");
-      if (!res || !res.status) {
+      if (!res?.status) {
         throw new Error("Request failed or returned no status");
       }
     }
     expect(res).toBeDefined();
-    expect(res!.status).toBe(429);
-    expect(res!.body.error).toMatch(/too many requests/i);
+    expect(res?.status).toBe(429);
+    expect(res?.body.error).toMatch(/too many requests/i);
   });
 
   it("should default to user role if req.user is an object without role", async () => {
-    app = express();
     app.use((req, _res, next) => {
       req.user = { foo: "bar" };
       next();
@@ -127,12 +130,11 @@ describe("mcpRateLimiter", () => {
       res = await request(app).get("/other");
     }
     expect(res).toBeDefined();
-    expect(res!.status).toBe(429);
-    expect(res!.body.error).toMatch(/too many requests/i);
+    expect(res?.status).toBe(429);
+    expect(res?.body.error).toMatch(/too many requests/i);
   });
 
   it("should default to user role if req.user is null", async () => {
-    app = express();
     app.use((req, _res, next) => {
       (req as any).user = null;
       next();
@@ -145,7 +147,7 @@ describe("mcpRateLimiter", () => {
       res = await request(app).get("/other");
     }
     expect(res).toBeDefined();
-    expect(res!.status).toBe(429);
-    expect(res!.body.error).toMatch(/too many requests/i);
+    expect(res?.status).toBe(429);
+    expect(res?.body.error).toMatch(/too many requests/i);
   });
 });
