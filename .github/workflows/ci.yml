@@ -34,6 +34,8 @@ jobs:
         run: npm ci
       - name: Build Docker image
         run: docker build --no-cache -t mcp-server:ci .
+      - name: Debug installed versions in image
+        run: docker run --rm mcp-server:ci npm ls brace-expansion cross-spawn || true
       - name: Run Trivy scan
         uses: aquasecurity/trivy-action@master
         with:
