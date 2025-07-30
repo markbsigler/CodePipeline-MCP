@@ -1,5 +1,5 @@
 {
-  "type": "module",
+  
   "name": "codepipeline-mcp-server",
   "version": "0.1.0",
   "description": "Production-ready TypeScript/Node.js MCP server for CodePipeline (ISPW) with OpenAPI-driven tool mapping.",
