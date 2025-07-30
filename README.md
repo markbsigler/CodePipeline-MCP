@@ -6,7 +6,9 @@
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](./LICENSE)
 [![Changelog](https://img.shields.io/badge/changelog-up--to--date-brightgreen)](./CHANGELOG.md)
 
-A production-ready, secure, and extensible MCP server BMC AMI DevX Code Pipeline, auto-generating MCP tools from OpenAPI specs. Implements best practices for security, streaming, testing, and CI/CD.
+A production-ready, secure, and extensible MCP server BMC AMI DevX Code Pipeline,
+auto-generating MCP tools from OpenAPI specs. Implements best practices for
+security, streaming, testing, and CI/CD.
 
 ---
 
@@ -98,7 +100,8 @@ A production-ready, secure, and extensible MCP server BMC AMI DevX Code Pipeline
   - Secure, non-deterministic session IDs (`<user_id>:<session_id>`)
   - Sessions for state only (not authentication)
   - CORS and security headers (helmet.js)
-  - **Strict input validation and sanitization everywhere (including integer enforcement and pattern checks)**
+  - **Strict input validation and sanitization everywhere (including integer
+    enforcement and pattern checks)**
   - Rate limiting and request size limits
   - Structured logging (Winston or Pino)
   - Robust error handling (including 404 and rate limiting responses)
@@ -110,7 +113,8 @@ A production-ready, secure, and extensible MCP server BMC AMI DevX Code Pipeline
   - Multi-environment support (development, staging, production)
 - **Testing & Quality:**
   - Jest with 90%+ code coverage (**100% for critical logic and edge cases**)
-  - Robust integration and edge case test coverage (input validation, error handling, rate limiting, etc.)
+  - Robust integration and edge case test coverage (input validation, error
+    handling, rate limiting, etc.)
   - Linting/formatting (eslint, prettier, husky)
   - TypeScript strict mode
   - Security scanning (`npm audit`, `snyk`)
@@ -130,7 +134,7 @@ A production-ready, secure, and extensible MCP server BMC AMI DevX Code Pipeline
 
 ## Project Structure
 
-```
+```text
 ├── src/
 │   ├── handlers/
 │   ├── middleware/
@@ -179,8 +183,10 @@ A production-ready, secure, and extensible MCP server BMC AMI DevX Code Pipeline
    docker-compose up --build
    ```
 
-   - The app will be available at [http://localhost:3000](http://localhost:3000)
-   - Healthcheck: [http://localhost:3000/healthz](http://localhost:3000/healthz)
+   - The app will be available at
+     [http://localhost:3000](http://localhost:3000)
+   - Healthcheck:
+     [http://localhost:3000/healthz](http://localhost:3000/healthz)
 
 5. **Build for production:**
 
@@ -196,8 +202,9 @@ A production-ready, secure, and extensible MCP server BMC AMI DevX Code Pipeline
 
 ---
 
-1. **Obtain a JWT Token:**  
-   Use your authentication provider or the server's `/auth/login` endpoint (if enabled):
+1. **Obtain a JWT Token:**
+   Use your authentication provider or the server's `/auth/login` endpoint
+   (if enabled):
 
    ```sh
    # Example: obtain a JWT token (replace with your actual credentials)
@@ -210,7 +217,8 @@ A production-ready, secure, and extensible MCP server BMC AMI DevX Code Pipeline
 
 ## VS Code Client Configuration
 
-To connect to this MCP server from VS Code as a client: 2. Add or update the following settings to configure the MCP server endpoint and authentication:
+To connect to this MCP server from VS Code as a client: 2. Add or update the following settings to configure the MCP server endpoint
+and authentication:
 
 ```json
 {
@@ -234,7 +242,8 @@ To connect to this MCP server from VS Code as a client: 2. Add or update the fol
   - Secure, non-deterministic session IDs (`<user_id>:<session_id>`)
   - Sessions for state only (not authentication)
   - CORS and security headers (helmet.js)
-  - **Strict input validation and sanitization everywhere (including integer enforcement and pattern checks)**
+  - **Strict input validation and sanitization everywhere (including integer
+    enforcement and pattern checks)**
   - Rate limiting and request size limits
   - Structured logging (Winston or Pino)
   - Robust error handling (including 404 and rate limiting responses)
@@ -314,7 +323,8 @@ Add/modify tools in `config/openapi.json`.
 Handlers are auto-generated and registered.
 Plugin/middleware system for custom logic (see below for examples).
 See `PROMPT.md` for extensibility framework.
-**Code generation:** Use the provided CLI scripts (see below) to auto-generate TypeScript types and handler templates from OpenAPI specs.
+**Code generation:** Use the provided CLI scripts (see below) to auto-generate
+TypeScript types and handler templates from OpenAPI specs.
 
 ### 🛠️ CLI Scripts for OpenAPI-to-MCP Code Generation
 
@@ -334,7 +344,8 @@ npm run generate:handlers
 
 This will update `src/types/toolZodSchemas.ts` and create new handler stubs in `src/handlers/` for any tools defined in your OpenAPI spec but missing handlers.
 
-**Customizing:** You can edit the generated handler stubs to implement your tool logic. Types are automatically kept in sync with the OpenAPI spec.
+**Customizing:** You can edit the generated handler stubs to implement your tool
+logic. Types are automatically kept in sync with the OpenAPI spec.
 
 ---
 
@@ -346,11 +357,11 @@ You can extend the server by adding custom plugins or middleware. This allows yo
 
 ```typescript
 // src/middleware/requestTimer.ts
-import { Request, Response, NextFunction } from 'express';
+import { Request, Response, NextFunction } from "express";
 
 export function requestTimer(req: Request, res: Response, next: NextFunction) {
   const start = Date.now();
-  res.on('finish', () => {
+  res.on("finish", () => {
     const duration = Date.now() - start;
     console.log(`Request to ${req.path} took ${duration}ms`);
   });
@@ -362,7 +373,7 @@ export function requestTimer(req: Request, res: Response, next: NextFunction) {
 
 ```typescript
 // src/index.ts
-import { requestTimer } from './middleware/requestTimer';
+import { requestTimer } from "./middleware/requestTimer";
 app.use(requestTimer);
 ```
 
@@ -376,7 +387,7 @@ export function transformResult(result: any) {
 }
 
 // Use in your handler:
-import { transformResult } from '../plugins/transformResult';
+import { transformResult } from "../plugins/transformResult";
 const output = transformResult(toolResult);
 ```
 
@@ -388,8 +399,8 @@ When you add a new tool to `config/openapi.json`, use the following template for
 
 ```typescript
 // src/handlers/myNewTool.ts
-import { Request, Response } from 'express';
-import { MyNewToolParams } from '../types/toolZodSchemas';
+import { Request, Response } from "express";
+import { MyNewToolParams } from "../types/toolZodSchemas";
 
 export async function myNewToolHandler(req: Request, res: Response) {
   // Validate and extract params
@@ -419,9 +430,11 @@ async function doSomething(params: MyNewToolParams) {
 ### Type Safety, Linting, and Test Coverage
 
 - **Type Safety:** All code and tests are fully type-safe (TypeScript strict mode, no `any` usage, explicit return types everywhere).
-- **Lint Compliance:** Zero lint errors and warnings (ESLint, Prettier, Husky pre-commit hooks enforced).
-- **Test Suite:** All tests pass (unit, integration, edge cases, error handling, observability, and rate limiting).
-- **How to Run:**
+  -- **Lint Compliance:** Zero lint errors and warnings (ESLint, Prettier, Husky
+  pre-commit hooks enforced).
+  -- **Test Suite:** All tests pass (unit, integration, edge cases, error
+  handling, observability, and rate limiting).
+  -- **How to Run:**
   - Run all tests: `npm test`
   - Coverage: `npm run test:coverage`
   - Lint: `npm run lint`
@@ -455,9 +468,12 @@ This project uses [Stryker](https://stryker-mutator.io/) for mutation testing to
    ```
 
 3. View the mutation report:
-   Open the generated HTML report at `reports/mutation/mutation.html` for detailed results.
+   Open the generated HTML report at `reports/mutation/mutation.html` for
+   detailed results.
 
-**Note:** The current mutation score is 85%. All critical logic and edge cases are covered; some low-level error branches and legacy code are not fully covered due to complexity or low risk. See the mutation report for details.
+**Note:** The current mutation score is 85%. All critical logic and edge cases
+are covered; some low-level error branches and legacy code are not fully covered
+due to complexity or low risk. See the mutation report for details.
 
 #### Stryker Configuration
 
@@ -668,7 +684,7 @@ sequenceDiagram
 ### Metrics and Grafana Dashboards
 
 - Prometheus metrics are exposed at `/metrics`.
-- To visualize metrics in Grafana:
+  -- To visualize metrics in Grafana:
   1. Run Prometheus and Grafana (example Docker Compose):
 
      ```yaml
@@ -762,11 +778,16 @@ We welcome contributions! Please open issues or pull requests. To contribute:
 ## Known Issues & Limitations
 
 - Some legacy error branches and low-level code are not fully covered by mutation tests (see mutation report for details).
-- Multi-arch Docker builds are supported, but only tested on linux/amd64 and linux/arm64.
-- The server expects JWT tokens issued for this instance; passthrough tokens are not supported.
-- Debug endpoints (e.g., `/docs`) should be disabled or restricted in production.
-- Supply chain security relies on regular dependency updates and audits; always run `npm audit` and `snyk` after upgrades.
-- See [GitHub Issues](https://github.com/markbsigler/CodePipeline-MCP/issues) for open bugs and feature requests.
+- Multi-arch Docker builds are supported, but only tested on linux/amd64 and
+  linux/arm64.
+- The server expects JWT tokens issued for this instance; passthrough tokens are
+  not supported.
+- Debug endpoints (e.g., `/docs`) should be disabled or restricted in
+  production.
+- Supply chain security relies on regular dependency updates and audits; always
+  run `npm audit` and `snyk` after upgrades.
+- See [GitHub Issues](https://github.com/markbsigler/CodePipeline-MCP/issues)
+  for open bugs and feature requests.
 
 **Q: Docker Compose fails to start?**
 
@@ -826,7 +847,7 @@ See the [OpenAPI spec](./config/openapi.json) or [Swagger UI](/docs) for full de
 
 ## Authentication Guide
 
-1. **Obtain a JWT Token:**  
+1. **Obtain a JWT Token:**
    Use your authentication provider or the server's `/auth/login` endpoint (if enabled):
 
    ```sh
@@ -837,7 +858,7 @@ See the [OpenAPI spec](./config/openapi.json) or [Swagger UI](/docs) for full de
 
    The response will include a JWT token.
 
-2. **Use the Token:**  
+2. **Use the Token:**
    Add the token to the `Authorization` header for all API requests:
 
    ```text
