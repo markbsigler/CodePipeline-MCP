@@ -4,8 +4,19 @@
 [![Coverage Status](https://coveralls.io/repos/github/markbsigler/CodePipeline-MCP/badge.svg?branch=main)](https://coveralls.io/github/markbsigler/CodePipeline-MCP?branch=main)
 [![Mutation Score](https://img.shields.io/badge/mutation--score-85%25-brightgreen?logo=stryker)](./reports/mutation/mutation.html)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](./LICENSE)
+[![Changelog](https://img.shields.io/badge/changelog-up--to--date-brightgreen)](./CHANGELOG.md)
 
 A production-ready, secure, and extensible MCP server BMC AMI DevX Code Pipeline, auto-generating MCP tools from OpenAPI specs. Implements best practices for security, streaming, testing, and CI/CD.
+
+---
+
+## 📚 Documentation Quick Links
+
+- [Architecture Overview](./docs/architecture.md)
+- [API Usage Examples](./docs/api-examples.md)
+- [Troubleshooting Guide](./docs/troubleshooting.md)
+- [Contributing Guide](./CONTRIBUTING.md)
+- [Security Policy](./SECURITY.md)
 
 ---
 
@@ -14,6 +25,7 @@ A production-ready, secure, and extensible MCP server BMC AMI DevX Code Pipeline
 <!-- toc -->
 
 - [BMC AMI DevX Code Pipeline MCP Server](#bmc-ami-devx-code-pipeline-mcp-server)
+  - [📚 Documentation Quick Links](#-documentation-quick-links)
   - [Table of Contents](#table-of-contents)
   - [Features \& Architecture](#features--architecture)
   - [Project Structure](#project-structure)
@@ -26,6 +38,12 @@ A production-ready, secure, and extensible MCP server BMC AMI DevX Code Pipeline
     - [SSE Notifications](#sse-notifications)
   - [Security \& Best Practices](#security--best-practices)
   - [Extending the Server](#extending-the-server)
+    - [🛠️ CLI Scripts for OpenAPI-to-MCP Code Generation](#️-cli-scripts-for-openapi-to-mcp-code-generation)
+    - [🔌 Plugin/Middleware System](#-pluginmiddleware-system)
+      - [Example: Adding a custom middleware to log request timing](#example-adding-a-custom-middleware-to-log-request-timing)
+      - [Registering the middleware](#registering-the-middleware)
+      - [Example: Adding a plugin for custom tool result transformation](#example-adding-a-plugin-for-custom-tool-result-transformation)
+    - [📝 Template for New MCP Tool Handlers](#-template-for-new-mcp-tool-handlers)
   - [Testing \& Quality](#testing--quality)
     - [Type Safety, Linting, and Test Coverage](#type-safety-linting-and-test-coverage)
     - [Mutation Testing with Stryker](#mutation-testing-with-stryker)
@@ -52,6 +70,7 @@ A production-ready, secure, and extensible MCP server BMC AMI DevX Code Pipeline
     - [Environment Hardening](#environment-hardening)
   - [Contributing](#contributing)
   - [FAQ / Troubleshooting](#faq--troubleshooting)
+  - [Known Issues \& Limitations](#known-issues--limitations)
   - [License](#license)
   - [Contact / Support](#contact--support)
   - [API Endpoint Reference](#api-endpoint-reference)
@@ -291,11 +310,107 @@ curl http://localhost:3000/notifications/tools/list_changed -H "Accept: text/eve
 
 ## Extending the Server
 
-- Add/modify tools in `config/openapi.json`
-- Handlers auto-generated and registered
-- Plugin/middleware system for custom logic
-- See `PROMPT.md` for extensibility framework
-- **Code generation:** Use the provided scripts/CLI tools (see `scripts/` or `package.json` scripts) to auto-generate TypeScript types and handler templates from OpenAPI specs.
+Add/modify tools in `config/openapi.json`.
+Handlers are auto-generated and registered.
+Plugin/middleware system for custom logic (see below for examples).
+See `PROMPT.md` for extensibility framework.
+**Code generation:** Use the provided CLI scripts (see below) to auto-generate TypeScript types and handler templates from OpenAPI specs.
+
+### 🛠️ CLI Scripts for OpenAPI-to-MCP Code Generation
+
+The project provides CLI scripts for generating MCP tool types and handler templates from your OpenAPI spec:
+
+**Available scripts:**
+
+- `npm run generate:types` — Generates TypeScript types from `config/openapi.json`.
+- `npm run generate:handlers` — Generates handler templates for new MCP tools.
+
+**Usage:**
+
+```sh
+npm run generate:types
+npm run generate:handlers
+```
+
+This will update `src/types/toolZodSchemas.ts` and create new handler stubs in `src/handlers/` for any tools defined in your OpenAPI spec but missing handlers.
+
+**Customizing:** You can edit the generated handler stubs to implement your tool logic. Types are automatically kept in sync with the OpenAPI spec.
+
+---
+
+### 🔌 Plugin/Middleware System
+
+You can extend the server by adding custom plugins or middleware. This allows you to inject logic at various points in the request lifecycle.
+
+#### Example: Adding a custom middleware to log request timing
+
+```typescript
+// src/middleware/requestTimer.ts
+import { Request, Response, NextFunction } from 'express';
+
+export function requestTimer(req: Request, res: Response, next: NextFunction) {
+  const start = Date.now();
+  res.on('finish', () => {
+    const duration = Date.now() - start;
+    console.log(`Request to ${req.path} took ${duration}ms`);
+  });
+  next();
+}
+```
+
+#### Registering the middleware
+
+```typescript
+// src/index.ts
+import { requestTimer } from './middleware/requestTimer';
+app.use(requestTimer);
+```
+
+#### Example: Adding a plugin for custom tool result transformation
+
+```typescript
+// src/plugins/transformResult.ts
+export function transformResult(result: any) {
+  // Custom transformation logic
+  return { ...result, transformed: true };
+}
+
+// Use in your handler:
+import { transformResult } from '../plugins/transformResult';
+const output = transformResult(toolResult);
+```
+
+---
+
+### 📝 Template for New MCP Tool Handlers
+
+When you add a new tool to `config/openapi.json`, use the following template for your handler:
+
+```typescript
+// src/handlers/myNewTool.ts
+import { Request, Response } from 'express';
+import { MyNewToolParams } from '../types/toolZodSchemas';
+
+export async function myNewToolHandler(req: Request, res: Response) {
+  // Validate and extract params
+  const params: MyNewToolParams = req.body.params;
+
+  // Implement your tool logic here
+  const result = await doSomething(params);
+
+  // Send response
+  res.json({ result });
+}
+
+async function doSomething(params: MyNewToolParams) {
+  // ...tool implementation...
+  return { success: true };
+}
+```
+
+> **Note:** The handler name and types should match the tool name and schema in your OpenAPI spec. The CLI scripts will generate a stub for you if missing.
+
+---
 
 ---
 
@@ -643,6 +758,15 @@ We welcome contributions! Please open issues or pull requests. To contribute:
 ---
 
 ## FAQ / Troubleshooting
+
+## Known Issues & Limitations
+
+- Some legacy error branches and low-level code are not fully covered by mutation tests (see mutation report for details).
+- Multi-arch Docker builds are supported, but only tested on linux/amd64 and linux/arm64.
+- The server expects JWT tokens issued for this instance; passthrough tokens are not supported.
+- Debug endpoints (e.g., `/docs`) should be disabled or restricted in production.
+- Supply chain security relies on regular dependency updates and audits; always run `npm audit` and `snyk` after upgrades.
+- See [GitHub Issues](https://github.com/markbsigler/CodePipeline-MCP/issues) for open bugs and feature requests.
 
 **Q: Docker Compose fails to start?**
 
