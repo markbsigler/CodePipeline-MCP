@@ -13,10 +13,11 @@ services:
     ports:
       - "3000:3000"
     healthcheck:
-      test: ["CMD", "curl", "-f", "http://localhost:3000/healthz"]
+      test: ["CMD-SHELL", "curl -f http://localhost:3000/healthz || exit 1"]
       interval: 30s
-      timeout: 10s
-      retries: 5
+      timeout: 20s
+      retries: 10
+      start_period: 30s
     logging:
       driver: "json-file"
       options:
