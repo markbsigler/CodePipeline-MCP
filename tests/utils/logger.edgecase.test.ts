@@ -7,18 +7,29 @@ describe("logger edge case", () => {
   afterEach(() => {
     jest.resetModules();
     if (fs.existsSync(logDir)) {
-      fs.rmSync(logDir, { recursive: true, force: true });
+      try {
+        fs.rmSync(logDir, { recursive: true, force: true });
+      } catch (err) {
+        // Ignore ENOTEMPTY errors, which can occur if files are locked or in use
+        if (err && (err as NodeJS.ErrnoException).code !== "ENOTEMPTY") {
+          throw err;
+        }
+      }
     }
   });
-  it("creates logDir if missing", (): Promise<void> => {
+  it("creates logDir if missing", async () => {
     if (fs.existsSync(logDir)) {
-      fs.rmSync(logDir, { recursive: true, force: true });
+      try {
+        fs.rmSync(logDir, { recursive: true, force: true });
+      } catch (err) {
+        if (err && (err as NodeJS.ErrnoException).code !== "ENOTEMPTY") {
+          throw err;
+        }
+      }
     }
     expect(fs.existsSync(logDir)).toBe(false);
     // Re-require logger to trigger logDir creation
-
-    return import(loggerPath);
-    // eslint-disable-next-line no-unreachable
+    await import(loggerPath);
     expect(fs.existsSync(logDir)).toBe(true);
   });
 });
