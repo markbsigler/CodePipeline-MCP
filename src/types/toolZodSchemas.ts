@@ -10,8 +10,15 @@ const openapiPath = path.resolve(__dirname, "../../config/openapi.json");
 const openapi = loadOpenApiSpec(openapiPath);
 const mcpTools = extractMcpToolsFromOpenApi(openapi as Record<string, unknown>);
 
-// Export all schemas for use in validation middleware
-export const toolZodSchemas = mcpTools.reduce(
+// Add index signature to fix TS7053 errors
+export interface ToolZodSchemas {
+  [key: string]: {
+    input: unknown;
+    output: unknown;
+  };
+}
+
+export const toolZodSchemas: ToolZodSchemas = mcpTools.reduce(
   (acc, tool) => {
     acc[tool.name] = {
       input: tool.inputZod,
@@ -19,5 +26,5 @@ export const toolZodSchemas = mcpTools.reduce(
     };
     return acc;
   },
-  {} as Record<string, { input: unknown; output: unknown }>,
+  {} as ToolZodSchemas,
 );

@@ -50,7 +50,7 @@ export function mcpRateLimiter(
   next: NextFunction,
 ): void {
   const key = req.baseUrl + req.path;
-  // Defensive: req.user may be string, JwtPayload, or undefined
+  // Defensive: req.user may be string, JwtPayload, null, or undefined
   let role = "user";
   if (
     typeof req.user === "object" &&
@@ -59,6 +59,10 @@ export function mcpRateLimiter(
     req.user.role === "admin"
   ) {
     role = "admin";
+  }
+  // If req.user is null, treat as "user" role
+  if (req.user === null) {
+    role = "user";
   }
   const limiter = limiters[`${key}:${role}`] || limiters[`default:${role}`];
   return limiter(req, res, next);
